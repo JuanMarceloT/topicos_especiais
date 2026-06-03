@@ -1,0 +1,26 @@
+Resumo da modelagem da rede aeroportuaria brasileira - 2025
+================================================================
+
+Arquivos mensais lidos: 11
+Linhas lidas: 2,162,059
+Linhas utilizadas: 1,314,175
+Linhas descartadas por filtro: 847,884
+
+Aeroportos no grafo: 155
+Rotas nao direcionais no grafo: 619
+Passageiros considerados: 92,874,875
+Etapas/voos considerados: 1,314,175
+Componentes conectados: 1
+Maior componente conectado: 155 aeroportos
+
+Top 10 aeroportos por score de criticidade:
+01. VCP - CAMPINAS/SP | grau=79 | passageiros=10,755,886 | betweenness=0.2871 | score=0.5194
+02. CNF - CONFINS/MG | grau=64 | passageiros=11,226,440 | betweenness=0.2167 | score=0.4591
+03. GRU - GUARULHOS/SP | grau=62 | passageiros=27,542,628 | betweenness=0.1091 | score=0.4199
+04. REC - RECIFE/PE | grau=46 | passageiros=8,458,269 | betweenness=0.1253 | score=0.3788
+05. MAO - MANAUS/AM | grau=32 | passageiros=2,680,308 | betweenness=0.1905 | score=0.3641
+06. CGH - SÃO PAULO/SP | grau=48 | passageiros=22,554,863 | betweenness=0.0420 | score=0.3595
+07. BSB - BRASÍLIA/DF | grau=41 | passageiros=14,383,446 | betweenness=0.0474 | score=0.3417
+08. GIG - RIO DE JANEIRO/RJ | grau=38 | passageiros=10,666,653 | betweenness=0.0313 | score=0.3243
+09. SSA - SALVADOR/BA | grau=33 | passageiros=6,570,605 | betweenness=0.0548 | score=0.3180
+10. BEL - BELÉM/PA | grau=27 | passageiros=3,362,515 | betweenness=0.0958 | score=0.3150

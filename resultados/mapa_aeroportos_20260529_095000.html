@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rede Aeroportuária Brasileira 2025</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #map-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  svg#map {
+    width: 100%;
+    height: 100%;
+    background: #0d1117;
+  }
+
+  .brasil-fill  { fill: #161b22; stroke: #3d444d; stroke-width: 1; }
+  .route        { stroke: #3d82f6; stroke-opacity: 0.25; fill: none; pointer-events: none; }
+  .route.bright { stroke: #60a5fa; stroke-opacity: 0.6; }
+
+  .airport      { cursor: pointer; transition: r 0.15s; }
+  .airport:hover { r: 10px; }
+  .airport.removed { opacity: 0.15; }
+  .airport.isolated { stroke: #f59e0b !important; stroke-width: 2; }
+
+  .a-label {
+    font-size: 9px;
+    fill: #8b949e;
+    pointer-events: none;
+    user-select: none;
+  }
+  .a-label.top { fill: #e6edf3; font-weight: 600; font-size: 11px; }
+
+  /* ── Sidebar ────────────────────────────────────── */
+  #sidebar {
+    width: 300px;
+    background: #161b22;
+    border-left: 1px solid #30363d;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid #30363d;
+  }
+  #sidebar-header h1 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e6edf3;
+    line-height: 1.4;
+  }
+  #sidebar-header .sub {
+    font-size: 11px;
+    color: #8b949e;
+    margin-top: 4px;
+  }
+
+  #stats-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #30363d;
+  }
+  .stat-box {
+    flex: 1;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+  .stat-box .val { font-size: 18px; font-weight: 700; color: #3b82f6; }
+  .stat-box .lbl { font-size: 10px; color: #8b949e; margin-top: 2px; }
+
+  #top-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  #top-list::-webkit-scrollbar { width: 4px; }
+  #top-list::-webkit-scrollbar-track { background: transparent; }
+  #top-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-left: 3px solid transparent;
+  }
+  .rank-item:hover { background: #21262d; }
+  .rank-item.active { background: #1f2937; border-left-color: #3b82f6; }
+  .rank-item.removed-item { opacity: 0.3; text-decoration: line-through; }
+
+  .rank-num {
+    font-size: 11px;
+    color: #6e7681;
+    width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .rank-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-code { font-weight: 700; font-size: 13px; }
+  .rank-city { font-size: 11px; color: #8b949e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-score { font-size: 11px; color: #6e7681; flex-shrink: 0; }
+
+  /* ── Tooltip ────────────────────────────────────── */
+  #tooltip {
+    position: fixed;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    max-width: 220px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  #tooltip.visible { opacity: 1; }
+  #tooltip h3 { font-size: 14px; margin-bottom: 4px; }
+  #tooltip .city { font-size: 12px; color: #8b949e; margin-bottom: 10px; }
+  .tt-row { display: flex; justify-content: space-between; gap: 16px; margin: 3px 0; }
+  .tt-key { color: #8b949e; font-size: 11px; }
+  .tt-val { font-size: 11px; font-weight: 600; }
+
+  /* ── Simulação ──────────────────────────────────── */
+  #sim-panel {
+    border-top: 1px solid #30363d;
+    padding: 12px 16px;
+  }
+  #sim-panel h2 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  #sim-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  button {
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #e6edf3;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  button:hover { background: #30363d; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  #sim-step-label { font-size: 12px; color: #8b949e; }
+
+  #sim-progress {
+    height: 4px;
+    background: #21262d;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  #sim-progress-bar {
+    height: 100%;
+    background: #ef4444;
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  .sim-stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+    font-size: 11px;
+  }
+  .sim-stat-key { color: #8b949e; }
+  .sim-stat-val { font-weight: 600; }
+  .val-danger  { color: #ef4444; }
+  .val-warn    { color: #f59e0b; }
+  .val-ok      { color: #22c55e; }
+
+  /* ── Legend ─────────────────────────────────────── */
+  #legend {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background: rgba(22, 27, 34, 0.9);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 11px;
+    pointer-events: none;
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+  }
+  .leg-dot {
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Hint ────────────────────────────────────────── */
+  #hint {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 11px;
+    color: #6e7681;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="map-wrap">
+  <svg id="map"></svg>
+  <div id="legend">
+    <div class="leg-item"><div class="leg-dot" style="width:12px;height:12px;background:#f59e0b;"></div> Top 3 (score mais alto)</div>
+    <div class="leg-item"><div class="leg-dot" style="width:9px;height:9px;background:#3b82f6;"></div> Top 4–20</div>
+    <div class="leg-item"><div class="leg-dot" style="width:7px;height:7px;background:#22d3ee;"></div> Top 21–50</div>
+    <div class="leg-item"><div class="leg-dot" style="width:5px;height:5px;background:#6b7280;"></div> Demais</div>
+    <div class="leg-item" style="margin-top:6px;"><div style="width:20px;height:1px;background:#60a5fa;opacity:0.6;"></div> Top 50 rotas</div>
+    <div class="leg-item"><div style="width:20px;height:1px;background:#3d82f6;opacity:0.25;"></div> Demais rotas</div>
+  </div>
+  <div id="hint">Scroll para zoom · Arraste para mover · Hover nos nodos</div>
+</div>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>✈ Rede Aeroportuária Brasileira</h1>
+    <div class="sub">Análise de vulnerabilidade — 2025</div>
+  </div>
+
+  <div id="stats-row">
+    <div class="stat-box">
+      <div class="val" id="stat-airports">—</div>
+      <div class="lbl">Aeroportos</div>
+    </div>
+    <div class="stat-box">
+      <div class="val" id="stat-routes">—</div>
+      <div class="lbl">Rotas</div>
+    </div>
+    <div class="stat-box">
+      <div class="val" id="stat-comp">1</div>
+      <div class="lbl">Componentes</div>
+    </div>
+  </div>
+
+  <div id="top-list"></div>
+
+  <div id="sim-panel">
+    <h2>Simulação de ataque</h2>
+    <div id="sim-controls">
+      <button id="btn-reset">↺</button>
+      <button id="btn-prev">‹</button>
+      <button id="btn-next">›</button>
+      <button id="btn-play">▶</button>
+      <span id="sim-step-label">Passo 0 / 0</span>
+    </div>
+    <div id="sim-progress"><div id="sim-progress-bar"></div></div>
+    <div class="sim-stat-row">
+      <span class="sim-stat-key">Aeroporto removido</span>
+      <span class="sim-stat-val" id="ss-removido">—</span>
+    </div>
+    <div class="sim-stat-row">
+      <span class="sim-stat-key">Maior componente</span>
+      <span class="sim-stat-val" id="ss-maior">—</span>
+    </div>
+    <div class="sim-stat-row">
+      <span class="sim-stat-key">Componentes</span>
+      <span class="sim-stat-val" id="ss-comp">—</span>
+    </div>
+    <div class="sim-stat-row">
+      <span class="sim-stat-key">Volume restante</span>
+      <span class="sim-stat-val" id="ss-vol">—</span>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <h3 id="tt-code"></h3>
+  <div class="city" id="tt-city"></div>
+  <div class="tt-row"><span class="tt-key">Ranking</span><span class="tt-val" id="tt-rank"></span></div>
+  <div class="tt-row"><span class="tt-key">Score</span><span class="tt-val" id="tt-score"></span></div>
+  <div class="tt-row"><span class="tt-key">Betweenness</span><span class="tt-val" id="tt-bc"></span></div>
+  <div class="tt-row"><span class="tt-key">Grau (rotas)</span><span class="tt-val" id="tt-grau"></span></div>
+  <div class="tt-row"><span class="tt-key">Passageiros/ano</span><span class="tt-val" id="tt-pass"></span></div>
+</div>
+
+<script>
+const DATA = {"airports": [{"id": "VCP", "nome": "VIRACOPOS", "municipio": "CAMPINAS", "uf": "SP", "regiao": "SUDESTE", "rank": 1, "score": 0.5193623125936258, "bc": 0.2870843216948342, "dc": 0.512987012987013, "cc": 0.6695652173913044, "grau": 79, "passageiros": 10755886, "lat": -23.007, "lon": -47.135}, {"id": "CNF", "nome": "TANCREDO NEVES", "municipio": "CONFINS", "uf": "MG", "regiao": "SUDESTE", "rank": 2, "score": 0.4590815410489961, "bc": 0.21667353723867103, "dc": 0.4155844155844156, "cc": 0.6285714285714286, "grau": 64, "passageiros": 11226440, "lat": -19.624, "lon": -43.972}, {"id": "GRU", "nome": "GUARULHOS - GOVERNADOR ANDRÉ FRANCO MONTORO", "municipio": "GUARULHOS", "uf": "SP", "regiao": "SUDESTE", "rank": 3, "score": 0.41985471561351123, "bc": 0.10905665518731211, "dc": 0.4025974025974026, "cc": 0.6234817813765182, "grau": 62, "passageiros": 27542628, "lat": -23.436, "lon": -46.473}, {"id": "REC", "nome": "GUARARAPES - GILBERTO FREYRE", "municipio": "RECIFE", "uf": "PE", "regiao": "NORDESTE", "rank": 4, "score": 0.37876711093976395, "bc": 0.1253007394731756, "dc": 0.2987012987012987, "cc": 0.5811320754716981, "grau": 46, "passageiros": 8458269, "lat": -8.127, "lon": -34.923}, {"id": "MAO", "nome": "EDUARDO GOMES", "municipio": "MANAUS", "uf": "AM", "regiao": "NORTE", "rank": 5, "score": 0.36408032144915364, "bc": 0.19053773367521196, "dc": 0.2077922077922078, "cc": 0.5403508771929825, "grau": 32, "passageiros": 2680308, "lat": -3.039, "lon": -60.05}, {"id": "CGH", "nome": "CONGONHAS", "municipio": "SÃO PAULO", "uf": "SP", "regiao": "SUDESTE", "rank": 6, "score": 0.35950142059897594, "bc": 0.042023159111579084, "dc": 0.3116883116883117, "cc": 0.5422535211267606, "grau": 48, "passageiros": 22554863, "lat": -23.626, "lon": -46.656}, {"id": "BSB", "nome": "PRESIDENTE JUSCELINO KUBITSCHEK", "municipio": "BRASÍLIA", "uf": "DF", "regiao": "CENTRO-OESTE", "rank": 7, "score": 0.34173119622807735, "bc": 0.04742589195922146, "dc": 0.2662337662337662, "cc": 0.5746268656716418, "grau": 41, "passageiros": 14383446, "lat": -15.871, "lon": -47.919}, {"id": "GIG", "nome": "AEROPORTO INTERNACIONAL DO RIO DE JANEIRO (GALEÃO) - ANTONIO CARLOS JOBIM", "municipio": "RIO DE JANEIRO", "uf": "RJ", "regiao": "SUDESTE", "rank": 8, "score": 0.3242641274293422, "bc": 0.031292139412906685, "dc": 0.24675324675324675, "cc": 0.5682656826568265, "grau": 38, "passageiros": 10666653, "lat": -22.81, "lon": -43.25}, {"id": "SSA", "nome": "DEPUTADO LUÍS EDUARDO MAGALHÃES", "municipio": "SALVADOR", "uf": "BA", "regiao": "NORDESTE", "rank": 9, "score": 0.3180425063254355, "bc": 0.0548238983184397, "dc": 0.21428571428571427, "cc": 0.5238095238095238, "grau": 33, "passageiros": 6570605, "lat": -12.909, "lon": -38.322}, {"id": "BEL", "nome": "INTERNACIONAL DE BELÉM/VAL DE CANS/JÚLIO CEZAR RIBEIRO", "municipio": "BELÉM", "uf": "PA", "regiao": "NORTE", "rank": 10, "score": 0.3150188683612521, "bc": 0.09580370309417767, "dc": 0.17532467532467533, "cc": 0.532871972318339, "grau": 27, "passageiros": 3362515, "lat": -1.379, "lon": -48.476}, {"id": "CWB", "nome": "AFONSO PENA", "municipio": "SÃO JOSÉ DOS PINHAIS", "uf": "PR", "regiao": "SUL", "rank": 11, "score": 0.30590163061560827, "bc": 0.0599628338314466, "dc": 0.17532467532467533, "cc": 0.49517684887459806, "grau": 27, "passageiros": 5436462, "lat": -25.529, "lon": -49.176}, {"id": "FOR", "nome": "PINTO MARTINS", "municipio": "FORTALEZA", "uf": "CE", "regiao": "NORDESTE", "rank": 12, "score": 0.304241189699208, "bc": 0.05851201054724472, "dc": 0.17532467532467533, "cc": 0.532871972318339, "grau": 27, "passageiros": 5073773, "lat": -3.775, "lon": -38.533}, {"id": "CGB", "nome": "MARECHAL RONDON", "municipio": "VÁRZEA GRANDE", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 13, "score": 0.27922822704227046, "bc": 0.042262412542255975, "dc": 0.15584415584415584, "cc": 0.4967741935483871, "grau": 24, "passageiros": 2251550, "lat": -15.652, "lon": -56.117}, {"id": "POA", "nome": "SALGADO FILHO", "municipio": "PORTO ALEGRE", "uf": "RS", "regiao": "SUL", "rank": 14, "score": 0.26725951859632446, "bc": 0.01615598516440193, "dc": 0.1038961038961039, "cc": 0.47530864197530864, "grau": 16, "passageiros": 6452125, "lat": -29.994, "lon": -51.171}, {"id": "MCZ", "nome": "ZUMBI DOS PALMARES", "municipio": "RIO LARGO", "uf": "AL", "regiao": "NORDESTE", "rank": 15, "score": 0.26455310465549914, "bc": 0.006036325084068422, "dc": 0.15584415584415584, "cc": 0.4888888888888889, "grau": 24, "passageiros": 2517038, "lat": -9.511, "lon": -35.792}, {"id": "RAO", "nome": "LEITE LOPES", "municipio": "RIBEIRÃO PRETO", "uf": "SP", "regiao": "SUDESTE", "rank": 16, "score": 0.2635053205473471, "bc": 0.013367065307067822, "dc": 0.2077922077922078, "cc": 0.5167785234899329, "grau": 32, "passageiros": 642305, "lat": -21.136, "lon": -47.777}, {"id": "VIX", "nome": "EURICO DE AGUIAR SALLES", "municipio": "VITÓRIA", "uf": "ES", "regiao": "SUDESTE", "rank": 17, "score": 0.2591185442870054, "bc": 0.0037858273641595036, "dc": 0.12987012987012986, "cc": 0.5202702702702703, "grau": 20, "passageiros": 3170970, "lat": -20.258, "lon": -40.286}, {"id": "GYN", "nome": "SANTA GENOVEVA/GOIÂNIA", "municipio": "GOIÂNIA", "uf": "GO", "regiao": "CENTRO-OESTE", "rank": 18, "score": 0.25831849831499726, "bc": 0.0030412549454780103, "dc": 0.12337662337662338, "cc": 0.5099337748344371, "grau": 19, "passageiros": 3510170, "lat": -16.632, "lon": -49.221}, {"id": "BPS", "nome": "PORTO SEGURO", "municipio": "PORTO SEGURO", "uf": "BA", "regiao": "NORDESTE", "rank": 19, "score": 0.25704181001755, "bc": 0.00339198040994056, "dc": 0.14285714285714285, "cc": 0.4797507788161994, "grau": 22, "passageiros": 2131644, "lat": -16.439, "lon": -39.081}, {"id": "SLZ", "nome": "MARECHAL CUNHA MACHADO", "municipio": "SÃO LUÍS", "uf": "MA", "regiao": "NORDESTE", "rank": 20, "score": 0.2553631272131313, "bc": 0.01664752905815944, "dc": 0.12987012987012986, "cc": 0.4935897435897436, "grau": 20, "passageiros": 1648871, "lat": -2.585, "lon": -44.234}, {"id": "FLN", "nome": "HERCÍLIO LUZ", "municipio": "FLORIANÓPOLIS", "uf": "SC", "regiao": "SUL", "rank": 21, "score": 0.25446843244864004, "bc": 0.003412931863708458, "dc": 0.11038961038961038, "cc": 0.4723926380368098, "grau": 17, "passageiros": 3481134, "lat": -27.67, "lon": -48.552}, {"id": "SDU", "nome": "SANTOS DUMONT", "municipio": "RIO DE JANEIRO", "uf": "RJ", "regiao": "SUDESTE", "rank": 22, "score": 0.2509041201711306, "bc": 0.001404961331659565, "dc": 0.07792207792207792, "cc": 0.456973293768546, "grau": 12, "passageiros": 5654678, "lat": -22.91, "lon": -43.163}, {"id": "JPA", "nome": "PRESIDENTE CASTRO PINTO", "municipio": "SANTA RITA", "uf": "PB", "regiao": "NORDESTE", "rank": 23, "score": 0.2470840000246675, "bc": 0.0023183137629205386, "dc": 0.12337662337662338, "cc": 0.4723926380368098, "grau": 19, "passageiros": 1662152, "lat": -7.146, "lon": -34.95}, {"id": "NAT", "nome": "GOVERNADOR ALUIZIO ALVES", "municipio": "SÃO GONÇALO DO AMARANTE", "uf": "RN", "regiao": "NORDESTE", "rank": 24, "score": 0.24660731522189186, "bc": 0.003061050399361958, "dc": 0.11038961038961038, "cc": 0.4935897435897436, "grau": 17, "passageiros": 2053459, "lat": -5.768, "lon": -35.376}, {"id": "IGU", "nome": "CATARATAS", "municipio": "FOZ DO IGUAÇU", "uf": "PR", "regiao": "SUL", "rank": 25, "score": 0.23800135031987532, "bc": 0.0022643868268270575, "dc": 0.08441558441558442, "cc": 0.4709480122324159, "grau": 13, "passageiros": 1990387, "lat": -25.6, "lon": -54.485}, {"id": "UDI", "nome": "TEN CEL AVIADOR CÉSAR BOMBONATO", "municipio": "UBERLÂNDIA", "uf": "MG", "regiao": "SUDESTE", "rank": 26, "score": 0.23545185425105625, "bc": 0.002764286415978166, "dc": 0.11038961038961038, "cc": 0.47530864197530864, "grau": 17, "passageiros": 964880, "lat": -18.884, "lon": -48.225}, {"id": "NVT", "nome": "MINISTRO VICTOR KONDER", "municipio": "NAVEGANTES", "uf": "SC", "regiao": "SUL", "rank": 27, "score": 0.22976355860398437, "bc": 0.0003171872659823938, "dc": 0.05844155844155844, "cc": 0.44126074498567336, "grau": 9, "passageiros": 2050000, "lat": -26.88, "lon": -48.651}, {"id": "SJP", "nome": "PROFESSOR ERIBERTO MANOEL REINO", "municipio": "SÃO JOSÉ DO RIO PRETO", "uf": "SP", "regiao": "SUDESTE", "rank": 28, "score": 0.22848963781780252, "bc": 0.0008304499817372909, "dc": 0.09740259740259741, "cc": 0.47530864197530864, "grau": 15, "passageiros": 830087, "lat": -20.817, "lon": -49.406}, {"id": "AJU", "nome": "SANTA MARIA", "municipio": "ARACAJU", "uf": "SE", "regiao": "NORDESTE", "rank": 29, "score": 0.22798429821469013, "bc": 0.00014244755141113686, "dc": 0.07792207792207792, "cc": 0.4624624624624625, "grau": 12, "passageiros": 1222421, "lat": -10.984, "lon": -37.07}, {"id": "CGR", "nome": "CAMPO GRANDE", "municipio": "CAMPO GRANDE", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 30, "score": 0.22681284641813101, "bc": 0.0008911336598082558, "dc": 0.06493506493506493, "cc": 0.4350282485875706, "grau": 10, "passageiros": 1439727, "lat": -20.469, "lon": -54.673}, {"id": "THE", "nome": "SENADOR PETRÔNIO PORTELLA", "municipio": "TERESINA", "uf": "PI", "regiao": "NORDESTE", "rank": 31, "score": 0.2190795292623626, "bc": 1.9334333059823253e-05, "dc": 0.05844155844155844, "cc": 0.4624624624624625, "grau": 9, "passageiros": 994914, "lat": -5.059, "lon": -42.824}, {"id": "PVH", "nome": "GOVERNADOR JORGE TEIXEIRA DE OLIVEIRA", "municipio": "PORTO VELHO", "uf": "RO", "regiao": "NORTE", "rank": 32, "score": 0.21721856819865437, "bc": 0.006051272521523728, "dc": 0.07142857142857142, "cc": 0.4709480122324159, "grau": 11, "passageiros": 556769, "lat": -8.709, "lon": -63.902}, {"id": "MGF", "nome": "SÍLVIO NAME JÚNIOR", "municipio": "MARINGÁ", "uf": "PR", "regiao": "SUL", "rank": 33, "score": 0.2159493826863119, "bc": 0.00028702678724503756, "dc": 0.05844155844155844, "cc": 0.4301675977653631, "grau": 9, "passageiros": 796246, "lat": -23.476, "lon": -52.012}, {"id": "LDB", "nome": "GOVERNADOR JOSÉ RICHA", "municipio": "LONDRINA", "uf": "PR", "regiao": "SUL", "rank": 34, "score": 0.21462662558042875, "bc": 0.00010176609428750477, "dc": 0.06493506493506493, "cc": 0.4583333333333333, "grau": 10, "passageiros": 640013, "lat": -23.334, "lon": -51.13}, {"id": "MCP", "nome": "ALBERTO ALCOLUMBRE", "municipio": "MACAPÁ", "uf": "AP", "regiao": "NORTE", "rank": 35, "score": 0.2134648582574242, "bc": 0.003846233576327734, "dc": 0.06493506493506493, "cc": 0.456973293768546, "grau": 10, "passageiros": 526585, "lat": -0.051, "lon": -51.072}, {"id": "PMW", "nome": "BRIGADEIRO LYSIAS RODRIGUES", "municipio": "PALMAS", "uf": "TO", "regiao": "NORTE", "rank": 36, "score": 0.21051642836380813, "bc": 0.002872624173871945, "dc": 0.045454545454545456, "cc": 0.4624624624624625, "grau": 7, "passageiros": 661735, "lat": -10.291, "lon": -48.357}, {"id": "STM", "nome": "MAESTRO WILSON FONSECA", "municipio": "SANTARÉM", "uf": "PA", "regiao": "NORTE", "rank": 37, "score": 0.2082681754784493, "bc": 0.006286208031649291, "dc": 0.05194805194805195, "cc": 0.42424242424242425, "grau": 8, "passageiros": 446773, "lat": -2.425, "lon": -54.786}, {"id": "XAP", "nome": "SERAFIN ENOSS BERTASO", "municipio": "CHAPECÓ", "uf": "SC", "regiao": "SUL", "rank": 38, "score": 0.2073957547840235, "bc": 5.305152363975893e-05, "dc": 0.045454545454545456, "cc": 0.42777777777777776, "grau": 7, "passageiros": 582871, "lat": -27.134, "lon": -52.656}, {"id": "IOS", "nome": "BAHIA - JORGE AMADO", "municipio": "ILHÉUS", "uf": "BA", "regiao": "NORDESTE", "rank": 39, "score": 0.20653822767801908, "bc": 0.0, "dc": 0.045454545454545456, "cc": 0.45294117647058824, "grau": 7, "passageiros": 550507, "lat": -14.816, "lon": -39.033}, {"id": "MAB", "nome": "JOÃO CORREA DA ROCHA", "municipio": "MARABÁ", "uf": "PA", "regiao": "NORTE", "rank": 40, "score": 0.20300943927201442, "bc": 0.003074041641806209, "dc": 0.05194805194805195, "cc": 0.45161290322580644, "grau": 8, "passageiros": 344036, "lat": -5.369, "lon": -49.138}, {"id": "CAC", "nome": "ADALBERTO MENDES DA SILVA", "municipio": "CASCAVEL", "uf": "PR", "regiao": "SUL", "rank": 41, "score": 0.20272900323461504, "bc": 0.00012047349508649816, "dc": 0.045454545454545456, "cc": 0.4230769230769231, "grau": 7, "passageiros": 422461, "lat": -24.968, "lon": -53.501}, {"id": "IMP", "nome": "PREFEITO RENATO MOREIRA", "municipio": "IMPERATRIZ", "uf": "MA", "regiao": "NORDESTE", "rank": 42, "score": 0.20206023447476204, "bc": 0.0002425212509246124, "dc": 0.05844155844155844, "cc": 0.4463768115942029, "grau": 9, "passageiros": 307823, "lat": -5.531, "lon": -47.46}, {"id": "VDC", "nome": "GLAUBER DE ANDRADE ROCHA", "municipio": "VITÓRIA DA CONQUISTA", "uf": "BA", "regiao": "NORDESTE", "rank": 43, "score": 0.20197509255555124, "bc": 8.48824378236143e-06, "dc": 0.05194805194805195, "cc": 0.45427728613569324, "grau": 8, "passageiros": 352270, "lat": -14.863, "lon": -40.863}, {"id": "PNZ", "nome": "SENADOR NILO COELHO", "municipio": "PETROLINA", "uf": "PE", "regiao": "NORDESTE", "rank": 44, "score": 0.2010877720558961, "bc": 0.0, "dc": 0.03896103896103896, "cc": 0.45161290322580644, "grau": 6, "passageiros": 433043, "lat": -9.362, "lon": -40.567}, {"id": "JOI", "nome": "LAURO CARNEIRO DE LOYOLA", "municipio": "JOINVILLE", "uf": "SC", "regiao": "SUL", "rank": 45, "score": 0.2007268640080761, "bc": 0.0, "dc": 0.032467532467532464, "cc": 0.41847826086956524, "grau": 5, "passageiros": 482797, "lat": -26.224, "lon": -48.797}, {"id": "BVB", "nome": "ATLAS BRASIL CANTANHEDE", "municipio": "BOA VISTA", "uf": "RR", "regiao": "NORTE", "rank": 46, "score": 0.20050110419644426, "bc": 0.00022231114668089464, "dc": 0.045454545454545456, "cc": 0.4624624624624625, "grau": 7, "passageiros": 361510, "lat": 2.841, "lon": -60.692}, {"id": "PPB", "nome": "PRESIDENTE PRUDENTE", "municipio": "PRESIDENTE PRUDENTE", "uf": "SP", "regiao": "SUDESTE", "rank": 47, "score": 0.19993606132902306, "bc": 0.00011128321610409181, "dc": 0.06493506493506493, "cc": 0.44, "grau": 10, "passageiros": 233813, "lat": -22.175, "lon": -51.424}, {"id": "JDO", "nome": "ORLANDO BEZERRA DE MENEZES", "municipio": "JUAZEIRO DO NORTE", "uf": "CE", "regiao": "NORDESTE", "rank": 48, "score": 0.19905122795004537, "bc": 0.0, "dc": 0.032467532467532464, "cc": 0.43258426966292135, "grau": 5, "passageiros": 430425, "lat": -7.219, "lon": -39.27}, {"id": "RBR", "nome": "PLÁCIDO DE CASTRO", "municipio": "RIO BRANCO", "uf": "AC", "regiao": "NORTE", "rank": 49, "score": 0.19831789297563915, "bc": 0.0020047938871618084, "dc": 0.03896103896103896, "cc": 0.4375, "grau": 6, "passageiros": 336706, "lat": -9.869, "lon": -67.898}, {"id": "OPS", "nome": "PRESIDENTE JOÃO BATISTA FIGUEIREDO", "municipio": "SINOP", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 50, "score": 0.19690845966957865, "bc": 0.0, "dc": 0.025974025974025976, "cc": 0.4196185286103542, "grau": 4, "passageiros": 424720, "lat": -11.885, "lon": -55.586}, {"id": "FEN", "nome": "FERNANDO DE NORONHA", "municipio": "FERNANDO DE NORONHA", "uf": "PE", "regiao": "NORDESTE", "rank": 51, "score": 0.19576382275674115, "bc": 9.703095604122683e-05, "dc": 0.032467532467532464, "cc": 0.4, "grau": 5, "passageiros": 342582, "lat": -3.855, "lon": -32.424}, {"id": "JJD", "nome": "JERICOACORA", "municipio": "CRUZ", "uf": "CE", "regiao": "NORDESTE", "rank": 52, "score": 0.1950689329032362, "bc": 0.0022617959394111388, "dc": 0.045454545454545456, "cc": 0.4230769230769231, "grau": 7, "passageiros": 233962, "lat": -2.896, "lon": -40.469}, {"id": "MOC", "nome": "MÁRIO RIBEIRO", "municipio": "MONTES CLAROS", "uf": "MG", "regiao": "SUDESTE", "rank": 53, "score": 0.1948475251594657, "bc": 0.00017664243536410587, "dc": 0.032467532467532464, "cc": 0.41621621621621624, "grau": 5, "passageiros": 320944, "lat": -16.706, "lon": -43.818}, {"id": "CXJ", "nome": "REGIONAL HUGO CANTERGIANI", "municipio": "CAXIAS DO SUL", "uf": "RS", "regiao": "SUL", "rank": 54, "score": 0.1894408877655671, "bc": 0.0, "dc": 0.025974025974025976, "cc": 0.4196185286103542, "grau": 4, "passageiros": 254605, "lat": -29.197, "lon": -51.188}, {"id": "CKS", "nome": "CARAJÁS", "municipio": "PARAUAPEBAS", "uf": "PA", "regiao": "NORTE", "rank": 55, "score": 0.18691088700699343, "bc": 0.0013186044490516742, "dc": 0.03896103896103896, "cc": 0.40848806366047746, "grau": 6, "passageiros": 157386, "lat": -6.115, "lon": -50.0}, {"id": "PFB", "nome": "LAURO KURTZ", "municipio": "PASSO FUNDO", "uf": "RS", "regiao": "SUL", "rank": 56, "score": 0.18551452835574467, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.41621621621621624, "grau": 3, "passageiros": 222327, "lat": -28.244, "lon": -52.326}, {"id": "CPV", "nome": "PRESIDENTE JOÃO SUASSUNA", "municipio": "CAMPINA GRANDE", "uf": "PB", "regiao": "NORDESTE", "rank": 57, "score": 0.18226894873352162, "bc": 0.0003918696814036767, "dc": 0.032467532467532464, "cc": 0.4207650273224044, "grau": 5, "passageiros": 134650, "lat": -7.269, "lon": -35.897}, {"id": "JTC", "nome": "AEROPORTO ESTADUAL DE BAURU-AREALVA / MOUSSA NAKHL TOBIAS", "municipio": "AREALVA", "uf": "SP", "regiao": "SUDESTE", "rank": 58, "score": 0.1811209706628259, "bc": 0.0012029245584390129, "dc": 0.06493506493506493, "cc": 0.4350282485875706, "grau": 10, "passageiros": 62274, "lat": -22.159, "lon": -49.071}, {"id": "PET", "nome": "PELOTAS", "municipio": "PELOTAS", "uf": "RS", "regiao": "SUL", "rank": 59, "score": 0.17737263056164693, "bc": 6.724813117958612e-05, "dc": 0.03896103896103896, "cc": 0.4207650273224044, "grau": 6, "passageiros": 85087, "lat": -31.718, "lon": -52.328}, {"id": "IPN", "nome": "USIMINAS", "municipio": "SANTANA DO PARAÍSO", "uf": "MG", "regiao": "SUDESTE", "rank": 60, "score": 0.17727255021066807, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.402088772845953, "grau": 3, "passageiros": 126389, "lat": -19.471, "lon": -42.488}, {"id": "IZA", "nome": "REGIONAL DA ZONA DA MATA", "municipio": "GOIANÁ", "uf": "MG", "regiao": "SUDESTE", "rank": 61, "score": 0.17704294726477074, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.41621621621621624, "grau": 3, "passageiros": 124416, "lat": -21.513, "lon": -43.188}, {"id": "ARU", "nome": "ESTADUAL DARIO GUARITA", "municipio": "ARAÇATUBA", "uf": "SP", "regiao": "SUDESTE", "rank": 62, "score": 0.17575981736308802, "bc": 4.467496727558647e-06, "dc": 0.032467532467532464, "cc": 0.4196185286103542, "grau": 5, "passageiros": 87233, "lat": -21.141, "lon": -50.425}, {"id": "UBA", "nome": "MÁRIO DE ALMEIDA FRANCO", "municipio": "UBERABA", "uf": "MG", "regiao": "SUDESTE", "rank": 63, "score": 0.17381979502988276, "bc": 0.0, "dc": 0.03896103896103896, "cc": 0.44508670520231214, "grau": 6, "passageiros": 66839, "lat": -19.764, "lon": -47.965}, {"id": "JJG", "nome": "REGIONAL SUL", "municipio": "JAGUARUNA", "uf": "SC", "regiao": "SUL", "rank": 64, "score": 0.17177627376065394, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4117647058823529, "grau": 2, "passageiros": 99109, "lat": -28.675, "lon": -49.059}, {"id": "ATM", "nome": "ALTAMIRA", "municipio": "ALTAMIRA", "uf": "PA", "regiao": "NORTE", "rank": 65, "score": 0.17051058123856058, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.3548387096774194, "grau": 3, "passageiros": 79519, "lat": -3.254, "lon": -52.254}, {"id": "BYO", "nome": "BONITO", "municipio": "BONITO", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 66, "score": 0.16711011769377862, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.41621621621621624, "grau": 3, "passageiros": 62990, "lat": -21.247, "lon": -56.525}, {"id": "GEL", "nome": "SANTO ÂNGELO", "municipio": "SANTO ÂNGELO", "uf": "RS", "regiao": "SUL", "rank": 67, "score": 0.16708510481754366, "bc": 0.0, "dc": 0.025974025974025976, "cc": 0.41847826086956524, "grau": 4, "passageiros": 55024, "lat": -28.282, "lon": -54.169}, {"id": "GVR", "nome": "CORONEL ALTINO MACHADO", "municipio": "GOVERNADOR VALADARES", "uf": "MG", "regiao": "SUDESTE", "rank": 68, "score": 0.16665516120289167, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 79741, "lat": -18.895, "lon": -41.982}, {"id": "TBT", "nome": "TABATINGA", "municipio": "TABATINGA", "uf": "AM", "regiao": "NORTE", "rank": 69, "score": 0.16498117214388167, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 62214, "lat": -4.256, "lon": -69.936}, {"id": "CLV", "nome": "NELSON RODRIGUES GUIMARÃES", "municipio": "CALDAS NOVAS", "uf": "GO", "regiao": "CENTRO-OESTE", "rank": 70, "score": 0.1649421285210106, "bc": 0.0, "dc": 0.025974025974025976, "cc": 0.4350282485875706, "grau": 4, "passageiros": 47509, "lat": -17.725, "lon": -48.611}, {"id": "BRA", "nome": "BARREIRAS", "municipio": "BARREIRAS", "uf": "BA", "regiao": "NORDESTE", "rank": 71, "score": 0.16412406688096906, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.39588688946015427, "grau": 3, "passageiros": 51334, "lat": -12.079, "lon": -45.009}, {"id": "SMT", "nome": "REGIONAL DE SORRISO ADOLINO BEDIN", "municipio": "SORRISO", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 72, "score": 0.16304191518865757, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.39690721649484534, "grau": 3, "passageiros": 47665, "lat": -12.479, "lon": -55.672}, {"id": "SJK", "nome": "PROFESSOR URBANO ERNESTO STUMPF", "municipio": "SÃO JOSÉ DOS CAMPOS", "uf": "SP", "regiao": "SUDESTE", "rank": 73, "score": 0.15889118686269696, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.39487179487179486, "grau": 3, "passageiros": 35865, "lat": -23.228, "lon": -45.862}, {"id": "CZS", "nome": "CRUZEIRO DO SUL", "municipio": "CRUZEIRO DO SUL", "uf": "AC", "regiao": "NORTE", "rank": 74, "score": 0.15886979946757632, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36666666666666664, "grau": 2, "passageiros": 40927, "lat": -7.599, "lon": -72.77}, {"id": "ROO", "nome": "RONDONÓPOLIS", "municipio": "RONDONÓPOLIS", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 75, "score": 0.15854646373574288, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 45747, "lat": -16.586, "lon": -54.723}, {"id": "AFL", "nome": "PILOTO OSVALDO MARQUES DIAS", "municipio": "ALTA FLORESTA", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 76, "score": 0.15820935025700616, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.40633245382585753, "grau": 2, "passageiros": 39116, "lat": -9.871, "lon": -56.106}, {"id": "TFF", "nome": "TEFÉ", "municipio": "TEFÉ", "uf": "AM", "regiao": "NORTE", "rank": 77, "score": 0.15724462044349424, "bc": 0.012987012987012988, "dc": 0.012987012987012988, "cc": 0.3532110091743119, "grau": 2, "passageiros": 24531, "lat": -3.382, "lon": -64.724}, {"id": "GNM", "nome": "GUANAMBI", "municipio": "GUANAMBI", "uf": "BA", "regiao": "NORDESTE", "rank": 78, "score": 0.15531424963365567, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.39086294416243655, "grau": 2, "passageiros": 32077, "lat": -14.21, "lon": -42.743}, {"id": "PTO", "nome": "JUVENAL LOUREIRO CARDOSO", "municipio": "PATO BRANCO", "uf": "PR", "regiao": "SUL", "rank": 79, "score": 0.15496480780860664, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4074074074074074, "grau": 2, "passageiros": 31318, "lat": -26.212, "lon": -52.697}, {"id": "PMG", "nome": "PONTA PORÃ", "municipio": "PONTA PORÃ", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 80, "score": 0.1545591628916286, "bc": 1.2126062546230612e-05, "dc": 0.01948051948051948, "cc": 0.4041994750656168, "grau": 3, "passageiros": 26643, "lat": -22.55, "lon": -55.703}, {"id": "RIA", "nome": "SANTA MARIA", "municipio": "SANTA MARIA", "uf": "RS", "regiao": "SUL", "rank": 81, "score": 0.15450872458915038, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.4052631578947368, "grau": 3, "passageiros": 26561, "lat": -29.711, "lon": -53.688}, {"id": "PIN", "nome": "JÚLIO BÉLEM", "municipio": "PARINTINS", "uf": "AM", "regiao": "NORTE", "rank": 82, "score": 0.15244760834845658, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 26356, "lat": -2.673, "lon": -56.777}, {"id": "JPR", "nome": "JI-PARANÁ", "municipio": "JI-PARANÁ", "uf": "RO", "regiao": "NORTE", "rank": 83, "score": 0.15149169332647197, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.4095744680851064, "grau": 3, "passageiros": 21600, "lat": -10.87, "lon": -61.846}, {"id": "CMG", "nome": "CORUMBÁ", "municipio": "CORUMBÁ", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 84, "score": 0.1508544012912549, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4031413612565445, "grau": 2, "passageiros": 23630, "lat": -19.012, "lon": -57.674}, {"id": "UNA", "nome": "HOTEL TRANSAMÉRICA(AERODROMO PRIVADO)", "municipio": "UNA", "uf": "BA", "regiao": "NORDESTE", "rank": 85, "score": 0.15061657139987114, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4010416666666667, "grau": 2, "passageiros": 23248, "lat": -15.355, "lon": -39.07}, {"id": "MII", "nome": "FRANK MILOYE MILENKOVICH", "municipio": "MARÍLIA", "uf": "SP", "regiao": "SUDESTE", "rank": 86, "score": 0.15031288637297976, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 26021, "lat": -22.196, "lon": -49.927}, {"id": "SJL", "nome": "SÃO GABRIEL DA CACHOEIRA", "municipio": "SÃO GABRIEL DA CACHOEIRA", "uf": "AM", "regiao": "NORTE", "rank": 87, "score": 0.14959354891068705, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 21674, "lat": -0.143, "lon": -67.087}, {"id": "BVH", "nome": "BRIGADEIRO CAMARÃO", "municipio": "VILHENA", "uf": "RO", "regiao": "NORTE", "rank": 88, "score": 0.1495375598854124, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.40633245382585753, "grau": 2, "passageiros": 21591, "lat": -12.694, "lon": -60.098}, {"id": "OAL", "nome": "CACOAL", "municipio": "CACOAL", "uf": "RO", "regiao": "NORTE", "rank": 89, "score": 0.14938810750590675, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.40633245382585753, "grau": 2, "passageiros": 21371, "lat": -11.496, "lon": -61.451}, {"id": "RRJ", "nome": "JACAREPAGUÁ", "municipio": "RIO DE JANEIRO", "uf": "RJ", "regiao": "SUDESTE", "rank": 90, "score": 0.14623751904281826, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.42896935933147634, "grau": 2, "passageiros": 17221, "lat": -22.988, "lon": -43.37}, {"id": "PHB", "nome": "AEROPORTO INTERNACIONAL DE PARNAÍBA / PREFEITO DOUTOR JOÃO SILVA FILHO", "municipio": "PARNAÍBA", "uf": "PI", "regiao": "NORDESTE", "rank": 91, "score": 0.14490866962915283, "bc": 0.002771532104460347, "dc": 0.03896103896103896, "cc": 0.44126074498567336, "grau": 6, "passageiros": 8462, "lat": -2.894, "lon": -41.732}, {"id": "URG", "nome": "RUBEM BERTA", "municipio": "URUGUAIANA", "uf": "RS", "regiao": "SUL", "rank": 92, "score": 0.14437816966825912, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3228511530398323, "grau": 1, "passageiros": 17326, "lat": -29.782, "lon": -57.038}, {"id": "ITB", "nome": "ITAITUBA", "municipio": "ITAITUBA", "uf": "PA", "regiao": "NORTE", "rank": 93, "score": 0.1428422114777106, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3515981735159817, "grau": 1, "passageiros": 15595, "lat": -4.243, "lon": -56.001}, {"id": "POJ", "nome": "PATOS DE MINAS", "municipio": "PATOS DE MINAS", "uf": "MG", "regiao": "SUDESTE", "rank": 94, "score": 0.13961834123078562, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3879093198992443, "grau": 2, "passageiros": 10941, "lat": -18.672, "lon": -46.491}, {"id": "DOU", "nome": "DOURADOS", "municipio": "DOURADOS", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 95, "score": 0.13873107624954853, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.385, "grau": 1, "passageiros": 11766, "lat": -22.202, "lon": -54.926}, {"id": "LEC", "nome": "HORÁCIO DE MATTOS", "municipio": "LENÇÓIS", "uf": "BA", "regiao": "NORDESTE", "rank": 96, "score": 0.13678164558768147, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.39086294416243655, "grau": 2, "passageiros": 9008, "lat": -12.482, "lon": -41.277}, {"id": "GPB", "nome": "Tancredo Thomas de Faria", "municipio": "GUARAPUAVA", "uf": "PR", "regiao": "SUL", "rank": 97, "score": 0.13548135510607, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4074074074074074, "grau": 2, "passageiros": 8240, "lat": -25.388, "lon": -51.52}, {"id": "AAX", "nome": "ROMEU ZEMA", "municipio": "ARAXÁ", "uf": "MG", "regiao": "SUDESTE", "rank": 98, "score": 0.135105369949257, "bc": 0.00038412977679593414, "dc": 0.01948051948051948, "cc": 0.4106666666666667, "grau": 3, "passageiros": 6944, "lat": -19.593, "lon": -46.943}, {"id": "TMT", "nome": "TROMBETAS", "municipio": "ORIXIMINÁ", "uf": "PA", "regiao": "NORTE", "rank": 99, "score": 0.1337777868130342, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 7332, "lat": -1.489, "lon": -55.896}, {"id": "MXQ", "nome": "LORENZO", "municipio": "CAIRU", "uf": "BA", "regiao": "NORDESTE", "rank": 100, "score": 0.13220548073512112, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3452914798206278, "grau": 2, "passageiros": 6583, "lat": -13.383, "lon": -38.928}, {"id": "EEA", "nome": "AEROPORTO REGIONAL DO PLANALTO SERRANO", "municipio": "CORREIA PINTO", "uf": "SC", "regiao": "SUL", "rank": 101, "score": 0.13125301310683612, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4074074074074074, "grau": 2, "passageiros": 6167, "lat": -27.593, "lon": -50.368}, {"id": "RVD", "nome": "GENERAL LEITE DE CASTRO", "municipio": "RIO VERDE", "uf": "GO", "regiao": "CENTRO-OESTE", "rank": 102, "score": 0.12980927444611462, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4041994750656168, "grau": 2, "passageiros": 5586, "lat": -17.835, "lon": -50.955}, {"id": "AUX", "nome": "ARAGUAÍNA", "municipio": "ARAGUAÍNA", "uf": "TO", "regiao": "NORTE", "rank": 103, "score": 0.12675843820623892, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36666666666666664, "grau": 2, "passageiros": 4532, "lat": -7.228, "lon": -48.241}, {"id": "ERN", "nome": "EIRUNEPÉ", "municipio": "EIRUNEPÉ", "uf": "AM", "regiao": "NORTE", "rank": 104, "score": 0.12421896604143859, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 3808, "lat": -6.639, "lon": -69.879}, {"id": "CAW", "nome": "BARTOLOMEU LISANDRO", "municipio": "CAMPOS DOS GOYTACAZES", "uf": "RJ", "regiao": "SUDESTE", "rank": 105, "score": 0.12150401866680582, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 3613, "lat": -21.699, "lon": -41.302}, {"id": "DIQ", "nome": "BRIGADEIRO CABRAL", "municipio": "DIVINÓPOLIS", "uf": "MG", "regiao": "SUDESTE", "rank": 106, "score": 0.12127434949349898, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.42896935933147634, "grau": 2, "passageiros": 3112, "lat": -20.181, "lon": -44.871}, {"id": "TJL", "nome": "TRÊS LAGOAS", "municipio": "TRÊS LAGOAS", "uf": "MS", "regiao": "CENTRO-OESTE", "rank": 107, "score": 0.1194894561303053, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 3147, "lat": -20.755, "lon": -51.683}, {"id": "MVF", "nome": "DIX-SEPT ROSADO", "municipio": "MOSSORÓ", "uf": "RN", "regiao": "NORDESTE", "rank": 108, "score": 0.11923223845100492, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3684210526315789, "grau": 1, "passageiros": 3092, "lat": -5.201, "lon": -37.364}, {"id": "NSR", "nome": "SERRA DA CAPIVARA/SÃO RAIMUNDO NONATO", "municipio": "SÃO RAIMUNDO NONATO", "uf": "PI", "regiao": "NORDESTE", "rank": 109, "score": 0.11499781391954887, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3684210526315789, "grau": 1, "passageiros": 2313, "lat": -9.074, "lon": -42.817}, {"id": "AIR", "nome": "ARIPUANÃ", "municipio": "ARIPUANÃ", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 110, "score": 0.11487113588466334, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3326133909287257, "grau": 1, "passageiros": 2293, "lat": -10.188, "lon": -59.457}, {"id": "MNX", "nome": "MANICORÉ", "municipio": "MANICORÉ", "uf": "AM", "regiao": "NORTE", "rank": 111, "score": 0.11341735944279693, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 1816, "lat": -5.811, "lon": -61.28}, {"id": "AQA", "nome": "BARTOLOMEU DE GUSMÃO", "municipio": "ARARAQUARA", "uf": "SP", "regiao": "SUDESTE", "rank": 112, "score": 0.11184198802806719, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 1863, "lat": -21.812, "lon": -48.14}, {"id": "PGZ", "nome": "COMANDANTE ANTONIO AMILTON BERALDO", "municipio": "PONTA GROSSA", "uf": "PR", "regiao": "SUL", "rank": 113, "score": 0.11104557737226997, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.402088772845953, "grau": 1, "passageiros": 1764, "lat": -25.184, "lon": -50.144}, {"id": "IUP", "nome": "PRAINHA", "municipio": "APUÍ", "uf": "AM", "regiao": "NORTE", "rank": 114, "score": 0.10966472093045991, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 1404, "lat": -7.2, "lon": -59.89}, {"id": "TFL", "nome": "JUSCELINO KUBITSCHECK", "municipio": "TEÓFILO OTONI", "uf": "MG", "regiao": "SUDESTE", "rank": 115, "score": 0.10954931051574851, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 1592, "lat": -17.893, "lon": -41.511}, {"id": "IAL", "nome": "SALINAS", "municipio": "SALINAS", "uf": "MG", "regiao": "SUDESTE", "rank": 116, "score": 0.10853462824118099, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 1485, "lat": -16.178, "lon": -42.317}, {"id": "CIZ", "nome": "COARI", "municipio": "COARI", "uf": "AM", "regiao": "NORTE", "rank": 117, "score": 0.1072041849017039, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 1186, "lat": -4.085, "lon": -63.133}, {"id": "LHN", "nome": "AERÓDROMO MUNICIPAL DE LINHARES", "municipio": "LINHARES", "uf": "ES", "regiao": "SUDESTE", "rank": 118, "score": 0.105463651888171, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 1203, "lat": -19.43, "lon": -40.065}, {"id": "BPG", "nome": "BARRA DO GARÇAS", "municipio": "BARRA DO GARÇAS", "uf": "MT", "regiao": "CENTRO-OESTE", "rank": 119, "score": 0.10453797905642488, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3326133909287257, "grau": 1, "passageiros": 1129, "lat": -15.862, "lon": -52.389}, {"id": "PBA", "nome": "AEROPORTO FÁBIO PERINI", "municipio": "CAIRU", "uf": "BA", "regiao": "NORDESTE", "rank": 120, "score": 0.10448560063901163, "bc": 4.244121891180715e-05, "dc": 0.01948051948051948, "cc": 0.34606741573033706, "grau": 3, "passageiros": 860, "lat": -13.4, "lon": -38.91}, {"id": "JPO", "nome": "PEREGRINO FILHO", "municipio": "PATOS", "uf": "PB", "regiao": "NORDESTE", "rank": 121, "score": 0.10436291830381408, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 976, "lat": -6.999, "lon": -37.189}, {"id": "UMU", "nome": "ORLANDO DE CARVALHO", "municipio": "UMUARAMA", "uf": "PR", "regiao": "SUL", "rank": 122, "score": 0.10334221384378593, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3326133909287257, "grau": 2, "passageiros": 910, "lat": -23.799, "lon": -53.313}, {"id": "MEU", "nome": "MONTE DOURADO", "municipio": "ALMEIRIM", "uf": "PA", "regiao": "NORTE", "rank": 123, "score": 0.10272043562280343, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3492063492063492, "grau": 2, "passageiros": 872, "lat": -0.893, "lon": -52.603}, {"id": "PTQ", "nome": "PORTO DE MOZ", "municipio": "PORTO DE MOZ", "uf": "PA", "regiao": "NORTE", "rank": 124, "score": 0.10270306899697386, "bc": 4.244121891180715e-05, "dc": 0.01948051948051948, "cc": 0.35, "grau": 3, "passageiros": 761, "lat": -1.744, "lon": -52.236}, {"id": "OIA", "nome": "OURILÂNDIA DO NORTE", "municipio": "OURILÂNDIA DO NORTE", "uf": "PA", "regiao": "NORTE", "rank": 125, "score": 0.10204552690125433, "bc": 1.697648756472286e-05, "dc": 0.01948051948051948, "cc": 0.35, "grau": 3, "passageiros": 728, "lat": -6.763, "lon": -51.05}, {"id": "BVS", "nome": "BREVES", "municipio": "BREVES", "uf": "PA", "regiao": "NORTE", "rank": 126, "score": 0.10122554335220428, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3492063492063492, "grau": 2, "passageiros": 787, "lat": -1.655, "lon": -50.454}, {"id": "VAG", "nome": "MAJOR BRIGADEIRO TROMPOWSKY", "municipio": "VARGINHA", "uf": "MG", "regiao": "SUDESTE", "rank": 127, "score": 0.1000000755341952, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 827, "lat": -21.59, "lon": -45.474}, {"id": "LBR", "nome": "LÁBREA", "municipio": "LÁBREA", "uf": "AM", "regiao": "NORTE", "rank": 128, "score": 0.09951357659802153, "bc": 6.366182836771073e-05, "dc": 0.01948051948051948, "cc": 0.35402298850574715, "grau": 3, "passageiros": 611, "lat": -7.278, "lon": -64.769}, {"id": "MBZ", "nome": "MAUÉS", "municipio": "MAUÉS", "uf": "AM", "regiao": "NORTE", "rank": 129, "score": 0.09805226071900439, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 633, "lat": -3.37, "lon": -57.72}, {"id": "SET", "nome": "SANTA MAGALHÃES", "municipio": "SERRA TALHADA", "uf": "PE", "regiao": "NORDESTE", "rank": 130, "score": 0.09724789277045384, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 599, "lat": -7.954, "lon": -38.301}, {"id": "JAW", "nome": "ARARIPINA", "municipio": "ARARIPINA", "uf": "PE", "regiao": "NORDESTE", "rank": 131, "score": 0.09637078310492861, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 564, "lat": -7.8, "lon": -40.605}, {"id": "CFB", "nome": "CABO FRIO", "municipio": "CABO FRIO", "uf": "RJ", "regiao": "SUDESTE", "rank": 132, "score": 0.0959421888261794, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 626, "lat": -22.921, "lon": -42.074}, {"id": "RPU", "nome": "URUCU", "municipio": "COARI", "uf": "AM", "regiao": "NORTE", "rank": 133, "score": 0.09362654000683134, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3515981735159817, "grau": 1, "passageiros": 534, "lat": -4.877, "lon": -65.353}, {"id": "BAT", "nome": "CHAFEI AMSEI (SBBT*)", "municipio": "BARRETOS", "uf": "SP", "regiao": "SUDESTE", "rank": 134, "score": 0.09330684144733031, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4031413612565445, "grau": 2, "passageiros": 457, "lat": -23.540000000000003, "lon": -48.66}, {"id": "GGJ", "nome": "GUAÍRA", "municipio": "GUAÍRA", "uf": "PR", "regiao": "SUL", "rank": 135, "score": 0.09246300479172512, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.33189655172413796, "grau": 1, "passageiros": 493, "lat": -24.049, "lon": -54.195}, {"id": "JPE", "nome": "AERODROMO DE PARAGOMINAS", "municipio": "PARAGOMINAS", "uf": "PA", "regiao": "NORTE", "rank": 136, "score": 0.09211218414642607, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3492063492063492, "grau": 2, "passageiros": 421, "lat": -2.979, "lon": -47.369}, {"id": "TUR", "nome": "TUCURUÍ", "municipio": "TUCURUÍ", "uf": "PA", "regiao": "NORTE", "rank": 137, "score": 0.09161983612046995, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3492063492063492, "grau": 2, "passageiros": 407, "lat": -3.786, "lon": -49.72}, {"id": "FRC", "nome": "TENENTE LUND PRESETTO", "municipio": "FRANCA", "uf": "SP", "regiao": "SUDESTE", "rank": 138, "score": 0.09099875439002486, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.4031413612565445, "grau": 2, "passageiros": 390, "lat": -20.592, "lon": -47.383}, {"id": "MUU", "nome": "BARRA GRANDE", "municipio": "MARAÚ", "uf": "BA", "regiao": "NORDESTE", "rank": 139, "score": 0.09023253022153324, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3452914798206278, "grau": 2, "passageiros": 370, "lat": -14.099, "lon": -38.999}, {"id": "CJZ", "nome": "PEDRO VIEIRA MOREIRA", "municipio": "CAJAZEIRAS", "uf": "PB", "regiao": "NORDESTE", "rank": 140, "score": 0.08967118340045481, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 356, "lat": -6.91, "lon": -38.555}, {"id": "JMA", "nome": "AEROPORTO ELIAS BREDER", "municipio": "MANHUAÇU", "uf": "MG", "regiao": "SUDESTE", "rank": 141, "score": 0.08952800746280146, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 403, "lat": -20.391, "lon": -42.043}, {"id": "PYT", "nome": "PARACATU", "municipio": "PARACATU", "uf": "MG", "regiao": "SUDESTE", "rank": 142, "score": 0.08847983886148292, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3869346733668342, "grau": 1, "passageiros": 375, "lat": -17.239, "lon": -46.882}, {"id": "BAZ", "nome": "BARCELOS", "municipio": "BARCELOS", "uf": "AM", "regiao": "NORTE", "rank": 143, "score": 0.08812628465953926, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.3515981735159817, "grau": 1, "passageiros": 366, "lat": -0.977, "lon": -62.92}, {"id": "RBB", "nome": "BORBA", "municipio": "BORBA", "uf": "AM", "regiao": "NORTE", "rank": 144, "score": 0.08802879436716499, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3524027459954233, "grau": 2, "passageiros": 318, "lat": -4.406, "lon": -59.602}, {"id": "CAU", "nome": "OSCAR LARANJEIRAS", "municipio": "CARUARU", "uf": "PE", "regiao": "NORDESTE", "rank": 145, "score": 0.08417716413807448, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 244, "lat": -8.282, "lon": -35.975}, {"id": "QGP", "nome": "GARANHUNS", "municipio": "GARANHUNS", "uf": "PE", "regiao": "NORDESTE", "rank": 146, "score": 0.08023481222959453, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.36930455635491605, "grau": 2, "passageiros": 186, "lat": -8.883, "lon": -36.527}, {"id": "TEC", "nome": "TELÊMACO BORBA (SBTL*)", "municipio": "TELÊMACO BORBA", "uf": "PR", "regiao": "SUL", "rank": 147, "score": 0.07858410323143734, "bc": 0.0, "dc": 0.012987012987012988, "cc": 0.3326133909287257, "grau": 2, "passageiros": 166, "lat": -24.317, "lon": -50.652}, {"id": "UVI", "nome": "JOSÉ CLETO", "municipio": "UNIÃO DA VITÓRIA", "uf": "PR", "regiao": "SUL", "rank": 148, "score": 0.07252496803879455, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.33189655172413796, "grau": 1, "passageiros": 125, "lat": -26.231, "lon": -51.087}, {"id": "OPP", "nome": "SALINÓPOLIS", "municipio": "SALINÓPOLIS", "uf": "PA", "regiao": "NORTE", "rank": 149, "score": 0.07144349424694828, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.34841628959276016, "grau": 1, "passageiros": 116, "lat": -0.64, "lon": -47.356}, {"id": "BRB", "nome": "BARREIRINHAS", "municipio": "BARREIRINHAS", "uf": "MA", "regiao": "NORDESTE", "rank": 150, "score": 0.06960846081636689, "bc": 0.0, "dc": 0.01948051948051948, "cc": 0.3326133909287257, "grau": 3, "passageiros": 78, "lat": -2.763, "lon": -42.774}, {"id": "IRZ", "nome": "SANTA IZABEL DO RIO NEGRO", "municipio": "SANTA ISABEL DO RIO NEGRO", "uf": "AM", "regiao": "NORTE", "rank": 151, "score": 0.06495409712375719, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.2614601018675722, "grau": 1, "passageiros": 74, "lat": -0.415, "lon": -65.019}, {"id": "JCS", "nome": "DOUTOR LÚCIO LIMA", "municipio": "CRATEÚS", "uf": "CE", "regiao": "NORDESTE", "rank": 152, "score": 0.05057563872577799, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.34841628959276016, "grau": 1, "passageiros": 27, "lat": -5.113, "lon": -40.674}, {"id": "QIG", "nome": "IGUATU", "municipio": "IGUATU", "uf": "CE", "regiao": "NORDESTE", "rank": 153, "score": 0.040460390826229764, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.34841628959276016, "grau": 1, "passageiros": 13, "lat": -6.354, "lon": -39.297}, {"id": "JSB", "nome": "WALFRIDO SAMITO DE ALMEIDA", "municipio": "SÃO BENEDITO", "uf": "CE", "regiao": "NORDESTE", "rank": 154, "score": 0.03694106036210362, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.34841628959276016, "grau": 1, "passageiros": 10, "lat": -4.052, "lon": -40.87}, {"id": "JSO", "nome": "VIRGÍLIO TÁVORA", "municipio": "SOBRAL", "uf": "CE", "regiao": "NORDESTE", "rank": 155, "score": 0.030345142926681525, "bc": 0.0, "dc": 0.006493506493506494, "cc": 0.34841628959276016, "grau": 1, "passageiros": 6, "lat": -3.688, "lon": -40.356}], "routes": [{"origem": "CGH", "destino": "SDU", "passageiros": 3682638, "voos": 50559}, {"origem": "BSB", "destino": "CGH", "passageiros": 2199288, "voos": 31588}, {"origem": "CGH", "destino": "CNF", "passageiros": 1927648, "voos": 26039}, {"origem": "CGH", "destino": "POA", "passageiros": 1904071, "voos": 22981}, {"origem": "GRU", "destino": "REC", "passageiros": 1724206, "voos": 20310}, {"origem": "GRU", "destino": "POA", "passageiros": 1697328, "voos": 21700}, {"origem": "CGH", "destino": "CWB", "passageiros": 1558940, "voos": 21813}, {"origem": "CGH", "destino": "SSA", "passageiros": 1453102, "voos": 16459}, {"origem": "GIG", "destino": "GRU", "passageiros": 1448930, "voos": 22853}, {"origem": "CNF", "destino": "GRU", "passageiros": 1375606, "voos": 20413}, {"origem": "CWB", "destino": "GRU", "passageiros": 1368569, "voos": 18900}, {"origem": "CGH", "destino": "FLN", "passageiros": 1294045, "voos": 14975}, {"origem": "BSB", "destino": "GRU", "passageiros": 1236321, "voos": 20354}, {"origem": "FOR", "destino": "GRU", "passageiros": 1196187, "voos": 15242}, {"origem": "CGH", "destino": "REC", "passageiros": 1118955, "voos": 12808}, {"origem": "GRU", "destino": "SSA", "passageiros": 1097325, "voos": 14541}, {"origem": "FLN", "destino": "GRU", "passageiros": 1006680, "voos": 12859}, {"origem": "GIG", "destino": "POA", "passageiros": 950871, "voos": 12419}, {"origem": "CGH", "destino": "GYN", "passageiros": 933870, "voos": 10111}, {"origem": "GRU", "destino": "MCZ", "passageiros": 921944, "voos": 10736}, {"origem": "GRU", "destino": "VIX", "passageiros": 885434, "voos": 11698}, {"origem": "CGB", "destino": "GRU", "passageiros": 881163, "voos": 11581}, {"origem": "GIG", "destino": "REC", "passageiros": 874870, "voos": 11057}, {"origem": "BSB", "destino": "SDU", "passageiros": 868498, "voos": 13657}, {"origem": "CGH", "destino": "NVT", "passageiros": 865998, "voos": 9421}, {"origem": "GRU", "destino": "GYN", "passageiros": 845482, "voos": 10370}, {"origem": "GRU", "destino": "IGU", "passageiros": 816183, "voos": 9585}, {"origem": "GIG", "destino": "SSA", "passageiros": 810235, "voos": 11454}, {"origem": "BSB", "destino": "CNF", "passageiros": 773917, "voos": 10836}, {"origem": "BSB", "destino": "REC", "passageiros": 763790, "voos": 9392}, {"origem": "GRU", "destino": "NAT", "passageiros": 760059, "voos": 8886}, {"origem": "BEL", "destino": "GRU", "passageiros": 754456, "voos": 10114}, {"origem": "REC", "destino": "VCP", "passageiros": 721620, "voos": 9594}, {"origem": "GIG", "destino": "VIX", "passageiros": 707786, "voos": 11172}, {"origem": "GRU", "destino": "MAO", "passageiros": 698654, "voos": 8730}, {"origem": "CNF", "destino": "GIG", "passageiros": 674290, "voos": 11050}, {"origem": "FOR", "destino": "GIG", "passageiros": 671410, "voos": 8919}, {"origem": "CGR", "destino": "GRU", "passageiros": 668810, "voos": 8268}, {"origem": "GRU", "destino": "NVT", "passageiros": 659320, "voos": 8786}, {"origem": "BSB", "destino": "GIG", "passageiros": 640329, "voos": 10841}, {"origem": "BSB", "destino": "SSA", "passageiros": 632353, "voos": 8582}, {"origem": "BSB", "destino": "VCP", "passageiros": 630244, "voos": 9696}, {"origem": "CGH", "destino": "VIX", "passageiros": 629186, "voos": 7062}, {"origem": "CNF", "destino": "VCP", "passageiros": 628016, "voos": 13166}, {"origem": "POA", "destino": "VCP", "passageiros": 612295, "voos": 9140}, {"origem": "CGH", "destino": "FOR", "passageiros": 600921, "voos": 6961}, {"origem": "AJU", "destino": "GRU", "passageiros": 591922, "voos": 6834}, {"origem": "CWB", "destino": "GIG", "passageiros": 588606, "voos": 8438}, {"origem": "GRU", "destino": "JPA", "passageiros": 588164, "voos": 6650}, {"origem": "BPS", "destino": "GRU", "passageiros": 582540, "voos": 7495}, {"origem": "CNF", "destino": "REC", "passageiros": 549092, "voos": 8475}, {"origem": "SSA", "destino": "VCP", "passageiros": 543264, "voos": 7461}, {"origem": "BSB", "destino": "FOR", "passageiros": 535522, "voos": 7042}, {"origem": "GRU", "destino": "SLZ", "passageiros": 531690, "voos": 6270}, {"origem": "CNF", "destino": "SSA", "passageiros": 526131, "voos": 8534}, {"origem": "GIG", "destino": "VCP", "passageiros": 508653, "voos": 8354}, {"origem": "SDU", "destino": "VCP", "passageiros": 483435, "voos": 9256}, {"origem": "BPS", "destino": "CGH", "passageiros": 481929, "voos": 4901}, {"origem": "CWB", "destino": "VCP", "passageiros": 467533, "voos": 9521}, {"origem": "BSB", "destino": "POA", "passageiros": 447079, "voos": 5468}, {"origem": "FOR", "destino": "REC", "passageiros": 438597, "voos": 6613}, {"origem": "BPS", "destino": "CNF", "passageiros": 429968, "voos": 5066}, {"origem": "BSB", "destino": "MAO", "passageiros": 422839, "voos": 5700}, {"origem": "BSB", "destino": "CWB", "passageiros": 403328, "voos": 5451}, {"origem": "GYN", "destino": "VCP", "passageiros": 402309, "voos": 6264}, {"origem": "REC", "destino": "SSA", "passageiros": 400194, "voos": 7149}, {"origem": "GRU", "destino": "MGF", "passageiros": 392200, "voos": 4793}, {"origem": "GIG", "destino": "IGU", "passageiros": 376634, "voos": 4649}, {"origem": "CGB", "destino": "VCP", "passageiros": 375959, "voos": 6201}, {"origem": "BEL", "destino": "BSB", "passageiros": 373744, "voos": 5471}, {"origem": "FLN", "destino": "GIG", "passageiros": 372940, "voos": 5457}, {"origem": "CWB", "destino": "POA", "passageiros": 372146, "voos": 6281}, {"origem": "BSB", "destino": "GYN", "passageiros": 357162, "voos": 4637}, {"origem": "CGH", "destino": "GIG", "passageiros": 355769, "voos": 5601}, {"origem": "GRU", "destino": "THE", "passageiros": 336984, "voos": 4437}, {"origem": "CGH", "destino": "IGU", "passageiros": 328566, "voos": 3496}, {"origem": "FLN", "destino": "VCP", "passageiros": 325413, "voos": 5640}, {"origem": "BSB", "destino": "JPA", "passageiros": 324321, "voos": 3554}, {"origem": "CGH", "destino": "MCZ", "passageiros": 323262, "voos": 3125}, {"origem": "BSB", "destino": "MCZ", "passageiros": 317722, "voos": 3436}, {"origem": "CNF", "destino": "SDU", "passageiros": 317718, "voos": 5693}, {"origem": "GRU", "destino": "XAP", "passageiros": 313542, "voos": 4758}, {"origem": "BSB", "destino": "CGB", "passageiros": 310464, "voos": 3735}, {"origem": "BEL", "destino": "MCP", "passageiros": 309858, "voos": 3699}, {"origem": "MAO", "destino": "VCP", "passageiros": 305721, "voos": 4361}, {"origem": "BSB", "destino": "SLZ", "passageiros": 304075, "voos": 3580}, {"origem": "GRU", "destino": "JDO", "passageiros": 303794, "voos": 3477}, {"origem": "VCP", "destino": "VIX", "passageiros": 299675, "voos": 4320}, {"origem": "GRU", "destino": "PNZ", "passageiros": 295680, "voos": 3736}, {"origem": "NVT", "destino": "VCP", "passageiros": 293743, "voos": 5073}, {"origem": "BEL", "destino": "FOR", "passageiros": 292744, "voos": 3975}, {"origem": "CGH", "destino": "SJP", "passageiros": 291668, "voos": 3280}, {"origem": "GRU", "destino": "LDB", "passageiros": 285578, "voos": 3834}, {"origem": "BSB", "destino": "NAT", "passageiros": 284176, "voos": 3221}, {"origem": "BSB", "destino": "THE", "passageiros": 283057, "voos": 3592}, {"origem": "GRU", "destino": "SDU", "passageiros": 282312, "voos": 4957}, {"origem": "BEL", "destino": "VCP", "passageiros": 276758, "voos": 4454}, {"origem": "CNF", "destino": "GYN", "passageiros": 274772, "voos": 4822}, {"origem": "CGB", "destino": "CGH", "passageiros": 274031, "voos": 2908}, {"origem": "FOR", "destino": "SSA", "passageiros": 273380, "voos": 4047}, {"origem": "GRU", "destino": "VDC", "passageiros": 272793, "voos": 3494}, {"origem": "FEN", "destino": "REC", "passageiros": 270737, "voos": 4225}, {"origem": "CGR", "destino": "VCP", "passageiros": 270188, "voos": 4003}, {"origem": "GRU", "destino": "IOS", "passageiros": 268426, "voos": 3635}, {"origem": "CNF", "destino": "VIX", "passageiros": 264697, "voos": 4645}, {"origem": "GRU", "destino": "PMW", "passageiros": 262049, "voos": 3471}, {"origem": "BEL", "destino": "CNF", "passageiros": 258633, "voos": 4838}, {"origem": "GYN", "destino": "REC", "passageiros": 257507, "voos": 3149}, {"origem": "FOR", "destino": "VCP", "passageiros": 254791, "voos": 2716}, {"origem": "GRU", "destino": "UDI", "passageiros": 248218, "voos": 3465}, {"origem": "CGH", "destino": "UDI", "passageiros": 244282, "voos": 2623}, {"origem": "CGH", "destino": "RAO", "passageiros": 239035, "voos": 3068}, {"origem": "CAC", "destino": "GRU", "passageiros": 235891, "voos": 3206}, {"origem": "BEL", "destino": "STM", "passageiros": 232555, "voos": 2893}, {"origem": "BSB", "destino": "BVB", "passageiros": 230797, "voos": 2497}, {"origem": "CGH", "destino": "CGR", "passageiros": 230471, "voos": 2455}, {"origem": "CNF", "destino": "POA", "passageiros": 230451, "voos": 2967}, {"origem": "GIG", "destino": "NVT", "passageiros": 228578, "voos": 2804}, {"origem": "GIG", "destino": "MCZ", "passageiros": 225909, "voos": 2853}, {"origem": "BSB", "destino": "FLN", "passageiros": 224097, "voos": 3065}, {"origem": "BSB", "destino": "CGR", "passageiros": 223196, "voos": 2400}, {"origem": "GIG", "destino": "JPA", "passageiros": 220084, "voos": 2522}, {"origem": "BEL", "destino": "MAO", "passageiros": 218116, "voos": 3047}, {"origem": "GIG", "destino": "NAT", "passageiros": 217621, "voos": 2872}, {"origem": "CWB", "destino": "IGU", "passageiros": 217544, "voos": 3205}, {"origem": "BSB", "destino": "PVH", "passageiros": 214281, "voos": 2679}, {"origem": "CGH", "destino": "JOI", "passageiros": 210209, "voos": 2519}, {"origem": "GRU", "destino": "JJD", "passageiros": 209456, "voos": 2670}, {"origem": "CNF", "destino": "MCZ", "passageiros": 201571, "voos": 2143}, {"origem": "IGU", "destino": "VCP", "passageiros": 200136, "voos": 2429}, {"origem": "FOR", "destino": "MAO", "passageiros": 199168, "voos": 1972}, {"origem": "CGH", "destino": "LDB", "passageiros": 196367, "voos": 2167}, {"origem": "CGH", "destino": "MGF", "passageiros": 196055, "voos": 2297}, {"origem": "MCZ", "destino": "VCP", "passageiros": 195893, "voos": 2068}, {"origem": "BEL", "destino": "REC", "passageiros": 191878, "voos": 3097}, {"origem": "BSB", "destino": "RBR", "passageiros": 191745, "voos": 2430}, {"origem": "BSB", "destino": "PMW", "passageiros": 191115, "voos": 2331}, {"origem": "BSB", "destino": "VIX", "passageiros": 189964, "voos": 2530}, {"origem": "CNF", "destino": "FOR", "passageiros": 189244, "voos": 2235}, {"origem": "BPS", "destino": "VCP", "passageiros": 188958, "voos": 2080}, {"origem": "CNF", "destino": "CWB", "passageiros": 188762, "voos": 3417}, {"origem": "GRU", "destino": "OPS", "passageiros": 187383, "voos": 2595}, {"origem": "GRU", "destino": "SJP", "passageiros": 182130, "voos": 2545}, {"origem": "CNF", "destino": "NAT", "passageiros": 172320, "voos": 1807}, {"origem": "RAO", "destino": "VCP", "passageiros": 168554, "voos": 4952}, {"origem": "GRU", "destino": "JOI", "passageiros": 167257, "voos": 2540}, {"origem": "SJP", "destino": "VCP", "passageiros": 165856, "voos": 5034}, {"origem": "GIG", "destino": "GYN", "passageiros": 161038, "voos": 2114}, {"origem": "CGH", "destino": "JPA", "passageiros": 160605, "voos": 1643}, {"origem": "REC", "destino": "SLZ", "passageiros": 157341, "voos": 2348}, {"origem": "CNF", "destino": "UDI", "passageiros": 155577, "voos": 3962}, {"origem": "BSB", "destino": "MAB", "passageiros": 155199, "voos": 2146}, {"origem": "UDI", "destino": "VCP", "passageiros": 152712, "voos": 4117}, {"origem": "CNF", "destino": "MOC", "passageiros": 148699, "voos": 4292}, {"origem": "CGB", "destino": "CNF", "passageiros": 140986, "voos": 2433}, {"origem": "BPS", "destino": "GIG", "passageiros": 139127, "voos": 1878}, {"origem": "BSB", "destino": "MCP", "passageiros": 136181, "voos": 1807}, {"origem": "CAC", "destino": "VCP", "passageiros": 133944, "voos": 2172}, {"origem": "FOR", "destino": "SLZ", "passageiros": 131209, "voos": 1640}, {"origem": "GIG", "destino": "MAO", "passageiros": 128532, "voos": 1859}, {"origem": "CGH", "destino": "NAT", "passageiros": 128186, "voos": 1389}, {"origem": "VCP", "destino": "XAP", "passageiros": 127799, "voos": 1979}, {"origem": "MGF", "destino": "VCP", "passageiros": 127269, "voos": 3426}, {"origem": "AJU", "destino": "GIG", "passageiros": 126136, "voos": 1624}, {"origem": "GRU", "destino": "PFB", "passageiros": 124684, "voos": 1778}, {"origem": "MAO", "destino": "REC", "passageiros": 122077, "voos": 1461}, {"origem": "GRU", "destino": "PVH", "passageiros": 120994, "voos": 1658}, {"origem": "NAT", "destino": "VCP", "passageiros": 119575, "voos": 1260}, {"origem": "CNF", "destino": "FLN", "passageiros": 119382, "voos": 1920}, {"origem": "CNF", "destino": "IPN", "passageiros": 119216, "voos": 3799}, {"origem": "CKS", "destino": "CNF", "passageiros": 115116, "voos": 1665}, {"origem": "NAT", "destino": "REC", "passageiros": 108249, "voos": 2933}, {"origem": "POA", "destino": "REC", "passageiros": 108116, "voos": 1587}, {"origem": "BEL", "destino": "GIG", "passageiros": 107307, "voos": 1390}, {"origem": "MAO", "destino": "STM", "passageiros": 106954, "voos": 1995}, {"origem": "AJU", "destino": "BSB", "passageiros": 106595, "voos": 1239}, {"origem": "LDB", "destino": "VCP", "passageiros": 105760, "voos": 2820}, {"origem": "GYN", "destino": "SSA", "passageiros": 105670, "voos": 1385}, {"origem": "BSB", "destino": "STM", "passageiros": 105433, "voos": 1974}, {"origem": "GRU", "destino": "IMP", "passageiros": 105259, "voos": 1807}, {"origem": "JOI", "destino": "VCP", "passageiros": 105223, "voos": 2764}, {"origem": "BEL", "destino": "MAB", "passageiros": 105031, "voos": 1845}, {"origem": "FOR", "destino": "THE", "passageiros": 104458, "voos": 1515}, {"origem": "CNF", "destino": "MAO", "passageiros": 104240, "voos": 1357}, {"origem": "SLZ", "destino": "SSA", "passageiros": 103198, "voos": 1347}, {"origem": "CNF", "destino": "JPA", "passageiros": 102928, "voos": 1036}, {"origem": "JPA", "destino": "VCP", "passageiros": 101876, "voos": 1125}, {"origem": "BPS", "destino": "BSB", "passageiros": 101494, "voos": 1045}, {"origem": "FOR", "destino": "NAT", "passageiros": 100572, "voos": 1331}, {"origem": "MAO", "destino": "PVH", "passageiros": 100118, "voos": 1703}, {"origem": "CNF", "destino": "PVH", "passageiros": 100090, "voos": 1264}, {"origem": "GRU", "destino": "MOC", "passageiros": 99648, "voos": 1560}, {"origem": "THE", "destino": "VCP", "passageiros": 98880, "voos": 1126}, {"origem": "CGH", "destino": "PPB", "passageiros": 97825, "voos": 1118}, {"origem": "SLZ", "destino": "VCP", "passageiros": 94802, "voos": 1187}, {"origem": "CNF", "destino": "SLZ", "passageiros": 94515, "voos": 1118}, {"origem": "OPS", "destino": "VCP", "passageiros": 94131, "voos": 1049}, {"origem": "PFB", "destino": "VCP", "passageiros": 93821, "voos": 1112}, {"origem": "MCZ", "destino": "SSA", "passageiros": 93440, "voos": 1234}, {"origem": "AJU", "destino": "SSA", "passageiros": 93306, "voos": 2080}], "sim": [{"passo": 1, "removido": "VCP", "removidos": ["VCP"], "isolados": ["AQA", "CAW", "MII", "PGZ", "ROO", "TJL"], "maior_comp": 146, "fracao": 0.9419354838709677, "componentes": 8, "vol_restante": 0.8841894968903053}, {"passo": 2, "removido": "CNF", "removidos": ["VCP", "CNF"], "isolados": ["AQA", "CAW", "CFB", "DIQ", "GVR", "IAL", "JMA", "LHN", "MII", "PGZ", "PYT", "ROO", "RRJ", "TFL", "TJL", "VAG"], "maior_comp": 135, "fracao": 0.8709677419354839, "componentes": 18, "vol_restante": 0.7700744146358205}, {"passo": 3, "removido": "GRU", "removidos": ["VCP", "CNF", "GRU"], "isolados": ["AQA", "CAW", "CFB", "DIQ", "DOU", "GVR", "IAL", "JJG", "JMA", "LHN", "MII", "PGZ", "PYT", "ROO", "RRJ", "TFL", "TJL", "VAG"], "maior_comp": 130, "fracao": 0.8387096774193549, "componentes": 21, "vol_restante": 0.48833535442174214}, {"passo": 4, "removido": "REC", "removidos": ["VCP", "CNF", "GRU", "REC"], "isolados": ["AQA", "CAW", "CFB", "DIQ", "DOU", "GVR", "IAL", "JJG", "JMA", "LHN", "MII", "MVF", "NSR", "PGZ", "PYT", "ROO", "RRJ", "TFL", "TJL", "VAG"], "maior_comp": 121, "fracao": 0.7806451612903226, "componentes": 26, "vol_restante": 0.42951050001413194}, {"passo": 5, "removido": "MAO", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO"], "isolados": ["AQA", "BAZ", "CAW", "CFB", "DIQ", "DOU", "GVR", "IAL", "ITB", "JJG", "JMA", "LHN", "MII", "MVF", "NSR", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "VAG"], "maior_comp": 109, "fracao": 0.7032258064516129, "componentes": 33, "vol_restante": 0.41390223136235715}, {"passo": 6, "removido": "CGH", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "DIQ", "DOU", "EEA", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LHN", "MII", "MVF", "NSR", "PFB", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "VAG"], "maior_comp": 102, "fracao": 0.6580645161290323, "componentes": 39, "vol_restante": 0.2038587508193147}, {"passo": 7, "removido": "BSB", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "DIQ", "DOU", "EEA", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LHN", "MII", "MVF", "NSR", "PFB", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "VAG"], "maior_comp": 101, "fracao": 0.6516129032258065, "componentes": 39, "vol_restante": 0.1138769661870339}, {"passo": 8, "removido": "GIG", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LHN", "MII", "MVF", "NSR", "PFB", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "VAG"], "maior_comp": 99, "fracao": 0.6387096774193548, "componentes": 40, "vol_restante": 0.04889405234731137}, {"passo": 9, "removido": "SSA", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GNM", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LEC", "LHN", "MII", "MVF", "NSR", "PFB", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "VAG"], "maior_comp": 93, "fracao": 0.6, "componentes": 43, "vol_restante": 0.036964012064619196}, {"passo": 10, "removido": "BEL", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GNM", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LEC", "LHN", "MII", "MVF", "NSR", "OPP", "PFB", "PGZ", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "VAG"], "maior_comp": 82, "fracao": 0.5290322580645161, "componentes": 47, "vol_restante": 0.02424324124258579}, {"passo": 11, "removido": "CWB", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JJG", "JMA", "LEC", "LHN", "MII", "MVF", "NSR", "OPP", "PFB", "PGZ", "PTO", "PYT", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "UVI", "VAG"], "maior_comp": 75, "fracao": 0.4838709677419355, "componentes": 52, "vol_restante": 0.015141231684026493}, {"passo": 12, "removido": "FOR", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR"], "isolados": ["AQA", "BAZ", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OPP", "PFB", "PGZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "UVI", "VAG"], "maior_comp": 69, "fracao": 0.44516129032258067, "componentes": 57, "vol_restante": 0.010599540510821683}, {"passo": 13, "removido": "CGB", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "UVI", "VAG"], "maior_comp": 62, "fracao": 0.4, "componentes": 63, "vol_restante": 0.008370595384381405}, {"passo": 14, "removido": "POA", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 59, "fracao": 0.38064516129032255, "componentes": 65, "vol_restante": 0.007089441573945591}, {"passo": 15, "removido": "MCZ", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 57, "fracao": 0.36774193548387096, "componentes": 66, "vol_restante": 0.005539969771157162}, {"passo": 16, "removido": "RAO", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 53, "fracao": 0.3419354838709677, "componentes": 68, "vol_restante": 0.004990445478392299}, {"passo": 17, "removido": "VIX", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 51, "fracao": 0.32903225806451614, "componentes": 69, "vol_restante": 0.004972033609735679}, {"passo": 18, "removido": "GYN", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN"], "isolados": ["AFL", "AIR", "AQA", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 41, "fracao": 0.2645161290322581, "componentes": 71, "vol_restante": 0.003950465613008901}, {"passo": 19, "removido": "BPS", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 37, "fracao": 0.23870967741935484, "componentes": 73, "vol_restante": 0.0027122835966131853}, {"passo": 20, "removido": "SLZ", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 27, "fracao": 0.17419354838709677, "componentes": 75, "vol_restante": 0.001954016088850725}, {"passo": 21, "removido": "FLN", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 17, "fracao": 0.10967741935483871, "componentes": 78, "vol_restante": 0.0010548062648805718}, {"passo": 22, "removido": "SDU", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "TFL", "TJL", "UNA", "URG", "UVI", "VAG"], "maior_comp": 17, "fracao": 0.10967741935483871, "componentes": 78, "vol_restante": 0.0010535142039222126}, {"passo": 23, "removido": "JPA", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "TFL", "TJL", "UBA", "UNA", "URG", "UVI", "VAG"], "maior_comp": 12, "fracao": 0.07741935483870968, "componentes": 80, "vol_restante": 0.0008331209059500753}, {"passo": 24, "removido": "NAT", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "TFL", "TJL", "UBA", "UNA", "URG", "UVI", "VAG"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 83, "vol_restante": 0.00030225612685885175}, {"passo": 25, "removido": "IGU", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "TFL", "TJL", "UBA", "UNA", "URG", "UVI", "VAG"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 83, "vol_restante": 0.00030116864221889936}, {"passo": 26, "removido": "UDI", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU", "UDI"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "SMT", "TFL", "TJL", "UBA", "UNA", "URG", "UVI", "VAG"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 84, "vol_restante": 0.0003010394361230634}, {"passo": 27, "removido": "NVT", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU", "UDI", "NVT"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "SMT", "TFL", "TJL", "UBA", "UNA", "URG", "UVI", "VAG", "XAP"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 85, "vol_restante": 0.00030004885605498793}, {"passo": 28, "removido": "SJP", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU", "UDI", "NVT", "SJP"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LDB", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "SMT", "TFL", "THE", "TJL", "UBA", "UNA", "URG", "UVI", "VAG", "XAP"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 86, "vol_restante": 0.0002986921920487107}, {"passo": 29, "removido": "AJU", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU", "UDI", "NVT", "SJP", "AJU"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "IOS", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LDB", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "SMT", "TFL", "THE", "TJL", "UBA", "UNA", "URG", "UVI", "VAG", "VDC", "XAP"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 87, "vol_restante": 0.00029363161996180345}, {"passo": 30, "removido": "CGR", "removidos": ["VCP", "CNF", "GRU", "REC", "MAO", "CGH", "BSB", "GIG", "SSA", "BEL", "CWB", "FOR", "CGB", "POA", "MCZ", "RAO", "VIX", "GYN", "BPS", "SLZ", "FLN", "SDU", "JPA", "NAT", "IGU", "UDI", "NVT", "SJP", "AJU", "CGR"], "isolados": ["AFL", "AIR", "AQA", "ARU", "BAZ", "BPG", "BRA", "BVH", "BYO", "CAW", "CFB", "CLV", "CXJ", "DIQ", "DOU", "EEA", "GEL", "GGJ", "GNM", "GPB", "GVR", "IAL", "IOS", "ITB", "IZA", "JCS", "JDO", "JJG", "JMA", "JSB", "JSO", "LDB", "LEC", "LHN", "MII", "MVF", "NSR", "OAL", "OPP", "OPS", "PFB", "PGZ", "PMG", "PNZ", "PPB", "PTO", "PYT", "QIG", "RIA", "ROO", "RPU", "RRJ", "RVD", "SJK", "SMT", "TFL", "THE", "TJL", "UBA", "UNA", "URG", "UVI", "VAG", "VDC", "XAP"], "maior_comp": 7, "fracao": 0.04516129032258064, "componentes": 87, "vol_restante": 0.00029253336814719804}], "sem_coord": 0, "total": 155};
+const BRASIL = {"type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[[-60.0, 4.5], [-59.0, 3.8], [-60.7, 2.8], [-61.0, 1.5], [-60.0, 1.0], [-59.0, 0.5], [-51.5, 4.1], [-51.1, 3.8], [-50.5, 1.8], [-50.0, 0.5], [-50.0, -1.0], [-49.0, -1.5], [-44.4, -2.5], [-42.8, -2.5], [-41.5, -3.0], [-38.5, -3.7], [-37.5, -4.8], [-35.2, -5.8], [-35.0, -6.0], [-34.8, -7.2], [-34.9, -8.3], [-35.2, -9.5], [-37.1, -10.9], [-38.3, -12.9], [-38.9, -13.0], [-39.0, -15.3], [-39.1, -16.4], [-39.2, -17.9], [-39.6, -19.0], [-40.3, -20.3], [-41.1, -21.7], [-43.2, -22.9], [-44.3, -23.0], [-46.5, -24.0], [-47.9, -25.2], [-48.5, -26.5], [-48.6, -27.5], [-49.5, -28.5], [-51.2, -30.0], [-52.1, -31.3], [-52.4, -32.0], [-53.4, -33.5], [-53.5, -33.8], [-55.0, -33.0], [-57.5, -30.5], [-57.5, -28.0], [-58.6, -27.0], [-58.0, -25.0], [-57.5, -22.5], [-58.0, -20.0], [-57.5, -19.5], [-57.5, -17.8], [-58.5, -16.5], [-60.0, -15.0], [-60.5, -13.5], [-61.5, -11.0], [-62.8, -9.8], [-63.9, -8.5], [-65.3, -7.5], [-67.0, -5.0], [-68.8, -4.0], [-69.5, -2.2], [-70.0, 0.0], [-69.7, 1.0], [-69.5, 2.0], [-64.0, 1.5], [-61.0, 2.0], [-60.5, 3.5], [-60.0, 4.5]]]}};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt = n => n >= 1e6
+  ? (n/1e6).toFixed(1)+'M'
+  : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n);
+
+function airportColor(rank) {
+  if (rank <= 3)  return '#f59e0b';
+  if (rank <= 20) return '#3b82f6';
+  if (rank <= 50) return '#22d3ee';
+  return '#6b7280';
+}
+function airportRadius(rank, score) {
+  if (rank <= 3)  return 8;
+  if (rank <= 10) return 6;
+  if (rank <= 30) return 4.5;
+  if (rank <= 60) return 3.5;
+  return 2.5;
+}
+
+// ── Setup SVG ─────────────────────────────────────────────────────────────────
+const wrap = document.getElementById('map-wrap');
+const W = wrap.clientWidth, H = wrap.clientHeight;
+const svg = d3.select('#map').attr('viewBox', `0 0 ${W} ${H}`);
+
+const projection = d3.geoMercator()
+  .fitExtent([[20, 20], [W - 20, H - 20]], BRASIL);
+const geoPath = d3.geoPath().projection(projection);
+
+const g = svg.append('g');
+
+// Zoom + pan
+const zoom = d3.zoom()
+  .scaleExtent([0.6, 12])
+  .on('zoom', e => g.attr('transform', e.transform));
+svg.call(zoom);
+
+// ── Mapa base ─────────────────────────────────────────────────────────────────
+g.append('path').datum(BRASIL)
+  .attr('d', geoPath)
+  .attr('class', 'brasil-fill');
+
+// ── Projetar aeroportos ───────────────────────────────────────────────────────
+const airportMap = {};
+DATA.airports.forEach(a => {
+  const [x, y] = projection([a.lon, a.lat]);
+  a.x = x; a.y = y;
+  airportMap[a.id] = a;
+});
+
+// ── Rotas ─────────────────────────────────────────────────────────────────────
+const maxPass = d3.max(DATA.routes, r => r.passageiros) || 1;
+const routeStrokeScale = d3.scaleSqrt()
+  .domain([0, maxPass])
+  .range([0.3, 2.5]);
+
+const routeLayer = g.append('g').attr('class', 'routes');
+DATA.routes.forEach((r, i) => {
+  const a = airportMap[r.origem], b = airportMap[r.destino];
+  if (!a || !b) return;
+  routeLayer.append('line')
+    .datum(r)
+    .attr('class', i < 50 ? 'route bright' : 'route')
+    .attr('x1', a.x).attr('y1', a.y)
+    .attr('x2', b.x).attr('y2', b.y)
+    .attr('stroke-width', routeStrokeScale(r.passageiros));
+});
+
+// ── Nodos ─────────────────────────────────────────────────────────────────────
+const nodeLayer = g.append('g').attr('class', 'nodes');
+const labelLayer = g.append('g').attr('class', 'labels');
+
+const tooltip = document.getElementById('tooltip');
+
+DATA.airports.forEach(a => {
+  const r = airportRadius(a.rank, a.score);
+  const c = airportColor(a.rank);
+
+  nodeLayer.append('circle')
+    .datum(a)
+    .attr('class', 'airport')
+    .attr('id', 'ap-' + a.id)
+    .attr('cx', a.x).attr('cy', a.y)
+    .attr('r', r)
+    .attr('fill', c)
+    .attr('fill-opacity', 0.9)
+    .attr('stroke', '#0d1117')
+    .attr('stroke-width', 0.8)
+    .on('mouseover', function(event, d) {
+      document.getElementById('tt-code').textContent  = d.id + ' — ' + d.nome;
+      document.getElementById('tt-city').textContent  = d.municipio + ', ' + d.uf + ' · ' + d.regiao;
+      document.getElementById('tt-rank').textContent  = '#' + d.rank + ' de ' + DATA.airports.length;
+      document.getElementById('tt-score').textContent = d.score.toFixed(4);
+      document.getElementById('tt-bc').textContent    = d.bc.toFixed(4);
+      document.getElementById('tt-grau').textContent  = d.grau + ' destinos';
+      document.getElementById('tt-pass').textContent  = fmt(d.passageiros);
+      tooltip.classList.add('visible');
+      highlightAirport(d.id);
+    })
+    .on('mousemove', function(event) {
+      const x = event.clientX + 14, y = event.clientY - 10;
+      tooltip.style.left = Math.min(x, window.innerWidth - 240) + 'px';
+      tooltip.style.top  = Math.min(y, window.innerHeight - 200) + 'px';
+    })
+    .on('mouseout', function() {
+      tooltip.classList.remove('visible');
+      clearHighlight();
+    })
+    .on('click', function(event, d) {
+      selectRankItem(d.rank);
+    });
+
+  if (a.rank <= 30) {
+    labelLayer.append('text')
+      .attr('class', a.rank <= 10 ? 'a-label top' : 'a-label')
+      .attr('x', a.x + r + 2)
+      .attr('y', a.y + 4)
+      .text(a.id);
+  }
+});
+
+// ── Ranking sidebar ───────────────────────────────────────────────────────────
+const topList = document.getElementById('top-list');
+document.getElementById('stat-airports').textContent = DATA.airports.length;
+document.getElementById('stat-routes').textContent   = DATA.routes.length;
+
+DATA.airports.slice(0, 30).forEach(a => {
+  const item = document.createElement('div');
+  item.className = 'rank-item';
+  item.id = 'ri-' + a.rank;
+  item.innerHTML = `
+    <span class="rank-num">${a.rank}</span>
+    <div class="rank-dot" style="background:${airportColor(a.rank)}"></div>
+    <div class="rank-info">
+      <div class="rank-code">${a.id}</div>
+      <div class="rank-city">${a.municipio}, ${a.uf}</div>
+    </div>
+    <span class="rank-score">${a.score.toFixed(3)}</span>
+  `;
+  item.addEventListener('click', () => focusAirport(a.id));
+  topList.appendChild(item);
+});
+
+function selectRankItem(rank) {
+  document.querySelectorAll('.rank-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('ri-' + rank);
+  if (el) { el.classList.add('active'); el.scrollIntoView({block:'nearest'}); }
+}
+
+function highlightAirport(id) {
+  d3.selectAll('.route').style('opacity', r =>
+    (r.origem === id || r.destino === id) ? 0.9 : 0.08);
+}
+function clearHighlight() {
+  d3.selectAll('.route').style('opacity', null);
+}
+
+function focusAirport(id) {
+  const a = airportMap[id];
+  if (!a) return;
+  const scale = 4;
+  const tx = W/2 - scale * a.x;
+  const ty = H/2 - scale * a.y;
+  svg.transition().duration(600)
+     .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+  selectRankItem(a.rank);
+}
+
+// ── Simulação ─────────────────────────────────────────────────────────────────
+let simStep = 0;
+const simLen = DATA.sim.length;
+let playTimer = null;
+
+function applySimStep(step) {
+  // Resetar todos
+  d3.selectAll('.airport').classed('removed', false).classed('isolated', false);
+  d3.selectAll('.rank-item').classed('removed-item', false);
+
+  if (step === 0) {
+    document.getElementById('ss-removido').textContent = '—';
+    document.getElementById('ss-maior').textContent    = '—';
+    document.getElementById('ss-comp').textContent     = '—';
+    document.getElementById('ss-vol').textContent      = '—';
+    document.getElementById('stat-comp').textContent   = '1';
+    document.getElementById('sim-progress-bar').style.width = '0%';
+    document.getElementById('sim-step-label').textContent = `Passo 0 / ${simLen}`;
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-reset').disabled = true;
+    return;
+  }
+
+  const s = DATA.sim[step - 1];
+
+  // Marcar removidos
+  s.removidos.forEach(id => {
+    d3.select('#ap-' + id).classed('removed', true);
+    const ri = document.querySelector('#ri-' + (DATA.airports.findIndex(a=>a.id===id)+1));
+    if (ri) ri.classList.add('removed-item');
+  });
+
+  // Marcar isolados
+  s.isolados.filter(id => id).forEach(id => {
+    d3.select('#ap-' + id).classed('isolated', true);
+  });
+
+  // Stats
+  const fracColor = s.fracao > 0.8 ? 'val-ok' : s.fracao > 0.55 ? 'val-warn' : 'val-danger';
+  document.getElementById('ss-removido').textContent = s.removido;
+  document.getElementById('ss-maior').innerHTML =
+    `<span class="${fracColor}">${s.maior_comp} (${(s.fracao*100).toFixed(1)}%)</span>`;
+  document.getElementById('ss-comp').textContent  = s.componentes;
+  document.getElementById('ss-vol').innerHTML =
+    `<span class="${fracColor}">${(s.vol_restante*100).toFixed(1)}%</span>`;
+  document.getElementById('stat-comp').textContent = s.componentes;
+  document.getElementById('sim-progress-bar').style.width =
+    ((step / simLen) * 100) + '%';
+  document.getElementById('sim-step-label').textContent = `Passo ${step} / ${simLen}`;
+  document.getElementById('btn-prev').disabled  = step <= 1;
+  document.getElementById('btn-reset').disabled = step <= 0;
+  document.getElementById('btn-next').disabled  = step >= simLen;
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  clearPlay();
+  simStep = 0;
+  applySimStep(0);
+});
+document.getElementById('btn-prev').addEventListener('click', () => {
+  clearPlay();
+  if (simStep > 0) { simStep--; applySimStep(simStep); }
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  clearPlay();
+  if (simStep < simLen) { simStep++; applySimStep(simStep); }
+});
+
+function clearPlay() {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  document.getElementById('btn-play').textContent = '▶';
+}
+document.getElementById('btn-play').addEventListener('click', function() {
+  if (playTimer) {
+    clearPlay();
+  } else {
+    if (simStep >= simLen) simStep = 0;
+    this.textContent = '⏸';
+    playTimer = setInterval(() => {
+      simStep++;
+      applySimStep(simStep);
+      if (simStep >= simLen) clearPlay();
+    }, 800);
+  }
+});
+
+// Init
+applySimStep(0);
+document.getElementById('btn-prev').disabled  = true;
+document.getElementById('btn-reset').disabled = true;
+document.getElementById('btn-next').disabled  = simLen === 0;
+document.getElementById('btn-play').disabled  = simLen === 0;
+
+</script>
+</body>
+</html>
