@@ -6,12 +6,39 @@ from __future__ import annotations
 import csv
 import json
 import os
+import sys
 import webbrowser
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-RES  = ROOT / "resultados"
+ROOT   = Path(__file__).resolve().parents[1]
+RES    = ROOT / "resultados"
+VENDOR = Path(__file__).resolve().parent / "vendor"
+D3_PATH = VENDOR / "d3.v7.min.js"
+BRASIL_PATH = VENDOR / "brasil.geojson"
+
+
+def _script_d3() -> str:
+    """Embute o D3 inline (offline) ou cai para o CDN se o vendor não existir."""
+    if D3_PATH.exists():
+        return f"<script>{D3_PATH.read_text(encoding='utf-8')}</script>"
+    return '<script src="https://d3js.org/d3.v7.min.js"></script>'
+
+
+def _brasil_feature() -> dict:
+    """Contorno real do Brasil (Natural Earth 50m) ou fallback ao polígono simples."""
+    if BRASIL_PATH.exists():
+        return json.loads(BRASIL_PATH.read_text(encoding="utf-8"))
+    print(
+        f"AVISO: {BRASIL_PATH.name} não encontrado em vendor/; usando contorno "
+        "simplificado (fronteiras aproximadas). Restaure o asset para o mapa correto.",
+        file=sys.stderr,
+    )
+    return {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {"type": "Polygon", "coordinates": [BRASIL_POLYGON]},
+    }
 
 # ── Coordenadas IATA → (lat, lon) ────────────────────────────────────────────
 COORDS: dict[str, tuple[float, float]] = {
@@ -253,14 +280,7 @@ def carregar_dados() -> dict:
 
 
 def gerar_html(dados: dict) -> str:
-    brasil_geojson = json.dumps({
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [BRASIL_POLYGON],
-        },
-    })
+    brasil_geojson = json.dumps(_brasil_feature())
     data_js = json.dumps(dados, ensure_ascii=False)
 
     return f"""<!DOCTYPE html>
@@ -269,7 +289,7 @@ def gerar_html(dados: dict) -> str:
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rede Aeroportuária Brasileira 2025</title>
-<script src="https://d3js.org/d3.v7.min.js"></script>
+{_script_d3()}
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{

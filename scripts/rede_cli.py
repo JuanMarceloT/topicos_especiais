@@ -8,10 +8,11 @@ Uso:
 Comandos disponíveis no prompt:
     top [n]          ranking dos n mais criticos (default 10)
     info <CODIGO>    detalhes de um aeroporto
-    sim <n>          simula n remocoes (ataque por score)
-    sim grau <n>     simula n remocoes (ataque por grau)
+    sim <n>          simula n remocoes (ataque direcionado por criticidade)
     sim aleat <n>    simula n remocoes (falha aleatoria)
-    comp <n>         compara os 3 cenarios em n passos
+    comp <n>         compara ataque direcionado x falha aleatoria
+    cascata <n>      realocacao de demanda sob capacidade (varredura de alpha)
+    mapa             gera o mapa interativo no browser
     resumo           resumo geral da rede
     ajuda            lista os comandos
     sair             encerra
@@ -99,13 +100,8 @@ def cmd_resumo(ranking: list[dict]) -> None:
             if ln.startswith("Top"):
                 break
             print(f"  {ln}")
-    print(f"\n  {BOLD}Aeroportos:{RESET}  {len(ranking)}")
-    total_pass = sum(int(r["grau_ponderado_passageiros"]) for r in ranking)
-    print(f"  {BOLD}Passageiros:{RESET} {fmt_num(total_pass)}")
-    print(f"  {BOLD}Rotas:{RESET}       622 não-direcionais")
-    print(f"  {BOLD}E_glob:{RESET}      0,4422")
-    print(f"\n  {DIM}Baseado em Albert et al. (2000), Latora & Marchiori (2001),")
-    print(f"  Cumelles et al. (2021){RESET}")
+    print(f"\n  {DIM}Métricas calculadas em modelar_rede_aeroportuaria.py.")
+    print(f"  Fundamentação: Albert et al. (2000), Cumelles et al. (2021).{RESET}")
     print()
 
 
@@ -186,7 +182,7 @@ def cmd_sim(sim_rows: list[dict], nome_cenario: str, n: int) -> None:
     print(titulo(f"Simulação — {nome_cenario} — {n} passos"))
     print(linha())
     print(f"  {'#':>3}  {'Removido':<6}  {'Maior comp.':>12}  {'S(Q)':>6}  "
-          f"{'Compon.':>8}  {'Isolados':>8}  {'E_glob':>7}  {'Vol.':>6}")
+          f"{'Compon.':>8}  {'Isolados':>8}  {'Vol.':>6}")
     print(linha())
 
     for row in sim_rows[:n]:
@@ -196,7 +192,6 @@ def cmd_sim(sim_rows: list[dict], nome_cenario: str, n: int) -> None:
         frac  = float(row["fracao_maior_componente"])
         comp  = int(row["componentes_conectados"])
         iso   = int(row["aeroportos_isolados"])
-        eg    = float(row.get("eficiencia_global_normalizada", 0))
         vol   = float(row["fracao_volume_restante"])
 
         # Cor por degradação
@@ -207,10 +202,9 @@ def cmd_sim(sim_rows: list[dict], nome_cenario: str, n: int) -> None:
         else:
             cor = RED
 
-        eg_str = f"{eg:.3f}" if eg else "  —  "
         print(f"  {passo:>3}  {BOLD}{code:<6}{RESET}  "
               f"{cor}{maior:>12}{RESET}  {cor}{frac:>6.1%}{RESET}  "
-              f"{comp:>8}  {iso:>8}  {eg_str:>7}  {vol:>6.1%}")
+              f"{comp:>8}  {iso:>8}  {vol:>6.1%}")
 
     print(linha())
     ultimo = sim_rows[n-1]
@@ -222,46 +216,43 @@ def cmd_sim(sim_rows: list[dict], nome_cenario: str, n: int) -> None:
 
 def cmd_comp(n: int) -> None:
     score = carregar_sim("ataque_direcionado")
-    grau  = carregar_sim("ataque_grau")
     aleat = carregar_sim("falha_aleatoria")
 
-    if not score or not grau or not aleat:
-        print(f"\n  {RED}Arquivos de simulação incompletos.{RESET}\n")
+    if not score or not aleat:
+        print(f"\n  {RED}Arquivos de simulação não encontrados.{RESET}\n")
         return
 
-    n = min(n, 30, len(score), len(grau), len(aleat))
-    print(titulo(f"Comparação — {n} passos"))
+    n = min(n, 30, len(score), len(aleat))
+    print(titulo(f"Comparação — ataque direcionado × falha aleatória — {n} passos"))
     print(linha())
-    print(f"  {'#':>3}  {'Score maior':>12}  {'Grau maior':>11}  {'Aleat. maior':>12}  {'Δ score-aleat':>13}")
+    print(f"  {'#':>3}  {'Removido':<8}  {'Ataque maior':>12}  {'Aleat. maior':>12}  {'Δ (aleat−ataq)':>15}")
     print(linha())
 
     for i in range(n):
-        p    = i + 1
-        ms   = int(score[i]["maior_componente"])
-        mg   = int(grau[i]["maior_componente"])
-        ma   = int(aleat[i]["maior_componente"])
+        p     = i + 1
+        rem   = score[i]["aeroporto_removido"]
+        ms    = int(score[i]["maior_componente"])
+        ma    = int(aleat[i]["maior_componente"])
         delta = ma - ms
         cor_delta = GREEN if delta >= 0 else RED
-        print(f"  {p:>3}  {BLUE}{ms:>12}{RESET}  {YELLOW}{mg:>11}{RESET}  "
-              f"{GREEN}{ma:>12}{RESET}  {cor_delta}{delta:>+13}{RESET}")
+        print(f"  {p:>3}  {BOLD}{rem:<8}{RESET}  {BLUE}{ms:>12}{RESET}  "
+              f"{GREEN}{ma:>12}{RESET}  {cor_delta}{delta:>+15}{RESET}")
 
     print(linha())
 
-    def get_R(rows: list[dict]) -> float:
-        s = 1.0
-        for r in rows[:30]:
-            s += int(r["maior_componente"]) / 155
-        return s / 155
+    # Robustez = fração média do maior componente ao longo dos passos (dados reais)
+    def robustez(rows: list[dict]) -> float:
+        fr = [float(r["fracao_maior_componente"]) for r in rows[:n]]
+        return sum(fr) / len(fr) if fr else 0.0
 
-    rs = get_R(score)
-    rg = get_R(grau)
-    ra = get_R(aleat)
-    print(f"\n  {BOLD}Índice de robustez R (Schneider et al., 2011):{RESET}")
-    print(f"    Ataque score:   {BLUE}{rs:.4f}{RESET}  {barra(rs, 0.5, 20, BLUE)}")
-    print(f"    Ataque grau:    {YELLOW}{rg:.4f}{RESET}  {barra(rg, 0.5, 20, YELLOW)}")
-    print(f"    Falha aleat.:   {GREEN}{ra:.4f}{RESET}  {barra(ra, 0.5, 20, GREEN)}")
-    print(f"\n  {DIM}R_aleat / R_ataque ≈ {ra/rs:.2f}×  "
-          f"— confirma predição de Albert et al. (2000) para redes scale-free.{RESET}\n")
+    rs = robustez(score)
+    ra = robustez(aleat)
+    print(f"\n  {BOLD}Robustez média (fração média do maior componente em {n} passos):{RESET}")
+    print(f"    Ataque direcionado: {BLUE}{rs:>6.1%}{RESET}  {barra(rs, 1.0, 20, BLUE)}")
+    print(f"    Falha aleatória:    {GREEN}{ra:>6.1%}{RESET}  {barra(ra, 1.0, 20, GREEN)}")
+    if rs:
+        print(f"\n  {DIM}A falha aleatória preserva {ra/rs:.2f}× mais conectividade que o ataque")
+        print(f"  direcionado — comportamento esperado de redes scale-free (Albert et al., 2000).{RESET}\n")
 
 
 def cmd_mapa() -> None:
@@ -276,6 +267,53 @@ def cmd_mapa() -> None:
         print(f"\n  {RED}Erro ao gerar mapa: {exc}{RESET}\n")
 
 
+def cmd_cascata(n: int) -> None:
+    rows = carregar_sim("cascata_capacidade")
+    if not rows:
+        print(f"\n  {RED}Arquivo de cascata não encontrado.{RESET}")
+        print(f"  {DIM}Execute primeiro simular_cascata_capacidade.py{RESET}\n")
+        return
+
+    alpha = rows[0].get("alpha", "?")
+    n = min(n, len(rows))
+    print(titulo(f"Realocação sob capacidade — α={alpha} — {n} passos"))
+    print(f"  {DIM}Capacidade C = (1+α)·demanda. Modelo: Cumelles et al. (2021).{RESET}")
+    print(linha())
+    print(f"  {'#':>3}  {'Removido':<8}  {'Maior comp.':>12}  {'Saturados':>9}  "
+          f"{'Não realocados':>15}  {'% dem.':>6}")
+    print(linha())
+    for row in rows[:n]:
+        passo = int(row["passo"])
+        code  = row["aeroporto_removido"]
+        maior = int(row["maior_componente"])
+        sat   = int(row["aeroportos_saturados"])
+        nrea  = int(row["passageiros_nao_realocados"])
+        frac  = float(row["fracao_demanda_nao_realocada"])
+        cor = GREEN if frac < 0.25 else (YELLOW if frac < 0.5 else RED)
+        print(f"  {passo:>3}  {BOLD}{code:<8}{RESET}  {maior:>12}  {sat:>9}  "
+              f"{cor}{fmt_num(nrea):>15}{RESET}  {cor}{frac:>6.1%}{RESET}")
+    print(linha())
+
+    res = carregar_resumo_cascata()
+    if res:
+        print()
+        for ln in res:
+            print(f"  {ln}")
+    print()
+
+
+def carregar_resumo_cascata() -> list[str]:
+    p = RES / "resumo_cascata_capacidade_2025.txt"
+    if not p.exists():
+        return []
+    linhas = p.read_text(encoding="utf-8").splitlines()
+    try:
+        inicio = next(i for i, ln in enumerate(linhas) if ln.startswith("Varredura"))
+    except StopIteration:
+        return []
+    return linhas[inicio:]
+
+
 def cmd_ajuda() -> None:
     print(titulo("Comandos disponíveis"))
     print(linha())
@@ -283,10 +321,10 @@ def cmd_ajuda() -> None:
         ("resumo",        "resumo geral da rede"),
         ("top [n]",       "ranking dos n aeroportos mais críticos (default 10)"),
         ("info <CODIGO>", "detalhes de um aeroporto (ex: info VCP)"),
-        ("sim <n>",       "ataque direcionado por score — n passos"),
-        ("sim grau <n>",  "ataque por grau (degree) — n passos"),
+        ("sim <n>",       "ataque direcionado por criticidade — n passos"),
         ("sim aleat <n>", "falha aleatória — n passos"),
-        ("comp <n>",      "comparação dos 3 cenários em n passos"),
+        ("comp <n>",      "compara ataque direcionado × falha aleatória"),
+        ("cascata <n>",   "realocação de demanda sob capacidade (varredura de α)"),
         ("mapa",          "gera mapa interativo no browser (HTML + D3.js)"),
         ("ajuda",         "esta lista"),
         ("sair",          "encerra o programa"),
@@ -311,7 +349,7 @@ def main() -> None:
     # Banner
     print(f"\n{BOLD}{BLUE}  ✈  Rede Aeroportuária Brasileira 2025{RESET}")
     print(f"  {DIM}CLI de análise de vulnerabilidade{RESET}")
-    print(f"  {DIM}Albert (2000) · Latora (2001) · Cumelles (2021){RESET}\n")
+    print(f"  {DIM}Albert et al. (2000) · Cumelles et al. (2021){RESET}\n")
 
     # Carregar dados
     try:
@@ -350,19 +388,20 @@ def main() -> None:
                 cmd_info(ranking, partes[1])
 
         elif cmd == "sim":
-            if len(partes) >= 3 and partes[1] == "grau":
-                n = int(partes[2]) if partes[2].isdigit() else 10
-                cmd_sim(carregar_sim("ataque_grau"), "Ataque por grau", n)
-            elif len(partes) >= 3 and partes[1] == "aleat":
+            if len(partes) >= 3 and partes[1] == "aleat":
                 n = int(partes[2]) if partes[2].isdigit() else 10
                 cmd_sim(carregar_sim("falha_aleatoria"), "Falha aleatória", n)
             else:
                 n = int(partes[1]) if len(partes) > 1 and partes[1].isdigit() else 10
-                cmd_sim(carregar_sim("ataque_direcionado"), "Ataque por score", n)
+                cmd_sim(carregar_sim("ataque_direcionado"), "Ataque direcionado", n)
 
         elif cmd == "comp":
             n = int(partes[1]) if len(partes) > 1 and partes[1].isdigit() else 10
             cmd_comp(n)
+
+        elif cmd == "cascata":
+            n = int(partes[1]) if len(partes) > 1 and partes[1].isdigit() else 10
+            cmd_cascata(n)
 
         elif cmd == "mapa":
             cmd_mapa()
