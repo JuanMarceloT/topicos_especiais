@@ -8,12 +8,24 @@ domestica e calcula metricas basicas do grafo aeroportuario.
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
-import math
+import sys
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from metricas_grafo import (  # noqa: E402
+    PESOS_PADRAO,
+    PesosInput,
+    calcular_metricas_nos,
+    formatar_formula_pesos,
+    normalizar_pesos,
+    parsear_pesos,
+    salvar_pesos,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -176,95 +188,22 @@ def componentes_conectados(adj: dict[str, dict[str, int]]) -> list[list[str]]:
     return sorted(componentes, key=len, reverse=True)
 
 
-def betweenness_nao_ponderada(adj: dict[str, dict[str, int]]) -> dict[str, float]:
-    """Brandes nao ponderado para ranking estrutural."""
-    nodes = list(adj)
-    cb = {v: 0.0 for v in nodes}
-
-    for s in nodes:
-        stack: list[str] = []
-        pred = {w: [] for w in nodes}
-        sigma = dict.fromkeys(nodes, 0.0)
-        dist = dict.fromkeys(nodes, -1)
-        sigma[s] = 1.0
-        dist[s] = 0
-        queue = deque([s])
-
-        while queue:
-            v = queue.popleft()
-            stack.append(v)
-            for w in adj[v]:
-                if dist[w] < 0:
-                    queue.append(w)
-                    dist[w] = dist[v] + 1
-                if dist[w] == dist[v] + 1:
-                    sigma[w] += sigma[v]
-                    pred[w].append(v)
-
-        delta = dict.fromkeys(nodes, 0.0)
-        while stack:
-            w = stack.pop()
-            for v in pred[w]:
-                if sigma[w]:
-                    delta[v] += (sigma[v] / sigma[w]) * (1.0 + delta[w])
-            if w != s:
-                cb[w] += delta[w]
-
-    n = len(nodes)
-    if n > 2:
-        escala = 1.0 / ((n - 1) * (n - 2))
-        for v in cb:
-            cb[v] *= escala
-    return cb
-
-
-def closeness(adj: dict[str, dict[str, int]]) -> dict[str, float]:
-    resultado = {}
-    n = len(adj)
-    for origem in adj:
-        dist = {origem: 0}
-        fila = deque([origem])
-        while fila:
-            atual = fila.popleft()
-            for vizinho in adj[atual]:
-                if vizinho not in dist:
-                    dist[vizinho] = dist[atual] + 1
-                    fila.append(vizinho)
-        soma = sum(dist.values())
-        if soma == 0:
-            resultado[origem] = 0.0
-        else:
-            resultado[origem] = ((len(dist) - 1) / soma) * ((len(dist) - 1) / (n - 1))
-    return resultado
-
-
 def escrever_resultados(
     aeroportos: dict[str, Aeroporto],
     rotas: dict[tuple[str, str], Rota],
     estatisticas: dict[str, int],
+    pesos: PesosInput = PESOS_PADRAO,
 ) -> None:
     RESULTADOS_DIR.mkdir(exist_ok=True)
     adj = construir_adjacencia(rotas)
     componentes = componentes_conectados(adj)
     maior_componente = set(componentes[0]) if componentes else set()
 
-    grau = {codigo: len(adj.get(codigo, {})) for codigo in aeroportos}
-    grau_ponderado = {codigo: sum(adj.get(codigo, {}).values()) for codigo in aeroportos}
-    degree_centrality = {
-        codigo: (grau[codigo] / (len(aeroportos) - 1) if len(aeroportos) > 1 else 0.0)
-        for codigo in aeroportos
-    }
-    betweenness = betweenness_nao_ponderada(adj)
-    closeness_values = closeness(adj)
-
-    max_passageiros = max(grau_ponderado.values()) if grau_ponderado else 1
+    metricas = calcular_metricas_nos(adj, pesos)
+    salvar_pesos(RESULTADOS_DIR / "pesos_score_2025.json", pesos)
     ranking = []
     for codigo, aeroporto in aeroportos.items():
-        score = (
-            0.45 * betweenness.get(codigo, 0.0)
-            + 0.30 * degree_centrality.get(codigo, 0.0)
-            + 0.25 * (math.log1p(grau_ponderado[codigo]) / math.log1p(max_passageiros))
-        )
+        m = metricas[codigo]
         ranking.append(
             {
                 "codigo": codigo,
@@ -272,12 +211,12 @@ def escrever_resultados(
                 "municipio": aeroporto.municipio,
                 "uf": aeroporto.uf,
                 "regiao": aeroporto.regiao,
-                "grau": grau[codigo],
-                "grau_ponderado_passageiros": grau_ponderado[codigo],
-                "degree_centrality": degree_centrality.get(codigo, 0.0),
-                "betweenness_centrality": betweenness.get(codigo, 0.0),
-                "closeness_centrality": closeness_values.get(codigo, 0.0),
-                "score_criticidade": score,
+                "grau": m["grau"],
+                "grau_ponderado_passageiros": m["grau_ponderado_passageiros"],
+                "degree_centrality": m["degree_centrality"],
+                "betweenness_centrality": m["betweenness_centrality"],
+                "closeness_centrality": m["closeness_centrality"],
+                "score_criticidade": m["score_criticidade"],
                 "no_maior_componente": codigo in maior_componente,
             }
         )
@@ -366,6 +305,15 @@ def escrever_resultados(
         f.write(f"Etapas/voos considerados: {voos_total:,}\n")
         f.write(f"Componentes conectados: {len(componentes)}\n")
         f.write(f"Maior componente conectado: {len(maior_componente)} aeroportos\n\n")
+        w_b, w_d, w_v = normalizar_pesos(pesos)
+        f.write(
+            f"Pesos do score (entrada BC,DC,vol): {pesos[0]},{pesos[1]},{pesos[2]}\n"
+        )
+        f.write(
+            f"Coeficientes normalizados: betweenness={w_b:.4f}, "
+            f"degree={w_d:.4f}, volume={w_v:.4f}\n"
+        )
+        f.write(f"Formula: score = {formatar_formula_pesos(pesos)}\n\n")
         f.write("Top 10 aeroportos por score de criticidade:\n")
         for posicao, item in enumerate(top_10, start=1):
             f.write(
@@ -383,8 +331,21 @@ def escrever_resultados(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Modela a rede aeroportuaria brasileira.")
+    parser.add_argument(
+        "--pesos",
+        metavar="BC,DC,VOL",
+        default=None,
+        help=(
+            "Pesos do score (0-100 cada), ordem: betweenness,degree,volume. "
+            "Normalizados pela soma no calculo. Padrao: 45,30,25"
+        ),
+    )
+    args = parser.parse_args()
+    pesos = parsear_pesos(args.pesos) if args.pesos else PESOS_PADRAO
+
     aeroportos, rotas, estatisticas = processar_microdados()
-    escrever_resultados(aeroportos, rotas, estatisticas)
+    escrever_resultados(aeroportos, rotas, estatisticas, pesos)
 
 
 if __name__ == "__main__":

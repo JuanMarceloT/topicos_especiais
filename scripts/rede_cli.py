@@ -8,9 +8,10 @@ Uso:
 Comandos disponíveis no prompt:
     top [n]          ranking dos n mais criticos (default 10)
     info <CODIGO>    detalhes de um aeroporto
-    sim <n>          simula n remocoes (ataque direcionado por criticidade)
+    sim <n>          simula n remocoes (ataque direcionado estatico)
+    sim adapt <n>    simula n remocoes (ataque adaptativo)
     sim aleat <n>    simula n remocoes (falha aleatoria)
-    comp <n>         compara ataque direcionado x falha aleatoria
+    comp <n>         compara estatico x adaptativo x falha aleatoria
     cascata <n>      realocacao de demanda sob capacidade (varredura de alpha)
     mapa             gera o mapa interativo no browser
     resumo           resumo geral da rede
@@ -32,6 +33,18 @@ try:
     _MAPA_OK = True
 except ImportError:
     _MAPA_OK = False
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from metricas_grafo import PESOS_PADRAO, carregar_pesos, formatar_formula_pesos
+except ImportError:
+    PESOS_PADRAO = (45, 30, 25)
+
+    def carregar_pesos(path):  # type: ignore[no-redef]
+        return None
+
+    def formatar_formula_pesos(pesos=None):  # type: ignore[no-redef]
+        return "0,45·BC + 0,30·DC + 0,25·vol"
 
 ROOT   = Path(__file__).resolve().parents[1]
 RES    = ROOT / "resultados"
@@ -64,6 +77,10 @@ def carregar_sim(nome: str) -> list[dict]:
 def carregar_resumo() -> str:
     p = RES / "resumo_rede_2025.txt"
     return p.read_text(encoding="utf-8") if p.exists() else ""
+
+
+def pesos_ativos() -> tuple[int, int, int]:
+    return carregar_pesos(RES / "pesos_score_2025.json") or PESOS_PADRAO
 
 
 # ── Formatação ────────────────────────────────────────────────────────────────
@@ -107,7 +124,9 @@ def cmd_resumo(ranking: list[dict]) -> None:
 
 def cmd_top(ranking: list[dict], n: int = 10) -> None:
     n = min(n, len(ranking))
-    print(titulo(f"Top {n} — score = 0,45·BC + 0,30·DC + 0,25·vol"))
+    pesos = pesos_ativos()
+    print(titulo(f"Top {n} — score = {formatar_formula_pesos(pesos)}"))
+    print(f"  {DIM}Pesos de entrada (BC,DC,vol): {pesos[0]},{pesos[1]},{pesos[2]}{RESET}")
     print(linha())
     print(f"  {'#':>3}  {'Cód':<5}  {'Cidade/UF':<22}  {'Score':>6}  {'Betweenness':>11}  {'Grau':>5}  Barra")
     print(linha())
@@ -215,44 +234,70 @@ def cmd_sim(sim_rows: list[dict], nome_cenario: str, n: int) -> None:
 
 
 def cmd_comp(n: int) -> None:
-    score = carregar_sim("ataque_direcionado")
+    estatico = carregar_sim("ataque_direcionado")
+    adapt = carregar_sim("ataque_adaptativo")
     aleat = carregar_sim("falha_aleatoria")
 
-    if not score or not aleat:
-        print(f"\n  {RED}Arquivos de simulação não encontrados.{RESET}\n")
+    if not estatico or not aleat:
+        print(f"\n  {RED}Arquivos de simulação não encontrados.{RESET}")
+        print(f"  {DIM}Execute: python scripts/simular_falhas_rede.py{RESET}\n")
         return
 
-    n = min(n, 30, len(score), len(aleat))
-    print(titulo(f"Comparação — ataque direcionado × falha aleatória — {n} passos"))
-    print(linha())
-    print(f"  {'#':>3}  {'Removido':<8}  {'Ataque maior':>12}  {'Aleat. maior':>12}  {'Δ (aleat−ataq)':>15}")
+    tem_adapt = bool(adapt)
+    if not tem_adapt:
+        print(f"\n  {YELLOW}Arquivo adaptativo não encontrado — comparação parcial.{RESET}\n")
+
+    limites = [len(estatico), len(aleat)]
+    if tem_adapt:
+        limites.append(len(adapt))
+    n = min(n, 30, *limites)
+
+    if tem_adapt:
+        print(titulo(f"Comparação — estático × adaptativo × aleatório — {n} passos"))
+        print(linha())
+        print(f"  {'#':>3}  {'Estático':>10}  {'Adaptativo':>10}  {'Aleatório':>10}  {'Δ(adapt−est)':>13}")
+        print(linha())
+        for i in range(n):
+            p = i + 1
+            ms = int(estatico[i]["maior_componente"])
+            ma = int(adapt[i]["maior_componente"])
+            mal = int(aleat[i]["maior_componente"])
+            delta = ma - ms
+            cor_delta = GREEN if delta >= 0 else RED
+            print(f"  {p:>3}  {BLUE}{ms:>10}{RESET}  {YELLOW}{ma:>10}{RESET}  "
+                  f"{GREEN}{mal:>10}{RESET}  {cor_delta}{delta:>+13}{RESET}")
+    else:
+        print(titulo(f"Comparação — ataque direcionado × falha aleatória — {n} passos"))
+        print(linha())
+        print(f"  {'#':>3}  {'Removido':<8}  {'Ataque maior':>12}  {'Aleat. maior':>12}  {'Δ (aleat−ataq)':>15}")
+        print(linha())
+        for i in range(n):
+            p = i + 1
+            rem = estatico[i]["aeroporto_removido"]
+            ms = int(estatico[i]["maior_componente"])
+            mal = int(aleat[i]["maior_componente"])
+            delta = mal - ms
+            cor_delta = GREEN if delta >= 0 else RED
+            print(f"  {p:>3}  {BOLD}{rem:<8}{RESET}  {BLUE}{ms:>12}{RESET}  "
+                  f"{GREEN}{mal:>12}{RESET}  {cor_delta}{delta:>+15}{RESET}")
+
     print(linha())
 
-    for i in range(n):
-        p     = i + 1
-        rem   = score[i]["aeroporto_removido"]
-        ms    = int(score[i]["maior_componente"])
-        ma    = int(aleat[i]["maior_componente"])
-        delta = ma - ms
-        cor_delta = GREEN if delta >= 0 else RED
-        print(f"  {p:>3}  {BOLD}{rem:<8}{RESET}  {BLUE}{ms:>12}{RESET}  "
-              f"{GREEN}{ma:>12}{RESET}  {cor_delta}{delta:>+15}{RESET}")
-
-    print(linha())
-
-    # Robustez = fração média do maior componente ao longo dos passos (dados reais)
     def robustez(rows: list[dict]) -> float:
         fr = [float(r["fracao_maior_componente"]) for r in rows[:n]]
         return sum(fr) / len(fr) if fr else 0.0
 
-    rs = robustez(score)
+    rs = robustez(estatico)
     ra = robustez(aleat)
     print(f"\n  {BOLD}Robustez média (fração média do maior componente em {n} passos):{RESET}")
-    print(f"    Ataque direcionado: {BLUE}{rs:>6.1%}{RESET}  {barra(rs, 1.0, 20, BLUE)}")
+    print(f"    Ataque estático:    {BLUE}{rs:>6.1%}{RESET}  {barra(rs, 1.0, 20, BLUE)}")
+    if tem_adapt:
+        rad = robustez(adapt)
+        print(f"    Ataque adaptativo:  {YELLOW}{rad:>6.1%}{RESET}  {barra(rad, 1.0, 20, YELLOW)}")
     print(f"    Falha aleatória:    {GREEN}{ra:>6.1%}{RESET}  {barra(ra, 1.0, 20, GREEN)}")
     if rs:
         print(f"\n  {DIM}A falha aleatória preserva {ra/rs:.2f}× mais conectividade que o ataque")
-        print(f"  direcionado — comportamento esperado de redes scale-free (Albert et al., 2000).{RESET}\n")
+        print(f"  estático — comportamento esperado de redes scale-free (Albert et al., 2000).{RESET}\n")
 
 
 def cmd_mapa() -> None:
@@ -321,9 +366,10 @@ def cmd_ajuda() -> None:
         ("resumo",        "resumo geral da rede"),
         ("top [n]",       "ranking dos n aeroportos mais críticos (default 10)"),
         ("info <CODIGO>", "detalhes de um aeroporto (ex: info VCP)"),
-        ("sim <n>",       "ataque direcionado por criticidade — n passos"),
+        ("sim <n>",       "ataque direcionado estático — n passos"),
+        ("sim adapt <n>", "ataque adaptativo (recalcula score) — n passos"),
         ("sim aleat <n>", "falha aleatória — n passos"),
-        ("comp <n>",      "compara ataque direcionado × falha aleatória"),
+        ("comp <n>",      "compara estático × adaptativo × aleatório"),
         ("cascata <n>",   "realocação de demanda sob capacidade (varredura de α)"),
         ("mapa",          "gera mapa interativo no browser (HTML + D3.js)"),
         ("ajuda",         "esta lista"),
@@ -391,9 +437,12 @@ def main() -> None:
             if len(partes) >= 3 and partes[1] == "aleat":
                 n = int(partes[2]) if partes[2].isdigit() else 10
                 cmd_sim(carregar_sim("falha_aleatoria"), "Falha aleatória", n)
+            elif len(partes) >= 3 and partes[1] == "adapt":
+                n = int(partes[2]) if partes[2].isdigit() else 10
+                cmd_sim(carregar_sim("ataque_adaptativo"), "Ataque adaptativo", n)
             else:
                 n = int(partes[1]) if len(partes) > 1 and partes[1].isdigit() else 10
-                cmd_sim(carregar_sim("ataque_direcionado"), "Ataque direcionado", n)
+                cmd_sim(carregar_sim("ataque_direcionado"), "Ataque estático", n)
 
         elif cmd == "comp":
             n = int(partes[1]) if len(partes) > 1 and partes[1].isdigit() else 10

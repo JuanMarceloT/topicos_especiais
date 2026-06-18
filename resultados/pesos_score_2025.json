@@ -1,0 +1,10 @@
+{
+  "betweenness": 45,
+  "degree": 30,
+  "volume": 25,
+  "normalizados": {
+    "betweenness": 0.45,
+    "degree": 0.3,
+    "volume": 0.25
+  }
+}

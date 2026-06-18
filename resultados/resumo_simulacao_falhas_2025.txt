@@ -4,11 +4,13 @@ Resumo da simulacao de falhas - rede aeroportuaria brasileira 2025
 Aeroportos no grafo original: 155
 Volume original de passageiros nas rotas: 92,874,875
 Passos simulados por cenario: 30
+Pesos do score (BC,DC,vol): 45,30,25 -> normalizados (0.4500, 0.3000, 0.2500)
+Formula: score = 45%·BC + 30%·DC + 25%·vol
 
-Cenario 1: ataque direcionado
+Cenario 1: ataque direcionado (estatico)
 Ordem de remocao: ranking de criticidade calculado na modelagem.
 Primeira fragmentacao: passo 1 apos remover VCP.
-Top 10 removidos no ataque direcionado:
+Top 10 removidos no ataque estatico:
 01. VCP - CAMPINAS/SP
 02. CNF - CONFINS/MG
 03. GRU - GUARULHOS/SP
@@ -20,10 +22,26 @@ Top 10 removidos no ataque direcionado:
 09. SSA - SALVADOR/BA
 10. BEL - BELÉM/PA
 
-Cenario 2: falha aleatoria
+Cenario 2: ataque direcionado (adaptativo)
+Ordem de remocao: recalcula o score a cada passo sobre o subgrafo restante.
+Primeira fragmentacao: passo 1 apos remover VCP.
+Top 10 removidos no ataque adaptativo:
+01. VCP - CAMPINAS/SP | score=0.5194
+02. CNF - CONFINS/MG | score=0.4667
+03. GRU - GUARULHOS/SP | score=0.4527
+04. CGH - SÃO PAULO/SP | score=0.3997
+05. REC - RECIFE/PE | score=0.3901
+06. BSB - BRASÍLIA/DF | score=0.3730
+07. GIG - RIO DE JANEIRO/RJ | score=0.3741
+08. MAO - MANAUS/AM | score=0.3748
+09. SSA - SALVADOR/BA | score=0.3519
+10. BEL - BELÉM/PA | score=0.3426
+
+Cenario 3: falha aleatoria
 Ordem de remocao: sorteio com semente fixa 2025 para reproducibilidade.
 Primeira fragmentacao: passo 6 apos remover SSA.
 
 Comparacao no passo 10:
-Ataque direcionado: maior componente com 82 aeroportos, 47 componentes, 33 aeroportos isolados.
+Ataque estatico: maior componente com 82 aeroportos, 47 componentes, 33 aeroportos isolados.
+Ataque adaptativo: maior componente com 82 aeroportos, 47 componentes, 33 aeroportos isolados.
 Falha aleatoria: maior componente com 132 aeroportos, 10 componentes, 5 aeroportos isolados.

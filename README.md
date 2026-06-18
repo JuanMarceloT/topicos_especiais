@@ -29,7 +29,8 @@ mapa interativo em HTML com D3.js, incluído offline no repositório.
 - Uma **base de dados tratada** da malha aérea (aeroportos e rotas).
 - Um **grafo computacional** da rede nacional.
 - Um **ranking de criticidade** dos aeroportos, por um índice composto de centralidade.
-- Um **simulador de falhas** com dois cenários: falha aleatória e ataque direcionado.
+- Um **simulador de falhas** com três cenários: falha aleatória, ataque direcionado
+  estático (ranking fixo) e ataque adaptativo (recalcula criticidade a cada passo).
 - Um **módulo de realocação de demanda sob capacidade** (modelo de Cumelles et al., 2021):
   quando um aeroporto fecha, sua demanda é realocada para as alternativas próximas com
   capacidade disponível, e a fração de passageiros sem realocação viável é medida ao
@@ -44,8 +45,8 @@ O projeto é uma cadeia de quatro scripts, cada um com um papel claro:
    ponderado e calcula as centralidades e o índice de criticidade de cada aeroporto.
    Gera o grafo (`.json`), o ranking e as tabelas de aeroportos e rotas.
 2. **`simular_falhas_rede.py`** — a partir do grafo e do ranking, executa as simulações
-   de remoção de aeroportos nos dois cenários e registra, passo a passo, a degradação da
-   conectividade.
+   de remoção de aeroportos (estático, adaptativo e aleatório) e registra, passo a passo,
+   a degradação da conectividade.
 3. **`simular_cascata_capacidade.py`** — modelo de realocação de demanda sob capacidade
    (Cumelles et al., 2021): a cada aeroporto fechado, realoca a demanda para as
    alternativas mais próximas com capacidade disponível e mede a demanda sem realocação
@@ -96,9 +97,10 @@ Se preferir não usar `make`, os scripts rodam direto:
 | `resumo`        | resumo geral da rede                                          |
 | `top [n]`       | ranking dos `n` aeroportos mais críticos (padrão 10)         |
 | `info <CÓDIGO>` | detalhes de um aeroporto (ex.: `info VCP`)                    |
-| `sim <n>`       | ataque direcionado por criticidade — `n` passos              |
+| `sim <n>`       | ataque direcionado estático — `n` passos                     |
+| `sim adapt <n>` | ataque adaptativo (recalcula score) — `n` passos             |
 | `sim aleat <n>` | falha aleatória — `n` passos                                  |
-| `comp <n>`      | compara ataque direcionado × falha aleatória                 |
+| `comp <n>`      | compara estático × adaptativo × aleatório                    |
 | `cascata <n>`   | realocação de demanda sob capacidade (varredura de α)        |
 | `mapa`          | gera o mapa interativo no navegador                          |
 | `ajuda`         | lista os comandos                                            |
@@ -115,6 +117,7 @@ topicos_especiais/
 │
 ├── scripts/                        código-fonte
 │   ├── modelar_rede_aeroportuaria.py
+│   ├── metricas_grafo.py
 │   ├── simular_falhas_rede.py
 │   ├── simular_cascata_capacidade.py
 │   ├── test_cascata.py              testes do modelo de capacidade
@@ -125,9 +128,11 @@ topicos_especiais/
 ├── resultados/                     saídas já geradas (versionadas)
 │   ├── grafo_aeroportuario_2025.json
 │   ├── ranking_criticidade_2025.csv
+│   ├── pesos_score_2025.json
 │   ├── aeroportos_2025.csv
 │   ├── rotas_aeroportuarias_2025.csv
 │   ├── simulacao_ataque_direcionado_2025.csv
+│   ├── simulacao_ataque_adaptativo_2025.csv
 │   ├── simulacao_falha_aleatoria_2025.csv
 │   ├── mapa_aeroportos_2025.html
 │   └── resumo_*.txt
@@ -138,17 +143,29 @@ topicos_especiais/
 ## O índice de criticidade
 
 A criticidade de cada aeroporto é um **índice composto**, calculado em
-`modelar_rede_aeroportuaria.py`:
+`metricas_grafo.py` (usado por `modelar_rede_aeroportuaria.py` e pelas simulações):
 
 ```
-score = 0,45 · betweenness_centrality   (intermediação nas rotas)
-      + 0,30 · degree_centrality         (conexões diretas)
-      + 0,25 · volume de passageiros     (log-normalizado)
+score = w_bc · betweenness_centrality   (intermediação nas rotas)
+      + w_dc · degree_centrality         (conexões diretas)
+      + w_vol · volume de passageiros    (log-normalizado)
 ```
 
-Os pesos são **valores iniciais, sujeitos a calibração** (ex.: análise de
-sensibilidade). A *betweenness* é calculada de forma **não ponderada**: mede a
-intermediação estrutural, independente do volume — que já entra como termo próprio.
+Os pesos de entrada são três inteiros de **0 a 100**, na ordem
+`betweenness,degree,volume`. No cálculo, são **normalizados pela soma**
+(ex.: `45,30,25` → 0,45 + 0,30 + 0,25). Padrão: `45,30,25`.
+
+```bash
+# Recalcular ranking com outros pesos
+python scripts/modelar_rede_aeroportuaria.py --pesos 60,20,20
+
+# Simular com pesos customizados (estático re-ranqueia; adaptativo recalcula a cada passo)
+python scripts/simular_falhas_rede.py --pesos 60,20,20
+```
+
+Os pesos usados ficam em `resultados/pesos_score_2025.json`. A *betweenness* é
+calculada de forma **não ponderada**: mede a intermediação estrutural,
+independente do volume — que já entra como termo próprio.
 
 ## Fundamentação
 
