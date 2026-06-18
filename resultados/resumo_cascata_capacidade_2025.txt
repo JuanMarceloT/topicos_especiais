@@ -1,21 +1,32 @@
 Resumo da realocacao de demanda sob capacidade - 2025
 ============================================================
 
-Modelo: Cumelles, Lordan & Sallan (2021) - realocacao para as
-alternativas mais proximas com capacidade disponivel.
+Modelo adaptado do principio de Cumelles, Lordan & Sallan (2021):
+realocacao para alternativas proximas com capacidade disponivel.
 Capacidade C = (1 + alpha) * demanda inicial (embarcados + desembarcados).
 
 Aeroportos na rede: 155
-Demanda total: 185,749,750 passageiros
+Demanda total: 201,747,182 passageiros
 Passos de ataque por cenario: 30
 
 Varredura de alpha (estado no passo 10):
   alpha | saturados | maior comp |  nao realocados | % demanda
 --------------------------------------------------------------
-    0.1 |       144 |         82 |     111,446,845 |    60.0%
-    0.2 |       144 |         82 |     104,692,077 |    56.4%
-    0.5 |       144 |         82 |      84,427,773 |    45.5%
-    1.0 |       144 |         82 |      50,653,933 |    27.3%
+    0.1 |       144 |         87 |     123,072,667 |    61.0%
+    0.2 |       144 |         87 |     115,920,483 |    57.5%
+    0.5 |       144 |         87 |      94,463,930 |    46.8%
+    1.0 |       144 |         87 |      58,703,010 |    29.1%
 
 Quanto menor o alpha (menos folga de capacidade), mais aeroportos
 saturam e maior a demanda de passageiros que nao encontra realocacao viavel.
+
+Comparacao de selection rules (alpha=0.2, passo 10):
+       regra |  nao realocados |    passageiro-km
+--------------------------------------------------
+ proximidade |     115,920,483 |   15,061,378,073
+   conectado |     115,920,483 |   15,105,656,992
+  capacidade |     115,920,483 |   15,880,868,234
+
+A demanda nao realocada independe da regra (e limitada pela capacidade
+residual total do sistema); a regra afeta a distancia total de realocacao:
+'proximidade' minimiza o passageiro-km; 'capacidade' o aumenta.

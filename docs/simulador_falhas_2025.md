@@ -75,7 +75,7 @@ aeroportos sorteados.
 
 Apos dez remocoes, os resultados foram:
 
-- ataque direcionado: maior componente com 82 aeroportos, 47 componentes conectados e 33
+- ataque direcionado: maior componente com 87 aeroportos, 48 componentes conectados e 37
   aeroportos isolados;
 - falha aleatoria: maior componente com 132 aeroportos, 10 componentes conectados e 5 aeroportos
   isolados.

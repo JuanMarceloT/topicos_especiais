@@ -1,26 +1,26 @@
 Resumo da modelagem da rede aeroportuaria brasileira - 2025
 ================================================================
 
-Arquivos mensais lidos: 11
-Linhas lidas: 2,162,059
-Linhas utilizadas: 1,314,175
-Linhas descartadas por filtro: 847,884
+Arquivos mensais lidos: 12
+Linhas lidas: 2,350,330
+Linhas utilizadas: 1,430,477
+Linhas descartadas por filtro: 919,853
 
 Aeroportos no grafo: 155
-Rotas nao direcionais no grafo: 619
-Passageiros considerados: 92,874,875
-Etapas/voos considerados: 1,314,175
+Rotas nao direcionais no grafo: 622
+Passageiros considerados: 100,873,591
+Etapas/voos considerados: 1,430,477
 Componentes conectados: 1
 Maior componente conectado: 155 aeroportos
 
 Top 10 aeroportos por score de criticidade:
-01. VCP - CAMPINAS/SP | grau=79 | passageiros=10,755,886 | betweenness=0.2871 | score=0.5194
-02. CNF - CONFINS/MG | grau=64 | passageiros=11,226,440 | betweenness=0.2167 | score=0.4591
-03. GRU - GUARULHOS/SP | grau=62 | passageiros=27,542,628 | betweenness=0.1091 | score=0.4199
-04. REC - RECIFE/PE | grau=46 | passageiros=8,458,269 | betweenness=0.1253 | score=0.3788
-05. MAO - MANAUS/AM | grau=32 | passageiros=2,680,308 | betweenness=0.1905 | score=0.3641
-06. CGH - SÃO PAULO/SP | grau=48 | passageiros=22,554,863 | betweenness=0.0420 | score=0.3595
-07. BSB - BRASÍLIA/DF | grau=41 | passageiros=14,383,446 | betweenness=0.0474 | score=0.3417
-08. GIG - RIO DE JANEIRO/RJ | grau=38 | passageiros=10,666,653 | betweenness=0.0313 | score=0.3243
-09. SSA - SALVADOR/BA | grau=33 | passageiros=6,570,605 | betweenness=0.0548 | score=0.3180
-10. BEL - BELÉM/PA | grau=27 | passageiros=3,362,515 | betweenness=0.0958 | score=0.3150
+01. VCP - CAMPINAS/SP | grau=79 | passageiros=11,717,415 | betweenness=0.2859 | score=0.5815
+02. CNF - CONFINS/MG | grau=64 | passageiros=12,216,388 | betweenness=0.2162 | score=0.5266
+03. GRU - GUARULHOS/SP | grau=62 | passageiros=29,909,827 | betweenness=0.1082 | score=0.5036
+04. REC - RECIFE/PE | grau=47 | passageiros=9,160,522 | betweenness=0.1263 | score=0.4542
+05. CGH - SÃO PAULO/SP | grau=48 | passageiros=24,493,686 | betweenness=0.0420 | score=0.4474
+06. BSB - BRASÍLIA/DF | grau=41 | passageiros=15,626,199 | betweenness=0.0468 | score=0.4251
+07. MAO - MANAUS/AM | grau=32 | passageiros=2,909,349 | betweenness=0.1896 | score=0.4207
+08. GIG - RIO DE JANEIRO/RJ | grau=38 | passageiros=11,572,338 | betweenness=0.0311 | score=0.4076
+09. SSA - SALVADOR/BA | grau=33 | passageiros=7,128,371 | betweenness=0.0548 | score=0.3953
+10. FOR - FORTALEZA/CE | grau=29 | passageiros=5,490,756 | betweenness=0.0596 | score=0.3831

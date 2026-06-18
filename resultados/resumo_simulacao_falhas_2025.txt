@@ -2,7 +2,7 @@ Resumo da simulacao de falhas - rede aeroportuaria brasileira 2025
 ======================================================================
 
 Aeroportos no grafo original: 155
-Volume original de passageiros nas rotas: 92,874,875
+Volume original de passageiros nas rotas: 100,873,591
 Passos simulados por cenario: 30
 
 Cenario 1: ataque direcionado
@@ -13,17 +13,17 @@ Top 10 removidos no ataque direcionado:
 02. CNF - CONFINS/MG
 03. GRU - GUARULHOS/SP
 04. REC - RECIFE/PE
-05. MAO - MANAUS/AM
-06. CGH - SÃO PAULO/SP
-07. BSB - BRASÍLIA/DF
+05. CGH - SÃO PAULO/SP
+06. BSB - BRASÍLIA/DF
+07. MAO - MANAUS/AM
 08. GIG - RIO DE JANEIRO/RJ
 09. SSA - SALVADOR/BA
-10. BEL - BELÉM/PA
+10. FOR - FORTALEZA/CE
 
 Cenario 2: falha aleatoria
 Ordem de remocao: sorteio com semente fixa 2025 para reproducibilidade.
 Primeira fragmentacao: passo 6 apos remover SSA.
 
 Comparacao no passo 10:
-Ataque direcionado: maior componente com 82 aeroportos, 47 componentes, 33 aeroportos isolados.
+Ataque direcionado: maior componente com 87 aeroportos, 48 componentes, 37 aeroportos isolados.
 Falha aleatoria: maior componente com 132 aeroportos, 10 componentes, 5 aeroportos isolados.

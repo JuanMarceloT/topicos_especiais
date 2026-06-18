@@ -117,7 +117,8 @@ topicos_especiais/
 │   ├── modelar_rede_aeroportuaria.py
 │   ├── simular_falhas_rede.py
 │   ├── simular_cascata_capacidade.py
-│   ├── test_cascata.py              testes do modelo de capacidade
+│   ├── sensibilidade_score.py       sensibilidade do score aos pesos
+│   ├── test_cascata.py              testes (verificação) do modelo de capacidade
 │   ├── rede_cli.py
 │   ├── mapa_html.py
 │   └── vendor/                       D3 + contorno do Brasil (offline)
@@ -141,14 +142,17 @@ A criticidade de cada aeroporto é um **índice composto**, calculado em
 `modelar_rede_aeroportuaria.py`:
 
 ```
-score = 0,45 · betweenness_centrality   (intermediação nas rotas)
-      + 0,30 · degree_centrality         (conexões diretas)
-      + 0,25 · volume de passageiros     (log-normalizado)
+score = ( betweenness_centrality   (intermediação nas rotas)
+        + degree_centrality         (conexões diretas)
+        + volume de passageiros )   (log-normalizado)
+        / 3                         (média simples — pesos iguais)
 ```
 
-Os pesos são **valores iniciais, sujeitos a calibração** (ex.: análise de
-sensibilidade). A *betweenness* é calculada de forma **não ponderada**: mede a
-intermediação estrutural, independente do volume — que já entra como termo próprio.
+Usa-se a **média simples** (pesos iguais): é a escolha neutra quando não há base
+para privilegiar uma métrica; **calibrar os pesos é trabalho futuro**. A robustez
+do ranking a variações nos pesos é verificada em `sensibilidade_score.py`. A
+*betweenness* é calculada de forma **não ponderada**: mede a intermediação
+estrutural, independente do volume — que já entra como termo próprio.
 
 ## Fundamentação
 

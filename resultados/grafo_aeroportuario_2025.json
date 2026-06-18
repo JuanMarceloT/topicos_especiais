@@ -1245,470 +1245,470 @@
     {
       "source": "GIG",
       "target": "GRU",
-      "weight": 1448930,
-      "voos": 22853
+      "weight": 1582551,
+      "voos": 24887
     },
     {
       "source": "CGH",
       "target": "GIG",
-      "weight": 355769,
-      "voos": 5601
+      "weight": 388242,
+      "voos": 6074
     },
     {
       "source": "CGH",
       "target": "CWB",
-      "weight": 1558940,
-      "voos": 21813
+      "weight": 1692752,
+      "voos": 23797
     },
     {
       "source": "GRU",
       "target": "IGU",
-      "weight": 816183,
-      "voos": 9585
+      "weight": 887692,
+      "voos": 10428
     },
     {
       "source": "CGH",
       "target": "JPA",
-      "weight": 160605,
-      "voos": 1643
+      "weight": 171839,
+      "voos": 1754
     },
     {
       "source": "CGH",
       "target": "NVT",
-      "weight": 865998,
-      "voos": 9421
+      "weight": 939044,
+      "voos": 10236
     },
     {
       "source": "GRU",
       "target": "MGF",
-      "weight": 392200,
-      "voos": 4793
+      "weight": 426789,
+      "voos": 5219
     },
     {
       "source": "CWB",
       "target": "GRU",
-      "weight": 1368569,
-      "voos": 18900
+      "weight": 1484391,
+      "voos": 20615
     },
     {
       "source": "CGH",
       "target": "FLN",
-      "weight": 1294045,
-      "voos": 14975
+      "weight": 1403534,
+      "voos": 16288
     },
     {
       "source": "BSB",
       "target": "BVB",
-      "weight": 230797,
-      "voos": 2497
+      "weight": 252325,
+      "voos": 2726
     },
     {
       "source": "CGH",
       "target": "PPB",
-      "weight": 97825,
-      "voos": 1118
+      "weight": 105959,
+      "voos": 1201
     },
     {
       "source": "BSB",
       "target": "VCP",
-      "weight": 630244,
-      "voos": 9696
+      "weight": 676374,
+      "voos": 10547
     },
     {
       "source": "BSB",
       "target": "RBR",
-      "weight": 191745,
-      "voos": 2430
+      "weight": 208204,
+      "voos": 2638
     },
     {
       "source": "BSB",
       "target": "CZS",
-      "weight": 22301,
-      "voos": 371
+      "weight": 24143,
+      "voos": 404
     },
     {
       "source": "CZS",
       "target": "RBR",
-      "weight": 18626,
-      "voos": 390
+      "weight": 20493,
+      "voos": 426
     },
     {
       "source": "CGH",
       "target": "CNF",
-      "weight": 1927648,
-      "voos": 26039
+      "weight": 2096391,
+      "voos": 28418
     },
     {
       "source": "BSB",
       "target": "PMW",
-      "weight": 191115,
-      "voos": 2331
+      "weight": 210625,
+      "voos": 2567
     },
     {
       "source": "CGH",
       "target": "FOR",
-      "weight": 600921,
-      "voos": 6961
+      "weight": 653758,
+      "voos": 7619
     },
     {
       "source": "BPS",
       "target": "CGH",
-      "weight": 481929,
-      "voos": 4901
+      "weight": 519661,
+      "voos": 5270
     },
     {
       "source": "CGH",
       "target": "POA",
-      "weight": 1904071,
-      "voos": 22981
+      "weight": 2074115,
+      "voos": 25074
     },
     {
       "source": "CGH",
       "target": "IGU",
-      "weight": 328566,
-      "voos": 3496
+      "weight": 355159,
+      "voos": 3774
     },
     {
       "source": "GIG",
       "target": "POA",
-      "weight": 950871,
-      "voos": 12419
+      "weight": 1029211,
+      "voos": 13447
     },
     {
       "source": "CGH",
       "target": "CGR",
-      "weight": 230471,
-      "voos": 2455
+      "weight": 248785,
+      "voos": 2653
     },
     {
       "source": "CGH",
       "target": "XAP",
-      "weight": 72268,
-      "voos": 876
+      "weight": 79403,
+      "voos": 959
     },
     {
       "source": "CGH",
       "target": "GYN",
-      "weight": 933870,
-      "voos": 10111
+      "weight": 1020042,
+      "voos": 11016
     },
     {
       "source": "BSB",
       "target": "SSA",
-      "weight": 632353,
-      "voos": 8582
+      "weight": 689532,
+      "voos": 9336
     },
     {
       "source": "GRU",
       "target": "POA",
-      "weight": 1697328,
-      "voos": 21700
+      "weight": 1844139,
+      "voos": 23623
     },
     {
       "source": "FLN",
       "target": "GRU",
-      "weight": 1006680,
-      "voos": 12859
+      "weight": 1097880,
+      "voos": 14042
     },
     {
       "source": "GRU",
       "target": "NVT",
-      "weight": 659320,
-      "voos": 8786
+      "weight": 716308,
+      "voos": 9551
     },
     {
       "source": "BSB",
       "target": "PVH",
-      "weight": 214281,
-      "voos": 2679
+      "weight": 234241,
+      "voos": 2953
     },
     {
       "source": "CGH",
       "target": "MCZ",
-      "weight": 323262,
-      "voos": 3125
+      "weight": 344814,
+      "voos": 3338
     },
     {
       "source": "CNF",
       "target": "GRU",
-      "weight": 1375606,
-      "voos": 20413
+      "weight": 1496730,
+      "voos": 22242
     },
     {
       "source": "BSB",
       "target": "MAB",
-      "weight": 155199,
-      "voos": 2146
+      "weight": 169571,
+      "voos": 2332
     },
     {
       "source": "CGH",
       "target": "NAT",
-      "weight": 128186,
-      "voos": 1389
+      "weight": 129227,
+      "voos": 1400
     },
     {
       "source": "CAC",
       "target": "GRU",
-      "weight": 235891,
-      "voos": 3206
+      "weight": 255268,
+      "voos": 3469
     },
     {
       "source": "CGH",
       "target": "UDI",
-      "weight": 244282,
-      "voos": 2623
+      "weight": 265807,
+      "voos": 2856
     },
     {
       "source": "CGR",
       "target": "GRU",
-      "weight": 668810,
-      "voos": 8268
+      "weight": 723651,
+      "voos": 8904
     },
     {
       "source": "CGH",
       "target": "SJP",
-      "weight": 291668,
-      "voos": 3280
+      "weight": 319887,
+      "voos": 3597
     },
     {
       "source": "CGH",
       "target": "VIX",
-      "weight": 629186,
-      "voos": 7062
+      "weight": 682433,
+      "voos": 7686
     },
     {
       "source": "CGH",
       "target": "CXJ",
-      "weight": 82339,
-      "voos": 908
+      "weight": 89398,
+      "voos": 979
     },
     {
       "source": "CGH",
       "target": "RAO",
-      "weight": 239035,
-      "voos": 3068
+      "weight": 261133,
+      "voos": 3389
     },
     {
       "source": "GRU",
       "target": "VIX",
-      "weight": 885434,
-      "voos": 11698
+      "weight": 965071,
+      "voos": 12719
     },
     {
       "source": "ARU",
       "target": "CGH",
-      "weight": 47416,
-      "voos": 575
+      "weight": 51345,
+      "voos": 629
     },
     {
       "source": "BSB",
       "target": "GRU",
-      "weight": 1236321,
-      "voos": 20354
+      "weight": 1347443,
+      "voos": 22312
     },
     {
       "source": "BSB",
       "target": "CGH",
-      "weight": 2199288,
-      "voos": 31588
+      "weight": 2397216,
+      "voos": 34548
     },
     {
       "source": "CGH",
       "target": "REC",
-      "weight": 1118955,
-      "voos": 12808
+      "weight": 1204828,
+      "voos": 13804
     },
     {
       "source": "BPS",
       "target": "GRU",
-      "weight": 582540,
-      "voos": 7495
+      "weight": 634409,
+      "voos": 8156
     },
     {
       "source": "CGB",
       "target": "GRU",
-      "weight": 881163,
-      "voos": 11581
+      "weight": 964764,
+      "voos": 12660
     },
     {
       "source": "GRU",
       "target": "GYN",
-      "weight": 845482,
-      "voos": 10370
+      "weight": 923142,
+      "voos": 11322
     },
     {
       "source": "CGH",
       "target": "IOS",
-      "weight": 89635,
-      "voos": 1010
+      "weight": 90763,
+      "voos": 1022
     },
     {
       "source": "CGH",
       "target": "MOC",
-      "weight": 72547,
-      "voos": 913
+      "weight": 78704,
+      "voos": 991
     },
     {
       "source": "GRU",
       "target": "OPS",
-      "weight": 187383,
-      "voos": 2595
+      "weight": 204501,
+      "voos": 2822
     },
     {
       "source": "AJU",
       "target": "GRU",
-      "weight": 591922,
-      "voos": 6834
+      "weight": 637281,
+      "voos": 7358
     },
     {
       "source": "FOR",
       "target": "GRU",
-      "weight": 1196187,
-      "voos": 15242
+      "weight": 1299412,
+      "voos": 16598
     },
     {
       "source": "GRU",
       "target": "MCZ",
-      "weight": 921944,
-      "voos": 10736
+      "weight": 1004241,
+      "voos": 11685
     },
     {
       "source": "CGH",
       "target": "SSA",
-      "weight": 1453102,
-      "voos": 16459
+      "weight": 1573507,
+      "voos": 17835
     },
     {
       "source": "BSB",
       "target": "THE",
-      "weight": 283057,
-      "voos": 3592
+      "weight": 307852,
+      "voos": 3903
     },
     {
       "source": "GRU",
       "target": "IOS",
-      "weight": 268426,
-      "voos": 3635
+      "weight": 289734,
+      "voos": 3922
     },
     {
       "source": "GRU",
       "target": "NAT",
-      "weight": 760059,
-      "voos": 8886
+      "weight": 820987,
+      "voos": 9574
     },
     {
       "source": "BEL",
       "target": "GRU",
-      "weight": 754456,
-      "voos": 10114
+      "weight": 821145,
+      "voos": 11060
     },
     {
       "source": "CGH",
       "target": "MGF",
-      "weight": 196055,
-      "voos": 2297
+      "weight": 213148,
+      "voos": 2522
     },
     {
       "source": "GRU",
       "target": "REC",
-      "weight": 1724206,
-      "voos": 20310
+      "weight": 1864857,
+      "voos": 22146
     },
     {
       "source": "GRU",
       "target": "MAO",
-      "weight": 698654,
-      "voos": 8730
+      "weight": 759919,
+      "voos": 9505
     },
     {
       "source": "GRU",
       "target": "SSA",
-      "weight": 1097325,
-      "voos": 14541
+      "weight": 1188447,
+      "voos": 15765
     },
     {
       "source": "BSB",
       "target": "CNF",
-      "weight": 773917,
-      "voos": 10836
+      "weight": 843528,
+      "voos": 11845
     },
     {
       "source": "GRU",
       "target": "JPA",
-      "weight": 588164,
-      "voos": 6650
+      "weight": 637251,
+      "voos": 7216
     },
     {
       "source": "CWB",
       "target": "GIG",
-      "weight": 588606,
-      "voos": 8438
+      "weight": 638183,
+      "voos": 9174
     },
     {
       "source": "GRU",
       "target": "PNZ",
-      "weight": 295680,
-      "voos": 3736
+      "weight": 320585,
+      "voos": 4052
     },
     {
       "source": "GIG",
       "target": "JPA",
-      "weight": 220084,
-      "voos": 2522
+      "weight": 238678,
+      "voos": 2744
     },
     {
       "source": "CWB",
       "target": "POA",
-      "weight": 372146,
-      "voos": 6281
+      "weight": 403112,
+      "voos": 6809
     },
     {
       "source": "GIG",
       "target": "IGU",
-      "weight": 376634,
-      "voos": 4649
+      "weight": 406050,
+      "voos": 4987
     },
     {
       "source": "BSB",
       "target": "SDU",
-      "weight": 868498,
-      "voos": 13657
+      "weight": 944808,
+      "voos": 14826
     },
     {
       "source": "BSB",
       "target": "CGR",
-      "weight": 223196,
-      "voos": 2400
+      "weight": 244206,
+      "voos": 2602
     },
     {
       "source": "BSB",
       "target": "REC",
-      "weight": 763790,
-      "voos": 9392
+      "weight": 830226,
+      "voos": 10261
     },
     {
       "source": "BSB",
       "target": "FOR",
-      "weight": 535522,
-      "voos": 7042
+      "weight": 581050,
+      "voos": 7681
     },
     {
       "source": "GIG",
       "target": "NVT",
-      "weight": 228578,
-      "voos": 2804
+      "weight": 246389,
+      "voos": 3016
     },
     {
       "source": "BSB",
       "target": "CGB",
-      "weight": 310464,
-      "voos": 3735
+      "weight": 336887,
+      "voos": 4084
     },
     {
       "source": "BSB",
       "target": "POA",
-      "weight": 447079,
-      "voos": 5468
+      "weight": 484047,
+      "voos": 5910
     },
     {
       "source": "BPS",
@@ -1719,134 +1719,134 @@
     {
       "source": "BSB",
       "target": "MAO",
-      "weight": 422839,
-      "voos": 5700
+      "weight": 458631,
+      "voos": 6227
     },
     {
       "source": "BSB",
       "target": "STM",
-      "weight": 105433,
-      "voos": 1974
+      "weight": 112558,
+      "voos": 2151
     },
     {
       "source": "MAO",
       "target": "STM",
-      "weight": 106954,
-      "voos": 1995
+      "weight": 117016,
+      "voos": 2176
     },
     {
       "source": "GIG",
       "target": "VIX",
-      "weight": 707786,
-      "voos": 11172
+      "weight": 770051,
+      "voos": 12227
     },
     {
       "source": "BSB",
       "target": "SLZ",
-      "weight": 304075,
-      "voos": 3580
+      "weight": 324744,
+      "voos": 3816
     },
     {
       "source": "REC",
       "target": "SSA",
-      "weight": 400194,
-      "voos": 7149
+      "weight": 434391,
+      "voos": 7756
     },
     {
       "source": "BSB",
       "target": "GYN",
-      "weight": 357162,
-      "voos": 4637
+      "weight": 384376,
+      "voos": 4984
     },
     {
       "source": "BEL",
       "target": "BSB",
-      "weight": 373744,
-      "voos": 5471
+      "weight": 411779,
+      "voos": 6061
     },
     {
       "source": "BSB",
       "target": "MCP",
-      "weight": 136181,
-      "voos": 1807
+      "weight": 147887,
+      "voos": 1970
     },
     {
       "source": "BEL",
       "target": "MCP",
-      "weight": 309858,
-      "voos": 3699
+      "weight": 338635,
+      "voos": 4060
     },
     {
       "source": "BSB",
       "target": "NAT",
-      "weight": 284176,
-      "voos": 3221
+      "weight": 306009,
+      "voos": 3454
     },
     {
       "source": "BSB",
       "target": "CWB",
-      "weight": 403328,
-      "voos": 5451
+      "weight": 437411,
+      "voos": 5923
     },
     {
       "source": "BEL",
       "target": "STM",
-      "weight": 232555,
-      "voos": 2893
+      "weight": 254384,
+      "voos": 3176
     },
     {
       "source": "GIG",
       "target": "REC",
-      "weight": 874870,
-      "voos": 11057
+      "weight": 948689,
+      "voos": 11997
     },
     {
       "source": "GIG",
       "target": "SSA",
-      "weight": 810235,
-      "voos": 11454
+      "weight": 880973,
+      "voos": 12448
     },
     {
       "source": "GRU",
       "target": "JDO",
-      "weight": 303794,
-      "voos": 3477
+      "weight": 322928,
+      "voos": 3699
     },
     {
       "source": "FOR",
       "target": "SSA",
-      "weight": 273380,
-      "voos": 4047
+      "weight": 290882,
+      "voos": 4302
     },
     {
       "source": "NAT",
       "target": "SSA",
-      "weight": 90468,
-      "voos": 1222
+      "weight": 98715,
+      "voos": 1328
     },
     {
       "source": "SLZ",
       "target": "SSA",
-      "weight": 103198,
-      "voos": 1347
+      "weight": 111019,
+      "voos": 1452
     },
     {
       "source": "MCZ",
       "target": "SSA",
-      "weight": 93440,
-      "voos": 1234
+      "weight": 101794,
+      "voos": 1340
     },
     {
       "source": "CNF",
       "target": "SSA",
-      "weight": 526131,
-      "voos": 8534
+      "weight": 572307,
+      "voos": 9286
     },
     {
       "source": "MAO",
       "target": "PVH",
-      "weight": 100118,
-      "voos": 1703
+      "weight": 107867,
+      "voos": 1851
     },
     {
       "source": "CGH",
@@ -1863,8 +1863,8 @@
     {
       "source": "GRU",
       "target": "RAO",
-      "weight": 45853,
-      "voos": 738
+      "weight": 47940,
+      "voos": 784
     },
     {
       "source": "GRU",
@@ -1881,14 +1881,14 @@
     {
       "source": "CGH",
       "target": "IZA",
-      "weight": 78725,
-      "voos": 882
+      "weight": 84463,
+      "voos": 937
     },
     {
       "source": "CGH",
       "target": "JOI",
-      "weight": 210209,
-      "voos": 2519
+      "weight": 234234,
+      "voos": 2778
     },
     {
       "source": "GRU",
@@ -1899,176 +1899,176 @@
     {
       "source": "FEN",
       "target": "REC",
-      "weight": 270737,
-      "voos": 4225
+      "weight": 293926,
+      "voos": 4715
     },
     {
       "source": "BEL",
       "target": "MAO",
-      "weight": 218116,
-      "voos": 3047
+      "weight": 235144,
+      "voos": 3295
     },
     {
       "source": "CGH",
       "target": "SDU",
-      "weight": 3682638,
-      "voos": 50559
+      "weight": 4016707,
+      "voos": 55133
     },
     {
       "source": "AJU",
       "target": "CGH",
-      "weight": 41311,
-      "voos": 431
+      "weight": 42615,
+      "voos": 446
     },
     {
       "source": "GRU",
       "target": "THE",
-      "weight": 336984,
-      "voos": 4437
+      "weight": 367302,
+      "voos": 4844
     },
     {
       "source": "CKS",
       "target": "CNF",
-      "weight": 115116,
-      "voos": 1665
+      "weight": 124778,
+      "voos": 1817
     },
     {
       "source": "GYN",
       "target": "SSA",
-      "weight": 105670,
-      "voos": 1385
+      "weight": 114439,
+      "voos": 1501
     },
     {
       "source": "SSA",
       "target": "VCP",
-      "weight": 543264,
-      "voos": 7461
+      "weight": 592514,
+      "voos": 8098
     },
     {
       "source": "GRU",
       "target": "VDC",
-      "weight": 272793,
-      "voos": 3494
+      "weight": 292610,
+      "voos": 3768
     },
     {
       "source": "GIG",
       "target": "VCP",
-      "weight": 508653,
-      "voos": 8354
+      "weight": 555691,
+      "voos": 9079
     },
     {
       "source": "BSB",
       "target": "MCZ",
-      "weight": 317722,
-      "voos": 3436
+      "weight": 345265,
+      "voos": 3712
     },
     {
       "source": "GIG",
       "target": "MAO",
-      "weight": 128532,
-      "voos": 1859
+      "weight": 136128,
+      "voos": 1972
     },
     {
       "source": "CNF",
       "target": "GIG",
-      "weight": 674290,
-      "voos": 11050
+      "weight": 732213,
+      "voos": 11984
     },
     {
       "source": "GIG",
       "target": "NAT",
-      "weight": 217621,
-      "voos": 2872
+      "weight": 234404,
+      "voos": 3086
     },
     {
       "source": "BEL",
       "target": "GIG",
-      "weight": 107307,
-      "voos": 1390
+      "weight": 111872,
+      "voos": 1448
     },
     {
       "source": "FLN",
       "target": "GIG",
-      "weight": 372940,
-      "voos": 5457
+      "weight": 407595,
+      "voos": 5960
     },
     {
       "source": "FOR",
       "target": "GIG",
-      "weight": 671410,
-      "voos": 8919
+      "weight": 726321,
+      "voos": 9712
     },
     {
       "source": "GIG",
       "target": "GYN",
-      "weight": 161038,
-      "voos": 2114
+      "weight": 177049,
+      "voos": 2323
     },
     {
       "source": "GIG",
       "target": "MCZ",
-      "weight": 225909,
-      "voos": 2853
+      "weight": 245544,
+      "voos": 3093
     },
     {
       "source": "AJU",
       "target": "GIG",
-      "weight": 126136,
-      "voos": 1624
+      "weight": 136213,
+      "voos": 1749
     },
     {
       "source": "BPS",
       "target": "CNF",
-      "weight": 429968,
-      "voos": 5066
+      "weight": 467195,
+      "voos": 5512
     },
     {
       "source": "BSB",
       "target": "GIG",
-      "weight": 640329,
-      "voos": 10841
+      "weight": 698444,
+      "voos": 11760
     },
     {
       "source": "BSB",
       "target": "JPA",
-      "weight": 324321,
-      "voos": 3554
+      "weight": 354571,
+      "voos": 3859
     },
     {
       "source": "CGH",
       "target": "LDB",
-      "weight": 196367,
-      "voos": 2167
+      "weight": 212951,
+      "voos": 2343
     },
     {
       "source": "GRU",
       "target": "PET",
-      "weight": 46325,
-      "voos": 779
+      "weight": 50735,
+      "voos": 855
     },
     {
       "source": "AJU",
       "target": "SSA",
-      "weight": 93306,
-      "voos": 2080
+      "weight": 103017,
+      "voos": 2274
     },
     {
       "source": "JPA",
       "target": "SSA",
-      "weight": 91519,
-      "voos": 1138
+      "weight": 99290,
+      "voos": 1236
     },
     {
       "source": "CGH",
       "target": "CPV",
-      "weight": 10830,
-      "voos": 376
+      "weight": 11865,
+      "voos": 408
     },
     {
       "source": "CPV",
       "target": "SSA",
-      "weight": 30290,
-      "voos": 571
+      "weight": 33009,
+      "voos": 622
     },
     {
       "source": "BSB",
@@ -2079,158 +2079,158 @@
     {
       "source": "BSB",
       "target": "VIX",
-      "weight": 189964,
-      "voos": 2530
+      "weight": 198813,
+      "voos": 2644
     },
     {
       "source": "CNF",
       "target": "FOR",
-      "weight": 189244,
-      "voos": 2235
+      "weight": 201630,
+      "voos": 2364
     },
     {
       "source": "BSB",
       "target": "IMP",
-      "weight": 70777,
-      "voos": 1041
+      "weight": 76964,
+      "voos": 1135
     },
     {
       "source": "BEL",
       "target": "FOR",
-      "weight": 292744,
-      "voos": 3975
+      "weight": 316508,
+      "voos": 4281
     },
     {
       "source": "GRU",
       "target": "SJP",
-      "weight": 182130,
-      "voos": 2545
+      "weight": 196888,
+      "voos": 2752
     },
     {
       "source": "BPS",
       "target": "BSB",
-      "weight": 101494,
-      "voos": 1045
+      "weight": 110884,
+      "voos": 1143
     },
     {
       "source": "GRU",
       "target": "UDI",
-      "weight": 248218,
-      "voos": 3465
+      "weight": 268787,
+      "voos": 3765
     },
     {
       "source": "CGB",
       "target": "CGH",
-      "weight": 274031,
-      "voos": 2908
+      "weight": 299202,
+      "voos": 3172
     },
     {
       "source": "GRU",
       "target": "SLZ",
-      "weight": 531690,
-      "voos": 6270
+      "weight": 578035,
+      "voos": 6807
     },
     {
       "source": "GRU",
       "target": "XAP",
-      "weight": 313542,
-      "voos": 4758
+      "weight": 343001,
+      "voos": 5217
     },
     {
       "source": "FOR",
       "target": "MAO",
-      "weight": 199168,
-      "voos": 1972
+      "weight": 217617,
+      "voos": 2180
     },
     {
       "source": "GRU",
       "target": "MOC",
-      "weight": 99648,
-      "voos": 1560
+      "weight": 107342,
+      "voos": 1681
     },
     {
       "source": "GRU",
       "target": "SDU",
-      "weight": 282312,
-      "voos": 4957
+      "weight": 305882,
+      "voos": 5408
     },
     {
       "source": "FOR",
       "target": "REC",
-      "weight": 438597,
-      "voos": 6613
+      "weight": 472266,
+      "voos": 7099
     },
     {
       "source": "GRU",
       "target": "JJD",
-      "weight": 209456,
-      "voos": 2670
+      "weight": 222350,
+      "voos": 2834
     },
     {
       "source": "GRU",
       "target": "PFB",
-      "weight": 124684,
-      "voos": 1778
+      "weight": 135953,
+      "voos": 1944
     },
     {
       "source": "AJU",
       "target": "BSB",
-      "weight": 106595,
-      "voos": 1239
+      "weight": 116526,
+      "voos": 1351
     },
     {
       "source": "GRU",
       "target": "PMW",
-      "weight": 262049,
-      "voos": 3471
+      "weight": 285901,
+      "voos": 3787
     },
     {
       "source": "FOR",
       "target": "THE",
-      "weight": 104458,
-      "voos": 1515
+      "weight": 114712,
+      "voos": 1677
     },
     {
       "source": "GRU",
       "target": "JOI",
-      "weight": 167257,
-      "voos": 2540
+      "weight": 182846,
+      "voos": 2764
     },
     {
       "source": "BSB",
       "target": "OPS",
-      "weight": 79064,
-      "voos": 963
+      "weight": 82643,
+      "voos": 1007
     },
     {
       "source": "FOR",
       "target": "NAT",
-      "weight": 100572,
-      "voos": 1331
+      "weight": 109886,
+      "voos": 1450
     },
     {
       "source": "GRU",
       "target": "IMP",
-      "weight": 105259,
-      "voos": 1807
+      "weight": 111660,
+      "voos": 1923
     },
     {
       "source": "CWB",
       "target": "IGU",
-      "weight": 217544,
-      "voos": 3205
+      "weight": 235995,
+      "voos": 3486
     },
     {
       "source": "CXJ",
       "target": "GRU",
-      "weight": 82099,
-      "voos": 1249
+      "weight": 89683,
+      "voos": 1361
     },
     {
       "source": "GRU",
       "target": "JJG",
-      "weight": 92286,
-      "voos": 1580
+      "weight": 100279,
+      "voos": 1699
     },
     {
       "source": "FOR",
@@ -2241,218 +2241,218 @@
     {
       "source": "BSB",
       "target": "FLN",
-      "weight": 224097,
-      "voos": 3065
+      "weight": 243438,
+      "voos": 3310
     },
     {
       "source": "GRU",
       "target": "PVH",
-      "weight": 120994,
-      "voos": 1658
+      "weight": 131395,
+      "voos": 1819
     },
     {
       "source": "GRU",
       "target": "LDB",
-      "weight": 285578,
-      "voos": 3834
+      "weight": 311490,
+      "voos": 4166
     },
     {
       "source": "BPS",
       "target": "GIG",
-      "weight": 139127,
-      "voos": 1878
+      "weight": 143585,
+      "voos": 1940
     },
     {
       "source": "BEL",
       "target": "OPP",
-      "weight": 116,
-      "voos": 54
+      "weight": 133,
+      "voos": 62
     },
     {
       "source": "CIZ",
       "target": "LBR",
-      "weight": 193,
-      "voos": 69
+      "weight": 218,
+      "voos": 74
     },
     {
       "source": "LBR",
       "target": "MAO",
-      "weight": 416,
-      "voos": 80
+      "weight": 446,
+      "voos": 85
     },
     {
       "source": "CWB",
       "target": "GGJ",
-      "weight": 493,
-      "voos": 180
+      "weight": 550,
+      "voos": 195
     },
     {
       "source": "AQA",
       "target": "VCP",
-      "weight": 1863,
-      "voos": 729
+      "weight": 2041,
+      "voos": 799
     },
     {
       "source": "CNF",
       "target": "RRJ",
-      "weight": 9735,
-      "voos": 2401
+      "weight": 10649,
+      "voos": 2628
     },
     {
       "source": "REC",
       "target": "SET",
-      "weight": 593,
-      "voos": 189
+      "weight": 637,
+      "voos": 204
     },
     {
       "source": "BPG",
       "target": "CGB",
-      "weight": 1129,
-      "voos": 400
+      "weight": 1271,
+      "voos": 446
     },
     {
       "source": "AIR",
       "target": "CGB",
-      "weight": 2293,
-      "voos": 557
+      "weight": 2498,
+      "voos": 615
     },
     {
       "source": "MAO",
       "target": "MNX",
-      "weight": 1306,
-      "voos": 273
+      "weight": 1460,
+      "voos": 298
     },
     {
       "source": "DIQ",
       "target": "VCP",
-      "weight": 1860,
-      "voos": 466
+      "weight": 1978,
+      "voos": 493
     },
     {
       "source": "RRJ",
       "target": "VCP",
-      "weight": 7486,
-      "voos": 1643
+      "weight": 8255,
+      "voos": 1820
     },
     {
       "source": "FRC",
       "target": "VCP",
-      "weight": 388,
-      "voos": 159
+      "weight": 423,
+      "voos": 174
     },
     {
       "source": "CNF",
       "target": "IAL",
-      "weight": 1485,
-      "voos": 300
+      "weight": 1645,
+      "voos": 328
     },
     {
       "source": "JAW",
       "target": "REC",
-      "weight": 558,
-      "voos": 157
+      "weight": 627,
+      "voos": 175
     },
     {
       "source": "CIZ",
       "target": "MAO",
-      "weight": 993,
-      "voos": 243
+      "weight": 1089,
+      "voos": 260
     },
     {
       "source": "QGP",
       "target": "REC",
-      "weight": 184,
-      "voos": 100
+      "weight": 194,
+      "voos": 108
     },
     {
       "source": "CNF",
       "target": "TFL",
-      "weight": 1592,
-      "voos": 394
+      "weight": 1726,
+      "voos": 422
     },
     {
       "source": "BEL",
       "target": "TUR",
-      "weight": 396,
-      "voos": 167
+      "weight": 463,
+      "voos": 188
     },
     {
       "source": "BEL",
       "target": "BVS",
-      "weight": 777,
-      "voos": 154
+      "weight": 844,
+      "voos": 166
     },
     {
       "source": "BEL",
       "target": "MEU",
-      "weight": 861,
-      "voos": 200
+      "weight": 904,
+      "voos": 212
     },
     {
       "source": "CWB",
       "target": "UMU",
-      "weight": 907,
-      "voos": 243
+      "weight": 1012,
+      "voos": 270
     },
     {
       "source": "CNF",
       "target": "VAG",
-      "weight": 827,
-      "voos": 251
+      "weight": 910,
+      "voos": 281
     },
     {
       "source": "BAT",
       "target": "VCP",
-      "weight": 455,
-      "voos": 173
+      "weight": 488,
+      "voos": 189
     },
     {
       "source": "MAO",
       "target": "MBZ",
-      "weight": 549,
-      "voos": 139
+      "weight": 604,
+      "voos": 153
     },
     {
       "source": "MAO",
       "target": "RBB",
-      "weight": 234,
-      "voos": 91
+      "weight": 260,
+      "voos": 98
     },
     {
       "source": "CGB",
       "target": "JPR",
-      "weight": 4153,
-      "voos": 127
+      "weight": 4186,
+      "voos": 134
     },
     {
       "source": "JPR",
       "target": "PVH",
-      "weight": 185,
-      "voos": 66
+      "weight": 208,
+      "voos": 73
     },
     {
       "source": "MAO",
       "target": "TFF",
-      "weight": 24457,
-      "voos": 565
+      "weight": 26600,
+      "voos": 622
     },
     {
       "source": "CAU",
       "target": "REC",
-      "weight": 242,
-      "voos": 106
+      "weight": 261,
+      "voos": 116
     },
     {
       "source": "BEL",
       "target": "JPE",
-      "weight": 410,
-      "voos": 145
+      "weight": 439,
+      "voos": 156
     },
     {
       "source": "BEL",
       "target": "PTQ",
-      "weight": 740,
-      "voos": 161
+      "weight": 787,
+      "voos": 170
     },
     {
       "source": "BRB",
@@ -2481,26 +2481,26 @@
     {
       "source": "CJZ",
       "target": "REC",
-      "weight": 340,
-      "voos": 147
+      "weight": 369,
+      "voos": 161
     },
     {
       "source": "BEL",
       "target": "CKS",
-      "weight": 40731,
-      "voos": 1273
+      "weight": 44648,
+      "voos": 1381
     },
     {
       "source": "CNF",
       "target": "JMA",
-      "weight": 403,
-      "voos": 163
+      "weight": 439,
+      "voos": 176
     },
     {
       "source": "CWB",
       "target": "TEC",
-      "weight": 163,
-      "voos": 81
+      "weight": 169,
+      "voos": 84
     },
     {
       "source": "FOR",
@@ -2511,8 +2511,8 @@
     {
       "source": "CNF",
       "target": "LHN",
-      "weight": 1203,
-      "voos": 291
+      "weight": 1327,
+      "voos": 318
     },
     {
       "source": "BRB",
@@ -2547,32 +2547,32 @@
     {
       "source": "IRZ",
       "target": "TFF",
-      "weight": 74,
-      "voos": 35
+      "weight": 78,
+      "voos": 38
     },
     {
       "source": "CNF",
       "target": "PYT",
-      "weight": 375,
-      "voos": 139
+      "weight": 426,
+      "voos": 155
     },
     {
       "source": "CWB",
       "target": "UVI",
-      "weight": 125,
-      "voos": 76
+      "weight": 135,
+      "voos": 81
     },
     {
       "source": "CNF",
       "target": "DIQ",
-      "weight": 1252,
-      "voos": 413
+      "weight": 1306,
+      "voos": 429
     },
     {
       "source": "CKS",
       "target": "OIA",
-      "weight": 710,
-      "voos": 218
+      "weight": 759,
+      "voos": 231
     },
     {
       "source": "FOR",
@@ -2595,8 +2595,8 @@
     {
       "source": "MAO",
       "target": "RBR",
-      "weight": 35603,
-      "voos": 523
+      "weight": 38583,
+      "voos": 567
     },
     {
       "source": "CGH",
@@ -2607,8 +2607,8 @@
     {
       "source": "CWB",
       "target": "MGF",
-      "weight": 80474,
-      "voos": 2186
+      "weight": 88957,
+      "voos": 2418
     },
     {
       "source": "BPS",
@@ -2619,44 +2619,44 @@
     {
       "source": "SSA",
       "target": "VIX",
-      "weight": 92171,
-      "voos": 1272
+      "weight": 100606,
+      "voos": 1398
     },
     {
       "source": "BPS",
       "target": "SSA",
-      "weight": 26660,
-      "voos": 570
+      "weight": 28427,
+      "voos": 616
     },
     {
       "source": "BYO",
       "target": "CGH",
-      "weight": 26144,
-      "voos": 342
+      "weight": 28191,
+      "voos": 370
     },
     {
       "source": "GEL",
       "target": "GRU",
-      "weight": 30103,
-      "voos": 413
+      "weight": 33215,
+      "voos": 450
     },
     {
       "source": "CGH",
       "target": "CLV",
-      "weight": 40819,
-      "voos": 404
+      "weight": 43255,
+      "voos": 428
     },
     {
       "source": "GIG",
       "target": "SJK",
-      "weight": 35572,
-      "voos": 493
+      "weight": 37775,
+      "voos": 530
     },
     {
       "source": "CGH",
       "target": "UBA",
-      "weight": 10148,
-      "voos": 162
+      "weight": 12790,
+      "voos": 201
     },
     {
       "source": "CGH",
@@ -2667,20 +2667,20 @@
     {
       "source": "REC",
       "target": "VCP",
-      "weight": 721620,
-      "voos": 9594
+      "weight": 781037,
+      "voos": 10442
     },
     {
       "source": "SDU",
       "target": "VCP",
-      "weight": 483435,
-      "voos": 9256
+      "weight": 526927,
+      "voos": 10163
     },
     {
       "source": "MCZ",
       "target": "VCP",
-      "weight": 195893,
-      "voos": 2068
+      "weight": 210795,
+      "voos": 2226
     },
     {
       "source": "SLZ",
@@ -2691,242 +2691,242 @@
     {
       "source": "FOR",
       "target": "SLZ",
-      "weight": 131209,
-      "voos": 1640
+      "weight": 142438,
+      "voos": 1804
     },
     {
       "source": "CWB",
       "target": "VCP",
-      "weight": 467533,
-      "voos": 9521
+      "weight": 510206,
+      "voos": 10454
     },
     {
       "source": "OPS",
       "target": "VCP",
-      "weight": 94131,
-      "voos": 1049
+      "weight": 102600,
+      "voos": 1137
     },
     {
       "source": "NVT",
       "target": "VCP",
-      "weight": 293743,
-      "voos": 5073
+      "weight": 322944,
+      "voos": 5524
     },
     {
       "source": "JPA",
       "target": "REC",
-      "weight": 49015,
-      "voos": 1284
+      "weight": 53001,
+      "voos": 1394
     },
     {
       "source": "PET",
       "target": "VCP",
-      "weight": 13139,
-      "voos": 210
+      "weight": 15588,
+      "voos": 248
     },
     {
       "source": "GYN",
       "target": "VCP",
-      "weight": 402309,
-      "voos": 6264
+      "weight": 437986,
+      "voos": 6838
     },
     {
       "source": "BEL",
       "target": "CNF",
-      "weight": 258633,
-      "voos": 4838
+      "weight": 281842,
+      "voos": 5327
     },
     {
       "source": "RIA",
       "target": "VCP",
-      "weight": 10196,
-      "voos": 285
+      "weight": 12167,
+      "voos": 335
     },
     {
       "source": "LDB",
       "target": "VCP",
-      "weight": 105760,
-      "voos": 2820
+      "weight": 118499,
+      "voos": 3179
     },
     {
       "source": "CAC",
       "target": "VCP",
-      "weight": 133944,
-      "voos": 2172
+      "weight": 146690,
+      "voos": 2375
     },
     {
       "source": "RAO",
       "target": "VCP",
-      "weight": 168554,
-      "voos": 4952
+      "weight": 183425,
+      "voos": 5389
     },
     {
       "source": "BPS",
       "target": "VCP",
-      "weight": 188958,
-      "voos": 2080
+      "weight": 204904,
+      "voos": 2260
     },
     {
       "source": "CNF",
       "target": "RBR",
-      "weight": 47904,
-      "voos": 1150
+      "weight": 50933,
+      "voos": 1316
     },
     {
       "source": "CNF",
       "target": "PVH",
-      "weight": 100090,
-      "voos": 1264
+      "weight": 113034,
+      "voos": 1458
     },
     {
       "source": "PVH",
       "target": "RBR",
-      "weight": 2174,
-      "voos": 286
+      "weight": 2584,
+      "voos": 342
     },
     {
       "source": "MCZ",
       "target": "REC",
-      "weight": 88696,
-      "voos": 2482
+      "weight": 96127,
+      "voos": 2689
     },
     {
       "source": "CNF",
       "target": "REC",
-      "weight": 549092,
-      "voos": 8475
+      "weight": 596921,
+      "voos": 9256
     },
     {
       "source": "CPV",
       "target": "REC",
-      "weight": 46811,
-      "voos": 1442
+      "weight": 51939,
+      "voos": 1582
     },
     {
       "source": "CNF",
       "target": "IOS",
-      "weight": 92537,
-      "voos": 1282
+      "weight": 100263,
+      "voos": 1392
     },
     {
       "source": "SJP",
       "target": "VCP",
-      "weight": 165856,
-      "voos": 5034
+      "weight": 180925,
+      "voos": 5484
     },
     {
       "source": "CNF",
       "target": "GVR",
-      "weight": 79741,
-      "voos": 2615
+      "weight": 86581,
+      "voos": 2852
     },
     {
       "source": "VCP",
       "target": "VIX",
-      "weight": 299675,
-      "voos": 4320
+      "weight": 325582,
+      "voos": 4723
     },
     {
       "source": "FOR",
       "target": "VCP",
-      "weight": 254791,
-      "voos": 2716
+      "weight": 276266,
+      "voos": 2952
     },
     {
       "source": "CNF",
       "target": "GYN",
-      "weight": 274772,
-      "voos": 4822
+      "weight": 299685,
+      "voos": 5268
     },
     {
       "source": "CNF",
       "target": "IPN",
-      "weight": 119216,
-      "voos": 3799
+      "weight": 131968,
+      "voos": 4223
     },
     {
       "source": "CWB",
       "target": "LDB",
-      "weight": 48686,
-      "voos": 1331
+      "weight": 54627,
+      "voos": 1486
     },
     {
       "source": "CGB",
       "target": "GYN",
-      "weight": 41940,
-      "voos": 935
+      "weight": 50413,
+      "voos": 1128
     },
     {
       "source": "JOI",
       "target": "VCP",
-      "weight": 105223,
-      "voos": 2764
+      "weight": 117519,
+      "voos": 3131
     },
     {
       "source": "BEL",
       "target": "VCP",
-      "weight": 276758,
-      "voos": 4454
+      "weight": 299023,
+      "voos": 4862
     },
     {
       "source": "MCP",
       "target": "VCP",
-      "weight": 15091,
-      "voos": 940
+      "weight": 16263,
+      "voos": 1021
     },
     {
       "source": "FLN",
       "target": "VCP",
-      "weight": 325413,
-      "voos": 5640
+      "weight": 354041,
+      "voos": 6139
     },
     {
       "source": "CNF",
       "target": "CPV",
-      "weight": 46662,
-      "voos": 714
+      "weight": 50828,
+      "voos": 786
     },
     {
       "source": "PFB",
       "target": "VCP",
-      "weight": 93821,
-      "voos": 1112
+      "weight": 101994,
+      "voos": 1214
     },
     {
       "source": "IGU",
       "target": "VCP",
-      "weight": 200136,
-      "voos": 2429
+      "weight": 217163,
+      "voos": 2637
     },
     {
       "source": "SLZ",
       "target": "VCP",
-      "weight": 94802,
-      "voos": 1187
+      "weight": 102220,
+      "voos": 1288
     },
     {
       "source": "CGR",
       "target": "VCP",
-      "weight": 270188,
-      "voos": 4003
+      "weight": 295455,
+      "voos": 4374
     },
     {
       "source": "CNF",
       "target": "VCP",
-      "weight": 628016,
-      "voos": 13166
+      "weight": 689622,
+      "voos": 14485
     },
     {
       "source": "CNF",
       "target": "UDI",
-      "weight": 155577,
-      "voos": 3962
+      "weight": 169966,
+      "voos": 4330
     },
     {
       "source": "BEL",
       "target": "REC",
-      "weight": 191878,
-      "voos": 3097
+      "weight": 206191,
+      "voos": 3349
     },
     {
       "source": "BEL",
@@ -2943,32 +2943,32 @@
     {
       "source": "CXJ",
       "target": "VCP",
-      "weight": 85614,
-      "voos": 1039
+      "weight": 93035,
+      "voos": 1133
     },
     {
       "source": "UDI",
       "target": "VCP",
-      "weight": 152712,
-      "voos": 4117
+      "weight": 166454,
+      "voos": 4533
     },
     {
       "source": "PNZ",
       "target": "REC",
-      "weight": 55292,
-      "voos": 1145
+      "weight": 61628,
+      "voos": 1236
     },
     {
       "source": "GYN",
       "target": "REC",
-      "weight": 257507,
-      "voos": 3149
+      "weight": 279627,
+      "voos": 3425
     },
     {
       "source": "MAO",
       "target": "SJL",
-      "weight": 21575,
-      "voos": 387
+      "weight": 23259,
+      "voos": 420
     },
     {
       "source": "BVH",
@@ -2979,92 +2979,92 @@
     {
       "source": "GYN",
       "target": "PMW",
-      "weight": 60250,
-      "voos": 1009
+      "weight": 64451,
+      "voos": 1095
     },
     {
       "source": "BRA",
       "target": "CNF",
-      "weight": 29087,
-      "voos": 941
+      "weight": 31348,
+      "voos": 1023
     },
     {
       "source": "BRA",
       "target": "SSA",
-      "weight": 22223,
-      "voos": 788
+      "weight": 24038,
+      "voos": 868
     },
     {
       "source": "NAT",
       "target": "REC",
-      "weight": 108249,
-      "voos": 2933
+      "weight": 118966,
+      "voos": 3223
     },
     {
       "source": "CGB",
       "target": "VCP",
-      "weight": 375959,
-      "voos": 6201
+      "weight": 409297,
+      "voos": 6777
     },
     {
       "source": "ARU",
       "target": "VCP",
-      "weight": 38775,
-      "voos": 1145
+      "weight": 42265,
+      "voos": 1242
     },
     {
       "source": "BVB",
       "target": "MAO",
-      "weight": 73731,
-      "voos": 1012
+      "weight": 83305,
+      "voos": 1108
     },
     {
       "source": "CNF",
       "target": "SJP",
-      "weight": 55274,
-      "voos": 1636
+      "weight": 61129,
+      "voos": 1802
     },
     {
       "source": "UBA",
       "target": "VCP",
-      "weight": 16384,
-      "voos": 552
+      "weight": 19077,
+      "voos": 634
     },
     {
       "source": "BPS",
       "target": "GYN",
-      "weight": 32289,
-      "voos": 262
+      "weight": 35235,
+      "voos": 286
     },
     {
       "source": "CNF",
       "target": "MCZ",
-      "weight": 201571,
-      "voos": 2143
+      "weight": 219153,
+      "voos": 2334
     },
     {
       "source": "REC",
       "target": "SJP",
-      "weight": 43262,
-      "voos": 437
+      "weight": 47297,
+      "voos": 478
     },
     {
       "source": "CNF",
       "target": "NAT",
-      "weight": 172320,
-      "voos": 1807
+      "weight": 186491,
+      "voos": 1968
     },
     {
       "source": "RAO",
       "target": "REC",
-      "weight": 40019,
-      "voos": 429
+      "weight": 43517,
+      "voos": 467
     },
     {
       "source": "CNF",
       "target": "JJD",
-      "weight": 24124,
-      "voos": 299
+      "weight": 27430,
+      "voos": 338
     },
     {
       "source": "CNF",
@@ -3075,20 +3075,20 @@
     {
       "source": "MAO",
       "target": "REC",
-      "weight": 122077,
-      "voos": 1461
+      "weight": 132165,
+      "voos": 1577
     },
     {
       "source": "POA",
       "target": "VCP",
-      "weight": 612295,
-      "voos": 9140
+      "weight": 668870,
+      "voos": 10013
     },
     {
       "source": "BEL",
       "target": "SLZ",
-      "weight": 92755,
-      "voos": 1549
+      "weight": 103362,
+      "voos": 1762
     },
     {
       "source": "JJG",
@@ -3105,50 +3105,50 @@
     {
       "source": "CNF",
       "target": "JPA",
-      "weight": 102928,
-      "voos": 1036
+      "weight": 111707,
+      "voos": 1127
     },
     {
       "source": "CNF",
       "target": "SDU",
-      "weight": 317718,
-      "voos": 5693
+      "weight": 343995,
+      "voos": 6203
     },
     {
       "source": "IZA",
       "target": "VCP",
-      "weight": 40627,
-      "voos": 1169
+      "weight": 44826,
+      "voos": 1281
     },
     {
       "source": "CNF",
       "target": "VIX",
-      "weight": 264697,
-      "voos": 4645
+      "weight": 287736,
+      "voos": 5061
     },
     {
       "source": "MGF",
       "target": "VCP",
-      "weight": 127269,
-      "voos": 3426
+      "weight": 140941,
+      "voos": 3802
     },
     {
       "source": "CGR",
       "target": "CWB",
-      "weight": 25166,
-      "voos": 485
+      "weight": 30490,
+      "voos": 596
     },
     {
       "source": "JDO",
       "target": "VCP",
-      "weight": 73149,
-      "voos": 920
+      "weight": 80316,
+      "voos": 1015
     },
     {
       "source": "MAO",
       "target": "TBT",
-      "weight": 61383,
-      "voos": 1294
+      "weight": 66254,
+      "voos": 1405
     },
     {
       "source": "JDO",
@@ -3159,8 +3159,8 @@
     {
       "source": "PPB",
       "target": "VCP",
-      "weight": 93015,
-      "voos": 2233
+      "weight": 103255,
+      "voos": 2423
     },
     {
       "source": "FOR",
@@ -3171,56 +3171,56 @@
     {
       "source": "REC",
       "target": "SLZ",
-      "weight": 157341,
-      "voos": 2348
+      "weight": 170804,
+      "voos": 2564
     },
     {
       "source": "CAC",
       "target": "CWB",
-      "weight": 48412,
-      "voos": 1370
+      "weight": 53459,
+      "voos": 1536
     },
     {
       "source": "CNF",
       "target": "MOC",
-      "weight": 148699,
-      "voos": 4292
+      "weight": 162433,
+      "voos": 4687
     },
     {
       "source": "CNF",
       "target": "SLZ",
-      "weight": 94515,
-      "voos": 1118
+      "weight": 101245,
+      "voos": 1207
     },
     {
       "source": "JPA",
       "target": "VCP",
-      "weight": 101876,
-      "voos": 1125
+      "weight": 111052,
+      "voos": 1231
     },
     {
       "source": "CNF",
       "target": "UBA",
-      "weight": 38010,
-      "voos": 1000
+      "weight": 41015,
+      "voos": 1089
     },
     {
       "source": "CNF",
       "target": "RAO",
-      "weight": 62332,
-      "voos": 1860
+      "weight": 68476,
+      "voos": 2034
     },
     {
       "source": "PMW",
       "target": "VCP",
-      "weight": 87424,
-      "voos": 1126
+      "weight": 94159,
+      "voos": 1218
     },
     {
       "source": "CNF",
       "target": "MAO",
-      "weight": 104240,
-      "voos": 1357
+      "weight": 113099,
+      "voos": 1478
     },
     {
       "source": "MVF",
@@ -3231,50 +3231,50 @@
     {
       "source": "CNF",
       "target": "CWB",
-      "weight": 188762,
-      "voos": 3417
+      "weight": 208045,
+      "voos": 3743
     },
     {
       "source": "AJU",
       "target": "REC",
-      "weight": 84963,
-      "voos": 2325
+      "weight": 92142,
+      "voos": 2522
     },
     {
       "source": "CNF",
       "target": "IMP",
-      "weight": 61324,
-      "voos": 1126
+      "weight": 66595,
+      "voos": 1232
     },
     {
       "source": "NAT",
       "target": "VCP",
-      "weight": 119575,
-      "voos": 1260
+      "weight": 129780,
+      "voos": 1376
     },
     {
       "source": "CNF",
       "target": "POA",
-      "weight": 230451,
-      "voos": 2967
+      "weight": 244681,
+      "voos": 3169
     },
     {
       "source": "CGB",
       "target": "CNF",
-      "weight": 140986,
-      "voos": 2433
+      "weight": 152945,
+      "voos": 2612
     },
     {
       "source": "POA",
       "target": "RIA",
-      "weight": 13401,
-      "voos": 431
+      "weight": 14546,
+      "voos": 468
     },
     {
       "source": "MAO",
       "target": "VCP",
-      "weight": 305721,
-      "voos": 4361
+      "weight": 332420,
+      "voos": 4729
     },
     {
       "source": "CAW",
@@ -3285,14 +3285,14 @@
     {
       "source": "PET",
       "target": "POA",
-      "weight": 14803,
-      "voos": 443
+      "weight": 16150,
+      "voos": 478
     },
     {
       "source": "CNF",
       "target": "FLN",
-      "weight": 119382,
-      "voos": 1920
+      "weight": 130721,
+      "voos": 2102
     },
     {
       "source": "RVD",
@@ -3303,134 +3303,134 @@
     {
       "source": "IOS",
       "target": "VCP",
-      "weight": 90010,
-      "voos": 1061
+      "weight": 97884,
+      "voos": 1154
     },
     {
       "source": "AJU",
       "target": "VCP",
-      "weight": 84419,
-      "voos": 1133
+      "weight": 92460,
+      "voos": 1242
     },
     {
       "source": "CNF",
       "target": "SMT",
-      "weight": 25593,
-      "voos": 499
+      "weight": 30476,
+      "voos": 580
     },
     {
       "source": "CGB",
       "target": "CWB",
-      "weight": 29093,
-      "voos": 548
+      "weight": 34561,
+      "voos": 659
     },
     {
       "source": "CNF",
       "target": "MAB",
-      "weight": 83490,
-      "voos": 1220
+      "weight": 90995,
+      "voos": 1336
     },
     {
       "source": "BEL",
       "target": "MAB",
-      "weight": 105031,
-      "voos": 1845
+      "weight": 116028,
+      "voos": 2027
     },
     {
       "source": "VCP",
       "target": "XAP",
-      "weight": 127799,
-      "voos": 1979
+      "weight": 139357,
+      "voos": 2171
     },
     {
       "source": "CNF",
       "target": "GNM",
-      "weight": 24593,
-      "voos": 883
+      "weight": 26752,
+      "voos": 968
     },
     {
       "source": "REC",
       "target": "THE",
-      "weight": 78358,
-      "voos": 1029
+      "weight": 86181,
+      "voos": 1124
     },
     {
       "source": "ATM",
       "target": "BEL",
-      "weight": 79145,
-      "voos": 1048
+      "weight": 86489,
+      "voos": 1142
     },
     {
       "source": "PNZ",
       "target": "VCP",
-      "weight": 73920,
-      "voos": 972
+      "weight": 80284,
+      "voos": 1070
     },
     {
       "source": "MAO",
       "target": "PIN",
-      "weight": 26293,
-      "voos": 726
+      "weight": 27799,
+      "voos": 764
     },
     {
       "source": "CNF",
       "target": "THE",
-      "weight": 87781,
-      "voos": 1007
+      "weight": 94828,
+      "voos": 1092
     },
     {
       "source": "REC",
       "target": "VIX",
-      "weight": 93075,
-      "voos": 1118
+      "weight": 100815,
+      "voos": 1217
     },
     {
       "source": "AJU",
       "target": "CNF",
-      "weight": 92882,
-      "voos": 1425
+      "weight": 101996,
+      "voos": 1565
     },
     {
       "source": "SSA",
       "target": "VDC",
-      "weight": 12414,
-      "voos": 402
+      "weight": 13472,
+      "voos": 437
     },
     {
       "source": "CNF",
       "target": "VDC",
-      "weight": 66050,
-      "voos": 1318
+      "weight": 71697,
+      "voos": 1444
     },
     {
       "source": "AJU",
       "target": "VDC",
-      "weight": 268,
-      "voos": 108
+      "weight": 294,
+      "voos": 123
     },
     {
       "source": "REC",
       "target": "VDC",
-      "weight": 432,
-      "voos": 174
+      "weight": 444,
+      "voos": 181
     },
     {
       "source": "FLN",
       "target": "XAP",
-      "weight": 69028,
-      "voos": 1114
+      "weight": 74034,
+      "voos": 1207
     },
     {
       "source": "ITB",
       "target": "MAO",
-      "weight": 15595,
-      "voos": 440
+      "weight": 16710,
+      "voos": 473
     },
     {
       "source": "IMP",
       "target": "SLZ",
-      "weight": 68764,
-      "voos": 1058
+      "weight": 74222,
+      "voos": 1136
     },
     {
       "source": "IMP",
@@ -3441,44 +3441,44 @@
     {
       "source": "THE",
       "target": "VCP",
-      "weight": 98880,
-      "voos": 1126
+      "weight": 106765,
+      "voos": 1220
     },
     {
       "source": "ROO",
       "target": "VCP",
-      "weight": 45747,
-      "voos": 826
+      "weight": 50094,
+      "voos": 902
     },
     {
       "source": "CNF",
       "target": "PMW",
-      "weight": 59882,
-      "voos": 854
+      "weight": 64661,
+      "voos": 939
     },
     {
       "source": "CGB",
       "target": "OPS",
-      "weight": 64142,
-      "voos": 1009
+      "weight": 69903,
+      "voos": 1103
     },
     {
       "source": "PTO",
       "target": "VCP",
-      "weight": 16960,
-      "voos": 542
+      "weight": 18597,
+      "voos": 592
     },
     {
       "source": "JTC",
       "target": "VCP",
-      "weight": 40110,
-      "voos": 1259
+      "weight": 45092,
+      "voos": 1413
     },
     {
       "source": "AFL",
       "target": "CGB",
-      "weight": 14448,
-      "voos": 252
+      "weight": 16792,
+      "voos": 291
     },
     {
       "source": "GEL",
@@ -3489,26 +3489,26 @@
     {
       "source": "PMG",
       "target": "VCP",
-      "weight": 26440,
-      "voos": 488
+      "weight": 28699,
+      "voos": 527
     },
     {
       "source": "CMG",
       "target": "VCP",
-      "weight": 23513,
-      "voos": 391
+      "weight": 26725,
+      "voos": 439
     },
     {
       "source": "BYO",
       "target": "VCP",
-      "weight": 28634,
-      "voos": 448
+      "weight": 31483,
+      "voos": 489
     },
     {
       "source": "GYN",
       "target": "MCZ",
-      "weight": 35026,
-      "voos": 434
+      "weight": 38675,
+      "voos": 481
     },
     {
       "source": "PGZ",
@@ -3519,8 +3519,8 @@
     {
       "source": "CWB",
       "target": "PTO",
-      "weight": 14358,
-      "voos": 441
+      "weight": 15621,
+      "voos": 478
     },
     {
       "source": "EEA",
@@ -3543,62 +3543,62 @@
     {
       "source": "MII",
       "target": "VCP",
-      "weight": 26021,
-      "voos": 987
+      "weight": 28688,
+      "voos": 1079
     },
     {
       "source": "GEL",
       "target": "POA",
-      "weight": 18929,
-      "voos": 510
+      "weight": 20599,
+      "voos": 557
     },
     {
       "source": "POA",
       "target": "URG",
-      "weight": 17326,
-      "voos": 483
+      "weight": 18970,
+      "voos": 528
     },
     {
       "source": "ERN",
       "target": "MAO",
-      "weight": 2977,
-      "voos": 111
+      "weight": 3521,
+      "voos": 126
     },
     {
       "source": "ERN",
       "target": "TBT",
-      "weight": 831,
-      "voos": 78
+      "weight": 1362,
+      "voos": 106
     },
     {
       "source": "CGB",
       "target": "CGR",
-      "weight": 21674,
-      "voos": 540
+      "weight": 26831,
+      "voos": 679
     },
     {
       "source": "CNF",
       "target": "POJ",
-      "weight": 10885,
-      "voos": 574
+      "weight": 11988,
+      "voos": 633
     },
     {
       "source": "AAX",
       "target": "CNF",
-      "weight": 6759,
-      "voos": 538
+      "weight": 7330,
+      "voos": 596
     },
     {
       "source": "IOS",
       "target": "SSA",
-      "weight": 9522,
-      "voos": 270
+      "weight": 10389,
+      "voos": 292
     },
     {
       "source": "LEC",
       "target": "SSA",
-      "weight": 8331,
-      "voos": 275
+      "weight": 8957,
+      "voos": 296
     },
     {
       "source": "CLV",
@@ -3663,14 +3663,14 @@
     {
       "source": "MAO",
       "target": "TMT",
-      "weight": 5918,
-      "voos": 383
+      "weight": 6454,
+      "voos": 420
     },
     {
       "source": "STM",
       "target": "TMT",
-      "weight": 1414,
-      "voos": 143
+      "weight": 1534,
+      "voos": 158
     },
     {
       "source": "CGB",
@@ -3687,14 +3687,14 @@
     {
       "source": "NAT",
       "target": "RAO",
-      "weight": 16374,
-      "voos": 129
+      "weight": 17674,
+      "voos": 137
     },
     {
       "source": "BPS",
       "target": "UDI",
-      "weight": 35729,
-      "voos": 262
+      "weight": 38406,
+      "voos": 280
     },
     {
       "source": "CNF",
@@ -3705,140 +3705,140 @@
     {
       "source": "BPS",
       "target": "PPB",
-      "weight": 17532,
-      "voos": 113
+      "weight": 18874,
+      "voos": 122
     },
     {
       "source": "NAT",
       "target": "SJP",
-      "weight": 16342,
-      "voos": 106
+      "weight": 17624,
+      "voos": 114
     },
     {
       "source": "NAT",
       "target": "UDI",
-      "weight": 16404,
-      "voos": 103
+      "weight": 17685,
+      "voos": 111
     },
     {
       "source": "MCZ",
       "target": "SJP",
-      "weight": 35843,
-      "voos": 251
+      "weight": 38148,
+      "voos": 267
     },
     {
       "source": "MCZ",
       "target": "RAO",
-      "weight": 31889,
-      "voos": 223
+      "weight": 34473,
+      "voos": 242
     },
     {
       "source": "BPS",
       "target": "SJP",
-      "weight": 30475,
-      "voos": 201
+      "weight": 32928,
+      "voos": 221
     },
     {
       "source": "BPS",
       "target": "JTC",
-      "weight": 16346,
-      "voos": 107
+      "weight": 17585,
+      "voos": 115
     },
     {
       "source": "JPA",
       "target": "UDI",
-      "weight": 15404,
-      "voos": 147
+      "weight": 16711,
+      "voos": 162
     },
     {
       "source": "FOR",
       "target": "UDI",
-      "weight": 28348,
-      "voos": 259
+      "weight": 30475,
+      "voos": 280
     },
     {
       "source": "REC",
       "target": "UDI",
-      "weight": 36424,
-      "voos": 389
+      "weight": 39706,
+      "voos": 428
     },
     {
       "source": "MCZ",
       "target": "UDI",
-      "weight": 30188,
-      "voos": 289
+      "weight": 32507,
+      "voos": 308
     },
     {
       "source": "CNF",
       "target": "IGU",
-      "weight": 13601,
-      "voos": 161
+      "weight": 14608,
+      "voos": 174
     },
     {
       "source": "BVB",
       "target": "VCP",
-      "weight": 30554,
-      "voos": 774
+      "weight": 30585,
+      "voos": 776
     },
     {
       "source": "AJU",
       "target": "BPS",
-      "weight": 394,
-      "voos": 108
+      "weight": 403,
+      "voos": 113
     },
     {
       "source": "BPS",
       "target": "REC",
-      "weight": 146,
-      "voos": 73
+      "weight": 152,
+      "voos": 78
     },
     {
       "source": "CNF",
       "target": "UNA",
-      "weight": 9732,
-      "voos": 137
+      "weight": 10230,
+      "voos": 143
     },
     {
       "source": "CGH",
       "target": "UNA",
-      "weight": 13516,
-      "voos": 110
+      "weight": 14276,
+      "voos": 118
     },
     {
       "source": "NAT",
       "target": "PPB",
-      "weight": 15291,
-      "voos": 114
+      "weight": 16411,
+      "voos": 122
     },
     {
       "source": "BEL",
       "target": "NAT",
-      "weight": 6402,
-      "voos": 89
+      "weight": 7196,
+      "voos": 100
     },
     {
       "source": "IOS",
       "target": "REC",
-      "weight": 175,
-      "voos": 54
+      "weight": 184,
+      "voos": 59
     },
     {
       "source": "BPS",
       "target": "RAO",
-      "weight": 32403,
-      "voos": 262
+      "weight": 34565,
+      "voos": 283
     },
     {
       "source": "GNM",
       "target": "SSA",
-      "weight": 7484,
-      "voos": 359
+      "weight": 8087,
+      "voos": 389
     },
     {
       "source": "AJU",
       "target": "IOS",
-      "weight": 202,
-      "voos": 32
+      "weight": 228,
+      "voos": 36
     },
     {
       "source": "FOR",
@@ -3861,8 +3861,8 @@
     {
       "source": "AAX",
       "target": "POJ",
-      "weight": 56,
-      "voos": 15
+      "weight": 58,
+      "voos": 17
     },
     {
       "source": "NVT",
@@ -3903,44 +3903,44 @@
     {
       "source": "GRU",
       "target": "MCP",
-      "weight": 61854,
-      "voos": 957
+      "weight": 66324,
+      "voos": 1030
     },
     {
       "source": "GIG",
       "target": "SLZ",
-      "weight": 53963,
-      "voos": 694
+      "weight": 56690,
+      "voos": 725
     },
     {
       "source": "MXQ",
       "target": "SSA",
-      "weight": 6414,
-      "voos": 960
+      "weight": 7006,
+      "voos": 1047
     },
     {
       "source": "PBA",
       "target": "SSA",
-      "weight": 504,
-      "voos": 73
+      "weight": 547,
+      "voos": 80
     },
     {
       "source": "MUU",
       "target": "PBA",
-      "weight": 187,
-      "voos": 29
+      "weight": 222,
+      "voos": 37
     },
     {
       "source": "MUU",
       "target": "SSA",
-      "weight": 183,
-      "voos": 29
+      "weight": 222,
+      "voos": 37
     },
     {
       "source": "JPA",
       "target": "MCZ",
-      "weight": 201,
-      "voos": 13
+      "weight": 337,
+      "voos": 15
     },
     {
       "source": "PNZ",
@@ -3963,14 +3963,14 @@
     {
       "source": "IUP",
       "target": "MAO",
-      "weight": 894,
-      "voos": 79
+      "weight": 1003,
+      "voos": 88
     },
     {
       "source": "IUP",
       "target": "MNX",
-      "weight": 510,
-      "voos": 79
+      "weight": 555,
+      "voos": 88
     },
     {
       "source": "BPS",
@@ -3981,8 +3981,8 @@
     {
       "source": "CGB",
       "target": "MCZ",
-      "weight": 3859,
-      "voos": 42
+      "weight": 5156,
+      "voos": 54
     },
     {
       "source": "CWB",
@@ -4059,20 +4059,20 @@
     {
       "source": "CGB",
       "target": "MAO",
-      "weight": 344,
-      "voos": 68
+      "weight": 375,
+      "voos": 74
     },
     {
       "source": "CGB",
       "target": "PVH",
-      "weight": 18602,
-      "voos": 365
+      "weight": 19755,
+      "voos": 397
     },
     {
       "source": "CGB",
       "target": "SJP",
-      "weight": 4751,
-      "voos": 133
+      "weight": 5105,
+      "voos": 144
     },
     {
       "source": "CFB",
@@ -4089,8 +4089,8 @@
     {
       "source": "CWB",
       "target": "SSA",
-      "weight": 10968,
-      "voos": 133
+      "weight": 11918,
+      "voos": 143
     },
     {
       "source": "JTC",
@@ -4107,8 +4107,8 @@
     {
       "source": "FLN",
       "target": "POA",
-      "weight": 54128,
-      "voos": 849
+      "weight": 54129,
+      "voos": 850
     },
     {
       "source": "PHB",
@@ -4137,14 +4137,14 @@
     {
       "source": "JPO",
       "target": "REC",
-      "weight": 960,
-      "voos": 279
+      "weight": 1135,
+      "voos": 316
     },
     {
       "source": "BVH",
       "target": "VCP",
-      "weight": 17986,
-      "voos": 271
+      "weight": 19488,
+      "voos": 300
     },
     {
       "source": "SDU",
@@ -4161,8 +4161,8 @@
     {
       "source": "CWB",
       "target": "GPB",
-      "weight": 6139,
-      "voos": 240
+      "weight": 7210,
+      "voos": 283
     },
     {
       "source": "FLN",
@@ -4173,26 +4173,26 @@
     {
       "source": "AFL",
       "target": "VCP",
-      "weight": 24668,
-      "voos": 357
+      "weight": 27334,
+      "voos": 397
     },
     {
       "source": "JPR",
       "target": "VCP",
-      "weight": 17262,
-      "voos": 269
+      "weight": 18987,
+      "voos": 298
     },
     {
       "source": "OAL",
       "target": "VCP",
-      "weight": 17288,
-      "voos": 244
+      "weight": 19310,
+      "voos": 276
     },
     {
       "source": "BEL",
       "target": "RAO",
-      "weight": 410,
-      "voos": 6
+      "weight": 552,
+      "voos": 8
     },
     {
       "source": "BEL",
@@ -4215,8 +4215,62 @@
     {
       "source": "GRU",
       "target": "RBR",
-      "weight": 40654,
-      "voos": 610
+      "weight": 43815,
+      "voos": 660
+    },
+    {
+      "source": "BVB",
+      "target": "FOR",
+      "weight": 168,
+      "voos": 2
+    },
+    {
+      "source": "POA",
+      "target": "REC",
+      "weight": 117770,
+      "voos": 1736
+    },
+    {
+      "source": "FOR",
+      "target": "MCP",
+      "weight": 145,
+      "voos": 2
+    },
+    {
+      "source": "PVH",
+      "target": "REC",
+      "weight": 7,
+      "voos": 2
+    },
+    {
+      "source": "POA",
+      "target": "VIX",
+      "weight": 271,
+      "voos": 6
+    },
+    {
+      "source": "PVH",
+      "target": "VCP",
+      "weight": 323,
+      "voos": 5
+    },
+    {
+      "source": "FEN",
+      "target": "GRU",
+      "weight": 73060,
+      "voos": 1176
+    },
+    {
+      "source": "CGB",
+      "target": "GIG",
+      "weight": 34831,
+      "voos": 442
+    },
+    {
+      "source": "POA",
+      "target": "SSA",
+      "weight": 11791,
+      "voos": 131
     },
     {
       "source": "MAO",
@@ -4225,34 +4279,10 @@
       "voos": 18
     },
     {
-      "source": "POA",
-      "target": "REC",
-      "weight": 108116,
-      "voos": 1587
-    },
-    {
-      "source": "FEN",
-      "target": "GRU",
-      "weight": 70385,
-      "voos": 1125
-    },
-    {
-      "source": "CGB",
-      "target": "GIG",
-      "weight": 32497,
-      "voos": 416
-    },
-    {
       "source": "CXJ",
       "target": "GIG",
       "weight": 4553,
       "voos": 82
-    },
-    {
-      "source": "POA",
-      "target": "SSA",
-      "weight": 10781,
-      "voos": 120
     },
     {
       "source": "CGH",
@@ -4597,12 +4627,6 @@
       "voos": 162
     },
     {
-      "source": "PVH",
-      "target": "VCP",
-      "weight": 174,
-      "voos": 3
-    },
-    {
       "source": "GIG",
       "target": "IMP",
       "weight": 132,
@@ -4721,12 +4745,6 @@
       "target": "IGU",
       "weight": 1274,
       "voos": 11
-    },
-    {
-      "source": "POA",
-      "target": "VIX",
-      "weight": 262,
-      "voos": 4
     },
     {
       "source": "MCP",

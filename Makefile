@@ -12,7 +12,7 @@ RES     := resultados
 D3      := $(SCRIPTS)/vendor/d3.v7.min.js
 
 .DEFAULT_GOAL := help
-.PHONY: help cli mapa pipeline modelar simular cascata test vendor clean
+.PHONY: help cli mapa pipeline modelar simular cascata sensibilidade test vendor clean
 
 help: ## mostra os comandos disponíveis
 	@echo "Rede Aeroportuária Brasileira — comandos:"
@@ -38,7 +38,10 @@ simular: ## etapa 2: grafo -> simulações de falha (topológicas)
 cascata: ## etapa 3: realocação de demanda sob capacidade (varredura de α)
 	$(PYTHON) $(SCRIPTS)/simular_cascata_capacidade.py
 
-test: ## roda os testes do modelo de cascata
+sensibilidade: ## análise de sensibilidade do score aos pesos (top-10)
+	$(PYTHON) $(SCRIPTS)/sensibilidade_score.py
+
+test: ## roda os testes (verificação do modelo de cascata)
 	$(PYTHON) $(SCRIPTS)/test_cascata.py
 
 vendor: $(D3) ## baixa o D3 (offline) caso ainda não exista

@@ -260,11 +260,12 @@ def escrever_resultados(
     max_passageiros = max(grau_ponderado.values()) if grau_ponderado else 1
     ranking = []
     for codigo, aeroporto in aeroportos.items():
+        volume_normalizado = math.log1p(grau_ponderado[codigo]) / math.log1p(max_passageiros)
         score = (
-            0.45 * betweenness.get(codigo, 0.0)
-            + 0.30 * degree_centrality.get(codigo, 0.0)
-            + 0.25 * (math.log1p(grau_ponderado[codigo]) / math.log1p(max_passageiros))
-        )
+            betweenness.get(codigo, 0.0)
+            + degree_centrality.get(codigo, 0.0)
+            + volume_normalizado
+        ) / 3.0
         ranking.append(
             {
                 "codigo": codigo,

@@ -1,4 +1,4 @@
-PWD /home/aprix/projeot
+PWD /home/aprix/Área de trabalho/Repo/UFRGS-2026-1/topicos_especiais
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
@@ -170,17 +170,27 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecti1200.tfm
 OUTPUT Projeto_Ciencia_Inovacao.toc
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecti1200.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ectt1200.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm0800.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm0600.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1095.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbi1200.tfm
 INPUT Projeto_Ciencia_Inovacao.aux
 INPUT ./Projeto_Ciencia_Inovacao.out
 INPUT ./Projeto_Ciencia_Inovacao.out
+INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbi1200.600pk
+INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1095.600pk
 INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk
 INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk
 INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600pk
@@ -192,6 +202,7 @@ INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2074.60
 INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk
 INPUT /home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1440.600pk
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb

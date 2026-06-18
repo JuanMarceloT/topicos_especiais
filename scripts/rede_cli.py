@@ -277,7 +277,7 @@ def cmd_cascata(n: int) -> None:
     alpha = rows[0].get("alpha", "?")
     n = min(n, len(rows))
     print(titulo(f"Realocação sob capacidade — α={alpha} — {n} passos"))
-    print(f"  {DIM}Capacidade C = (1+α)·demanda. Modelo: Cumelles et al. (2021).{RESET}")
+    print(f"  {DIM}Capacidade C = (1+α)·demanda. Adaptado de Cumelles et al. (2021).{RESET}")
     print(linha())
     print(f"  {'#':>3}  {'Removido':<8}  {'Maior comp.':>12}  {'Saturados':>9}  "
           f"{'Não realocados':>15}  {'% dem.':>6}")

@@ -67,8 +67,8 @@
 \thispagestyle{empty}
 \begin{center}
   \vspace*{1cm}
-  {\large\scshape\color{cinza} Universidade}\\[4pt]
-  {\normalsize\color{cinza} Ciência da Computação}\\[2cm]
+  {\large\scshape\color{cinza} Universidade Federal do Rio Grande do Sul}\\[4pt]
+  {\normalsize\color{cinza} Ciência da Computação --- Tópicos Especiais}\\[2cm]
 
   {\color{azul}\rule{\linewidth}{2pt}}\\[0.6cm]
   {\LARGE\bfseries\color{azul}
@@ -77,13 +77,15 @@
     Brasileira: Uma Abordagem por\\[6pt]
     Teoria dos Grafos
   }\\[0.6cm]
-  {\color{azul}\rule{\linewidth}{2pt}}\\[2cm]
+  {\color{azul}\rule{\linewidth}{2pt}}\\[1cm]
+
+  {\normalsize\color{cinza} Trabalho final --- relatório técnico-científico}\\[2cm]
 
   {\large Tobias Cadoná Marion}\\[4pt]
   {\large Vitor Godoy de Fraga}\\[4pt]
   {\large Juan Marcelo Trabaina}\\[3cm]
 
-  {\normalsize\color{cinza} 2026}
+  {\normalsize\color{cinza} Porto Alegre, 2026}
 \end{center}
 
 \newpage
@@ -97,14 +99,25 @@ A rede aeroportuária brasileira constitui uma infraestrutura estratégica para 
 territorial, econômica e social do país. Em razão da extensão continental do Brasil e da
 concentração de conexões em poucos aeroportos de grande porte, interrupções operacionais em
 hubs relevantes podem produzir efeitos sistêmicos sobre a conectividade da malha aérea. Este
-projeto apresenta uma proposta de análise da vulnerabilidade estrutural da rede aeroportuária
-brasileira, considerando o fechamento hipotético de aeroportos e seus impactos sobre a
-continuidade das conexões e a redistribuição da demanda de passageiros. O produto final previsto
-é um protótipo computacional acompanhado de um relatório técnico, contendo a representação da
-rede em grafo, indicadores de centralidade, ranking de criticidade dos aeroportos e simulações de
-falhas aleatórias e ataques direcionados. Espera-se que os resultados contribuam para uma leitura
-mais objetiva dos pontos críticos da infraestrutura aérea nacional e ofereçam subsídios iniciais
-para estudos de resiliência em sistemas de transporte.
+trabalho desenvolveu um \textbf{artefato computacional aberto e reproduzível} que identifica os
+aeroportos estruturalmente mais críticos da malha aérea brasileira e simula o impacto de sua
+remoção. A partir de microdados públicos da ANAC referentes aos doze meses de 2025
+(1{,}43 milhão de etapas de voo), a malha foi representada como um grafo ponderado com
+155 aeroportos e 622 rotas, sobre o qual se calcularam indicadores de centralidade, um ranking
+de criticidade e duas famílias de simulação: (i) a remoção topológica de nós, comparando falhas
+aleatórias e ataques direcionados; e (ii) um modelo exploratório de realocação de demanda sob
+restrição de capacidade. Os resultados confirmam o comportamento esperado de uma rede
+\textit{scale-free}: o aeroporto de Viracopos (VCP) emerge como o nó mais crítico --- em
+concordância com a literatura independente --- e o ataque direcionado fragmenta a malha de forma
+muito mais acentuada que a falha aleatória de mesma magnitude. O ranking dos dez aeroportos mais
+críticos mostrou-se robusto a perturbações nos pesos do índice (VCP sempre em primeiro lugar e ao
+menos 9 dos 10 aeroportos retidos). No modelo
+de capacidade, a remoção dos dez maiores hubs deixa de 29\% a 61\% da demanda de passageiros sem
+realocação viável, conforme a folga de capacidade assumida. Diferentemente das análises
+acadêmicas pontuais já publicadas sobre a rede brasileira e das ferramentas comerciais
+proprietárias, a contribuição central é a entrega de um artefato aberto, testado e auditável ---
+uma \textbf{inovação de processo} --- que transforma dados públicos dispersos em indicadores
+objetivos e reproduzíveis de resiliência da malha aérea nacional.
 
 \medskip
 \noindent\textbf{Palavras-chave:} Redes Complexas; Teoria dos Grafos; Falhas em Cascata;
@@ -137,26 +150,27 @@ movimentação aérea, ainda são limitadas as ferramentas abertas voltadas à s
 à análise de vulnerabilidade da rede aeroportuária nacional.
 
 Dessa forma, a questão orientadora do estudo é: quais aeroportos brasileiros apresentam maior
-criticidade estrutural e quais impactos sua remoção hipotética pode causar na conectividade da
-rede e na distribuição da demanda de passageiros?
+criticidade estrutural e qual o impacto de sua remoção hipotética sobre a conectividade da malha
+aérea, comparando-se cenários de falha aleatória e de ataque direcionado?
 
 % 3. JUSTIFICATIVA
 \section{Justificativa}
 
 \subsection{Impacto Prático}
 
-A proposta apresenta relevância prática por aplicar métodos computacionais à análise de uma
+O trabalho apresenta relevância prática por aplicar métodos computacionais à análise de uma
 infraestrutura crítica nacional. A identificação de aeroportos estruturalmente relevantes pode
 apoiar estudos de planejamento, contingência e priorização de investimentos em capacidade
 operacional. Além disso, a simulação de cenários de falha permite observar, ainda que em nível
 experimental, como a indisponibilidade de determinados aeroportos pode afetar regiões
 dependentes do transporte aéreo.
 
-Sob a perspectiva da inovação, o projeto se caracteriza como uma inovação de processo, pois
-organiza dados públicos e métodos de análise de redes em um protótipo voltado à avaliação de
-risco sistêmico. O valor da proposta está na transformação de dados dispersos em indicadores
-objetivos, capazes de apoiar análises mais transparentes sobre a resiliência da malha aérea
-brasileira.
+Embora a estrutura da rede aérea brasileira já tenha sido objeto de estudos acadêmicos pontuais
+(ver Seção~\ref{sec:lit}) e existam ferramentas comerciais proprietárias de análise do setor,
+persiste uma lacuna: a ausência de uma ferramenta \textbf{aberta e reproduzível} que converta os
+microdados públicos da ANAC em indicadores de vulnerabilidade auditáveis. É essa lacuna que o
+trabalho busca ocupar; a natureza dessa contribuição e seu impacto são discutidos, à luz dos
+resultados, na Seção~\ref{sec:discussao}.
 
 \subsection{Pertinência da Computação}
 
@@ -172,9 +186,10 @@ mais consistentes para comparação entre cenários.
 
 \subsection{Objetivo Geral}
 
-Desenvolver um protótipo de análise da vulnerabilidade estrutural da rede aeroportuária
-brasileira, capaz de apresentar indicadores de criticidade dos aeroportos e estimar impactos de
-falhas sobre a conectividade da malha e a distribuição da demanda de passageiros.
+Desenvolver um protótipo aberto e reproduzível que identifique os aeroportos estruturalmente mais
+críticos da malha aérea brasileira, a partir de microdados públicos da ANAC, e simule o impacto de
+sua remoção sobre a conectividade da rede, comparando cenários de falha aleatória e de ataque
+direcionado.
 
 \subsection{Objetivos Específicos}
 
@@ -192,6 +207,7 @@ falhas sobre a conectividade da malha e a distribuição da demanda de passageir
 
 % 5. REVISÃO DE LITERATURA
 \section{Revisão de Literatura e Soluções de Mercado}
+\label{sec:lit}
 
 \subsection{Fundamentação Teórica}
 
@@ -212,8 +228,10 @@ na equação de Huff, expressa por:
 
 \noindent onde $C_i$ é a demanda total do centro populacional $i$, $S_j$ é o poder de atração
 do aeroporto $j$, $T_{ij}$ é o tempo de viagem entre $i$ e $j$, e $a$ é um parâmetro estimado
-empiricamente. A abordagem é relevante para este projeto por permitir estimar a redistribuição
-da demanda entre aeroportos alternativos quando um ponto da rede se torna indisponível.
+empiricamente. Essa abordagem motiva o módulo exploratório de redistribuição de demanda do
+protótipo, que realoca a demanda dos aeroportos fechados para alternativas próximas com capacidade
+disponível; a adoção do modelo de Huff completo, com tempos de viagem, permanece como refinamento
+futuro (ver Seção~\ref{sec:limitacoes}).
 
 \textbf{Cumelles, Lordan e Sallan (2021)} analisam falhas em cascata em redes aeroportuárias e
 destacam que esses sistemas apresentam características próprias, pois os voos são eventos
@@ -223,123 +241,412 @@ contribuição orienta a definição dos cenários de simulação adotados neste
 
 \subsection{Estado da Técnica e Mercado}
 
-Ferramentas comerciais como OAG Traffic Analyser e Cirium Flightglobal oferecem análises de
-mercado, tráfego e planejamento para o setor aéreo. Entretanto, essas soluções são proprietárias
-e não têm como finalidade principal a construção de um modelo acadêmico aberto para simulação
-de vulnerabilidade estrutural. No contexto brasileiro, a ANAC disponibiliza bases públicas de
-movimentação aérea, mas a conversão desses dados em uma ferramenta experimental de análise de
-falhas ainda representa uma oportunidade de aplicação acadêmica e tecnológica.
+No meio acadêmico, a estrutura da rede aérea brasileira já foi estudada. \textbf{Couto et al.
+(2015)} caracterizaram a malha nacional como uma rede \textit{scale-free} com propriedades de
+pequeno mundo, identificando o aeroporto de Viracopos como o nó mais central da rede de voos
+nacionais e mostrando que sua indisponibilidade fragmenta a malha em diversas sub-redes — evidência
+de baixa resiliência a ataques direcionados. Esse e outros estudos, contudo, são artigos de
+análise: descrevem resultados, mas não disponibilizam uma ferramenta aberta e reproduzível que
+outros pesquisadores possam executar e estender.
+
+No plano comercial, ferramentas como OAG Traffic Analyser e Cirium Flightglobal oferecem análises de
+mercado, tráfego e planejamento para o setor aéreo, mas são soluções proprietárias e fechadas. A
+ANAC disponibiliza bases públicas de movimentação aérea; entretanto, a conversão desses dados em
+uma ferramenta experimental, aberta e reproduzível de análise de vulnerabilidade ainda representa
+uma lacuna — exatamente o espaço que esta proposta busca ocupar.
 
 % 6. METODOLOGIA
 \section{Metodologia}
 
 \subsection{Fonte de Dados}
 
-O estudo utilizará dados públicos disponíveis no portal de dados abertos da ANAC
+O estudo utilizou dados públicos disponíveis no portal de dados abertos da ANAC
 (\url{https://dados.anac.gov.br}), com foco em registros de voos regulares, pares
-origem-destino e movimentação de passageiros. Quando necessário, informações complementares
-sobre infraestrutura e capacidade aeroportuária serão consultadas em fontes públicas da
-INFRAERO e em relatórios institucionais da ANAC.
+origem-destino e movimentação de passageiros. Foram processados os \textbf{doze} arquivos mensais
+combinados de 2025, totalizando 2.350.330 linhas brutas, das quais 1.430.477 etapas de voo foram
+utilizadas após filtragem (descartadas as etapas internacionais, não regulares, de carga ou sem
+passageiros). Capacidades
+reais de pista e \textit{slots} não estão disponíveis em base pública consolidada e, por isso,
+foram tratadas como parâmetro do modelo (Seção~\ref{sec:capacidade}), não como dado de entrada.
 
 \subsection{Arquitetura e Algoritmia}
 
-A rede aeroportuária será representada como um grafo ponderado $G = (V, E)$, no qual $V$
+A rede aeroportuária foi representada como um grafo ponderado $G = (V, E)$, no qual $V$
 corresponde ao conjunto de aeroportos e $E$ ao conjunto de rotas entre eles. O peso das arestas
-será definido de acordo com o volume de passageiros transportados no período de referência. A
-construção do grafo e o cálculo das métricas estruturais serão realizados com a linguagem Python
-e a biblioteca NetworkX.
+foi definido de acordo com o volume de passageiros transportados no período de referência. A
+construção do grafo e o cálculo das métricas estruturais foram realizados em Python, com os
+algoritmos de rede (busca em componentes conexos e \textit{betweenness centrality}) implementados
+diretamente sobre a biblioteca padrão da linguagem, sem dependência de bibliotecas externas de
+análise de redes.
 
-O simulador implementará dois cenários de remoção de nós:
+A criticidade de cada aeroporto foi estimada por um \textbf{índice composto} que combina três
+dimensões complementares: a \textit{betweenness centrality} (papel de intermediação nas rotas), a
+\textit{degree centrality} (número de conexões diretas) e o volume de passageiros (relevância
+operacional). Formalmente,
+
+\begin{equation}
+  \text{score}_i = \frac{\text{BC}_i + \text{DC}_i + \widehat{V}_i}{3},
+\end{equation}
+
+\noindent onde $\text{BC}_i$ é a \textit{betweenness} (não ponderada, medindo intermediação
+estrutural), $\text{DC}_i$ é o grau normalizado e $\widehat{V}_i$ é o volume de passageiros
+normalizado por logaritmo. Adotou-se a \textbf{média simples} das três dimensões: na ausência de
+uma base empírica para privilegiar uma métrica sobre as demais, o peso igual é a escolha neutra,
+e evita que a criticidade dependa de uma única dimensão. A \textbf{calibração dos pesos} ---
+atribuir maior ou menor importância a cada dimensão a partir de dados ou de critério especialista
+--- permanece como \textbf{trabalho futuro}; a robustez do ranking a variações nos pesos é
+avaliada por análise de sensibilidade (Seção~\ref{sec:resultados}).
+
+O simulador implementou dois cenários de remoção de nós:
 
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Falha aleatória:} remoção de aeroportos selecionados uniformemente ao acaso.
-  \item \textbf{Ataque direcionado:} remoção em ordem decrescente de \textit{betweenness
-        centrality}.
+  \item \textbf{Falha aleatória:} remoção de aeroportos selecionados uniformemente ao acaso, com
+        semente fixa para garantir reprodutibilidade.
+  \item \textbf{Ataque direcionado:} remoção dos aeroportos em ordem decrescente do índice de
+        criticidade.
 \end{itemize}
 
-A cada remoção, serão calculados indicadores de conectividade, como o tamanho relativo do maior
-componente conectado, além da redistribuição estimada da demanda para aeroportos alternativos.
-Essa redistribuição será orientada pela lógica da equação de Huff e por critérios de proximidade
-geográfica e capacidade residual, conforme adaptação do modelo discutido por Cumelles et al.
+A cada remoção, foram calculados indicadores de conectividade da rede, como o número de componentes
+conectados, o tamanho relativo do maior componente conectado, a quantidade de aeroportos isolados e
+a fração do volume de passageiros ainda atendida pelas rotas remanescentes. A comparação entre os
+dois cenários permite observar a assimetria entre falhas aleatórias e ataques direcionados,
+característica esperada de redes \textit{scale-free}.
+
+\subsection{Modelo de Realocação de Demanda sob Capacidade}
+\label{sec:capacidade}
+
+Como camada adicional à análise topológica, implementou-se um \textbf{modelo exploratório de
+realocação de demanda sob restrição de capacidade}, adaptado do princípio de Cumelles, Lordan e
+Sallan (2021): ao fechar um aeroporto, sua demanda de passageiros é redistribuída para as
+alternativas próximas com capacidade disponível, e não propagada continuamente pelas conexões da
+rede. A carga de cada aeroporto $i$ é a sua demanda observada $L_i$ (embarcados mais
+desembarcados), e a capacidade é modelada como
+
+\begin{equation}
+  C_i = (1 + \alpha)\,L_i,
+\end{equation}
+
+\noindent onde $\alpha \ge 0$ é a \textbf{folga operacional} --- a fração de demanda adicional que
+o aeroporto absorve acima de sua operação normal. Removido um aeroporto, sua demanda é alocada nas
+alternativas vivas (por padrão, as geograficamente mais próximas), preenchendo a capacidade
+residual de cada candidato até esgotá-la; a demanda que não encontra capacidade disponível é
+contabilizada como \textbf{demanda não realocada} (\textit{stranded}). Por construção, nenhum
+aeroporto recebe carga acima de $C_i$ --- não há propagação de sobrecarga. O comportamento do
+modelo foi examinado por uma \textbf{varredura de $\alpha$}, adotando-se $\alpha = 0{,}20$ (folga
+de 20\%) como cenário de referência (Seção~\ref{sec:resultados} e Seção~\ref{sec:limitacoes}).
 
 \subsection{Ambiente de Desenvolvimento}
 
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Linguagem:} Python 3.11+
-  \item \textbf{Bibliotecas:} NetworkX, Pandas/GeoPandas, Matplotlib/Plotly, NumPy
-  \item \textbf{Ambiente:} Jupyter Notebook
+  \item \textbf{Linguagem:} Python 3.11+ (biblioteca padrão, sem dependências externas)
+  \item \textbf{Processamento:} módulos \texttt{csv}, \texttt{json} e \texttt{collections} para
+        leitura dos microdados e construção do grafo
+  \item \textbf{Visualização:} mapa interativo em HTML autocontido com D3.js
+  \item \textbf{Interface:} aplicação de linha de comando (CLI) para consulta do ranking e das
+        simulações
   \item \textbf{Controle de versão:} Git/GitHub
 \end{itemize}
 
-\subsection{Plano de Validação}
+\subsection{Critérios de Validação}
 
-A validação será conduzida por meio da comparação entre os resultados obtidos nas simulações e
-as propriedades esperadas para redes com concentração de conexões em hubs. Também serão
-avaliados cenários hipotéticos envolvendo aeroportos de alta centralidade, como GRU, CGH e BSB.
-O objetivo da validação é verificar se o comportamento observado no protótipo é coerente com a
-literatura sobre redes complexas e com a lógica operacional da malha aérea.
+Adotou-se como critério de validação a comparação entre o comportamento da ferramenta e as
+propriedades esperadas para redes \textit{scale-free}, documentadas na literatura. Em particular,
+verificou-se se: (i) hubs centrais como Viracopos (VCP), Guarulhos (GRU) e Brasília (BSB) emergem
+no topo do ranking de criticidade; (ii) o ataque direcionado fragmenta a rede de forma muito mais
+acentuada que a falha aleatória de mesma magnitude. Esse é o comportamento esperado segundo Couto
+et al. (2015), que reportam a rede aérea brasileira como não-resiliente a ataques direcionados e
+apontam Viracopos como nó crítico cuja remoção fragmenta a malha. Ambos os critérios foram
+satisfeitos pelos resultados (Seção~\ref{sec:resultados}): a coerência entre o comportamento da
+ferramenta e esses achados independentes constitui evidência de validade.
 
-% 7. RESULTADOS ESPERADOS
-\section{Resultados Esperados}
+\subsection{Verificação e Confiabilidade}
 
-Alinhado ao nível de maturidade tecnológica TRL 3--5 previsto para a disciplina, o projeto
-entregará:
+É preciso distinguir \textbf{verificação} (o programa faz o que a especificação define) de
+\textbf{validação} (o modelo corresponde à realidade). A confiabilidade da ferramenta apoia-se em
+três pilares de verificação, deixando a validação empírica como trabalho futuro.
 
-\begin{itemize}[leftmargin=*]
-  \item Uma \textbf{base de dados tratada} com rotas e movimentação de passageiros da rede
-        aeroportuária brasileira.
-  \item Um \textbf{grafo computacional da malha aérea nacional}, documentado em Jupyter Notebook
-        e organizado para reprodução dos experimentos.
-  \item Um \textbf{ranking de criticidade aeroportuária}, baseado em métricas de centralidade e
-        impacto estrutural.
-  \item Um \textbf{simulador experimental de falhas}, capaz de representar remoções aleatórias e
-        direcionadas de aeroportos.
-  \item Um \textbf{relatório técnico-científico} com descrição dos cenários, análise dos impactos
-        observados e interpretação dos resultados.
-\end{itemize}
+\textbf{(i) Verificação automatizada.} O modelo de realocação sob capacidade é coberto por um
+conjunto de testes automatizados que asseguram sua consistência interna: o caso-limite de
+capacidade infinita ($\alpha \to \infty$) reproduz exatamente a simulação topológica de ataque
+(teste discriminador); a redução da folga $\alpha$ aumenta monotonicamente a demanda não realocada;
+e nenhum aeroporto recebe carga acima de sua capacidade. Registra-se ainda, como teste, o
+\textit{resultado negativo} que motivou o desenho: a propagação ingênua de sobrecarga colapsa a
+rede de forma praticamente insensível a $\alpha$, comportamento coerente com a observação de
+Cumelles et al. (2021) de que modelos de fluxo contínuo são inadequados a redes aéreas.
 
-% 8. CRONOGRAMA
-\section{Cronograma}
+\textbf{(ii) Coerência com a literatura.} Os resultados são confrontados com achados independentes
+(Albert et al., 2000; Couto et al., 2015), conforme o Plano de Validação.
+
+\textbf{(iii) Reprodutibilidade.} Todos os indicadores e tabelas são regeneráveis a partir dos
+dados públicos e dos \textit{scripts} versionados, sem dependências externas, o que permite
+auditoria e replicação independentes.
+
+A confiabilidade aqui afirmada é, portanto, de \emph{consistência interna, coerência com a
+literatura e reprodutibilidade} --- não de validação empírica contra dados operacionais reais, que
+depende de capacidades declaradas de pista/\textit{slots} e da calibração de $\alpha$, e permanece
+como trabalho futuro.
+
+% 7. RESULTADOS
+\section{Resultados}
+\label{sec:resultados}
+
+\subsection{Caracterização da Rede}
+
+A partir de 1.430.477 etapas de voo úteis (extraídas de 2.350.330 registros brutos), o grafo
+resultante reúne \textbf{155 aeroportos} e \textbf{622 rotas} não direcionais, com volume total
+de \textbf{100.873.591 passageiros} associado às arestas. A rede é \textbf{conexa} (um único
+componente conectado abrangendo os 155 aeroportos), confirmando a ausência de aeroportos
+isolados na operação regular de 2025. Essa estrutura --- poucos nós de grau muito elevado e uma
+longa cauda de aeroportos pouco conectados --- é compatível com a caracterização da malha aérea
+brasileira como rede \textit{scale-free} por Couto et al. (2015).
+
+\subsection{Ranking de Criticidade e sua Robustez}
+
+A Tabela~\ref{tab:ranking} apresenta os dez aeroportos mais críticos segundo o índice composto.
+O aeroporto de \textbf{Viracopos (VCP)} ocupa a primeira posição, com a maior \textit{betweenness}
+da rede (0{,}286), seguido por Confins (CNF) e Guarulhos (GRU). Vale notar que GRU, apesar de
+concentrar o maior volume de passageiros (29{,}9 milhões), aparece em terceiro: a criticidade
+\textit{estrutural} não coincide com o mero volume, e sim com o papel de intermediação ---
+exatamente o que o índice composto pretende capturar.
 
 \begin{table}[h!]
 \centering
-\renewcommand{\arraystretch}{1.5}
-\begin{tabularx}{\textwidth}{|X|c|c|c|c|}
-\hline
-\rowcolor{azul}
-\textcolor{white}{\textbf{Atividade}} &
-\textcolor{white}{\textbf{Mar}} &
-\textcolor{white}{\textbf{Abr}} &
-\textcolor{white}{\textbf{Mai}} &
-\textcolor{white}{\textbf{Jun}} \\
-\hline
-Levantamento bibliográfico e revisão de literatura
-  & $\bullet$ & $\bullet$ & & \\
-\hline
-\rowcolor{azulclaro}
-Coleta e tratamento dos dados ANAC/INFRAERO
-  & $\bullet$ & $\bullet$ & & \\
-\hline
-Modelagem da rede aeroportuária como grafo
-  & & $\bullet$ & $\bullet$ & \\
-\hline
-\rowcolor{azulclaro}
-Implementação do simulador de falhas em Python
-  & & $\bullet$ & $\bullet$ & \\
-\hline
-Simulações e análise de vulnerabilidade
-  & & & $\bullet$ & $\bullet$ \\
-\hline
-\rowcolor{azulclaro}
-Validação e teste com cenários reais
-  & & & $\bullet$ & $\bullet$ \\
-\hline
-Redação do documento e relatório final
-  & & & $\bullet$ & $\bullet$ \\
-\hline
-\end{tabularx}
-\caption{Cronograma de atividades do projeto (Mar--Jun 2026)}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{clrrrr}
+\toprule
+\textbf{\#} & \textbf{Aeroporto} & \textbf{Grau} & \textbf{Passageiros} & \textbf{Betweenness} & \textbf{Score} \\
+\midrule
+1  & VCP --- Campinas/SP       & 79 & 11.717.415 & 0{,}2859 & 0{,}5815 \\
+2  & CNF --- Confins/MG        & 64 & 12.216.388 & 0{,}2162 & 0{,}5266 \\
+3  & GRU --- Guarulhos/SP      & 62 & 29.909.827 & 0{,}1082 & 0{,}5036 \\
+4  & REC --- Recife/PE         & 47 &  9.160.522 & 0{,}1263 & 0{,}4542 \\
+5  & CGH --- São Paulo/SP      & 48 & 24.493.686 & 0{,}0420 & 0{,}4474 \\
+6  & BSB --- Brasília/DF       & 41 & 15.626.199 & 0{,}0468 & 0{,}4251 \\
+7  & MAO --- Manaus/AM         & 32 &  2.909.349 & 0{,}1896 & 0{,}4207 \\
+8  & GIG --- Rio de Janeiro/RJ & 38 & 11.572.338 & 0{,}0311 & 0{,}4076 \\
+9  & SSA --- Salvador/BA       & 33 &  7.128.371 & 0{,}0548 & 0{,}3953 \\
+10 & FOR --- Fortaleza/CE      & 29 &  5.490.756 & 0{,}0596 & 0{,}3831 \\
+\bottomrule
+\end{tabular}
+\caption{Dez aeroportos mais críticos por índice composto de criticidade.}
+\label{tab:ranking}
 \end{table}
+
+O índice usa \textbf{pesos iguais} (média simples), por ser a escolha neutra na ausência de
+calibração. Para verificar se o resultado depende dessa escolha, o top-10 foi recomputado sob
+\textbf{análise de sensibilidade}, perturbando-se os pesos para enfatizar cada uma das três
+dimensões e testando-se também ponderações alternativas. \textbf{VCP permaneceu como nó mais
+crítico em todas as configurações}, e o top-10 manteve-se estável: em metade das perturbações o
+conjunto foi idêntico ao base (interseção 10/10, Jaccard $1{,}00$) e, no restante, 9 dos 10
+aeroportos foram retidos (Jaccard $0{,}82$), com a troca de um único aeroporto na fronteira do
+ranking (entre Manaus e Fortaleza, conforme se reforce ou não a \textit{betweenness}). O
+resultado, portanto, \textbf{não é dirigido pela escolha exata dos pesos}: os aeroportos
+estruturalmente centrais emergem sob qualquer ponderação razoável das três dimensões.
+
+\subsection{Ataque Direcionado \textit{versus} Falha Aleatória}
+
+A Tabela~\ref{tab:ataque} compara, no décimo passo de remoção, o ataque direcionado (remoção dos
+dez aeroportos mais críticos) e a falha aleatória (sorteio com semente fixa). A assimetria é
+expressiva: o ataque direcionado fragmenta a rede em 48 componentes e isola 37 aeroportos,
+reduzindo o maior componente a 87 dos 155 aeroportos (56{,}1\%); a falha aleatória de mesma
+magnitude preserva um maior componente de 132 aeroportos (85{,}2\%), com apenas 10 componentes e
+5 isolados. A primeira fragmentação ocorreu já no \textbf{passo 1} do ataque (remoção de VCP),
+contra o \textbf{passo 6} no cenário aleatório.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Cenário (passo 10)} & \textbf{Maior componente} & \textbf{Componentes} & \textbf{Isolados} \\
+\midrule
+Ataque direcionado & 87 (56{,}1\%) & 48 & 37 \\
+Falha aleatória    & 132 (85{,}2\%) & 10 & 5 \\
+\bottomrule
+\end{tabular}
+\caption{Degradação da conectividade após dez remoções, por cenário.}
+\label{tab:ataque}
+\end{table}
+
+Esse é exatamente o comportamento previsto por Albert, Jeong e Barabási (2000) para redes
+\textit{scale-free}: tolerância a falhas aleatórias e fragilidade a ataques direcionados aos
+hubs.
+
+\subsection{Realocação de Demanda sob Capacidade}
+
+A Tabela~\ref{tab:cascata} reporta a varredura de $\alpha$ no décimo passo do ataque, sobre a
+\textbf{demanda total de 201.747.182 passageiros} (embarcados mais desembarcados --- o dobro do
+volume de arestas, pois cada passageiro é contado na origem e no destino). No cenário de
+referência $\alpha = 0{,}20$ (folga de 20\%), \textbf{115{,}9 milhões de passageiros (57{,}5\% da
+demanda)} ficam sem realocação viável após o fechamento dos dez maiores hubs. A fração varia de
+\textbf{29{,}1\% com folga de 100\%} a \textbf{61{,}0\% com folga de apenas 10\%}.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{cccc}
+\toprule
+\textbf{$\alpha$ (folga)} & \textbf{Aeroportos saturados} & \textbf{Demanda não realocada} & \textbf{\% da demanda} \\
+\midrule
+0{,}10 & 144 & 123.072.667 & 61{,}0\% \\
+\rowcolor{azulclaro}
+0{,}20 & 144 & 115.920.483 & 57{,}5\% \\
+0{,}50 & 144 &  94.463.930 & 46{,}8\% \\
+1{,}00 & 144 &  58.703.010 & 29{,}1\% \\
+\bottomrule
+\end{tabular}
+\caption{Demanda não realocada no passo 10 do ataque, por folga de capacidade $\alpha$. A linha
+destacada é o cenário de referência ($\alpha = 0{,}20$).}
+\label{tab:cascata}
+\end{table}
+
+Dois achados, sempre condicionados às premissas do modelo (Seção~\ref{sec:limitacoes}):
+(i)~a fração de demanda sem realocação é alta e cresce ao se reduzir a folga --- a remoção dos
+grandes hubs introduz demanda em escala muito superior à capacidade residual do restante do
+sistema; (ii)~o número de aeroportos saturados é praticamente constante ($\approx 144$) em toda
+a faixa de $\alpha$ examinada, de modo que o sinal informativo é a \textbf{demanda não realocada},
+não a contagem de saturados.
+
+\paragraph{Resultado negativo que motivou o desenho.} A primeira versão do modelo seguiu a cascata
+clássica por \textit{propagação de sobrecarga} (despejar a carga sobre vizinhos ignorando
+capacidade, falhando quem excede o limite). O resultado é degenerado: a rede colapsa quase por
+completo (resta um único aeroporto) e o desfecho é praticamente \textbf{insensível a $\alpha$} ---
+dar 10\% ou 100\% de folga não muda o colapso. Esse comportamento, coerente com a observação de
+Cumelles et al. (2021) de que modelos de fluxo contínuo são inadequados a redes aéreas, motivou a
+substituição do mecanismo pela realocação que respeita a capacidade. A degenerescência é
+reproduzível e está registrada como asserção de teste.
+
+% 7.5 DISCUSSÃO
+\section{Discussão: Contribuição, Inovação e Impacto}
+\label{sec:discussao}
+
+\subsection{Coerência dos Resultados}
+
+Os três blocos de resultados são internamente coerentes e convergem com a literatura independente,
+o que sustenta a validade da ferramenta. O ranking eleva ao topo aeroportos de forte papel de
+intermediação --- com VCP em primeiro lugar, em concordância direta com Couto et al. (2015), que
+já apontavam Viracopos como o nó cuja remoção mais fragmenta a malha nacional. A simulação
+topológica reproduz a assimetria ataque/aleatório característica de redes \textit{scale-free}
+(Albert et al., 2000). E o modelo de capacidade quantifica algo que a análise puramente
+topológica não alcança: mesmo quando a rede permanece formalmente conectada, o sistema não dispõe
+de capacidade residual para reabsorver a demanda dos hubs fechados. As três análises, obtidas por
+caminhos independentes, contam a mesma história sobre a concentração de risco em poucos nós.
+
+\subsection{Natureza da Contribuição: Inovação de Processo}
+
+A contribuição central deste trabalho \textbf{não} é uma descoberta inédita sobre a topologia da
+rede aérea brasileira --- essa estrutura já foi caracterizada academicamente. A inovação é de
+\textbf{processo}: a entrega de um \textbf{artefato aberto, reproduzível e auditável} que organiza
+microdados públicos da ANAC e métodos de análise de redes em uma ferramenta documentada e
+executável. O panorama existente apresenta dois extremos --- de um lado, artigos acadêmicos que
+\textit{descrevem} resultados mas não disponibilizam ferramenta executável e extensível; de outro,
+soluções comerciais (OAG, Cirium) que são proprietárias e fechadas. Este trabalho ocupa a lacuna
+intermediária: todo número deste relatório é regenerável a partir de \textit{scripts} versionados,
+sem dependências externas (apenas a biblioteca padrão de Python; algoritmos de grafo escritos do
+zero), acompanhado de visualização interativa offline. O valor está na \textbf{transformação de
+dados dispersos em indicadores objetivos e reproduzíveis}.
+
+Três elementos reforçam a solidez dessa contribuição, além da mera disponibilização de código:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Robustez metodológica.} O ranking de criticidade não depende de uma calibração
+        arbitrária: VCP permanece como nó mais crítico sob todas as ponderações testadas e o top-10
+        mantém-se estável aos pesos do índice (idêntico em cinco das seis perturbações; 9 dos 10
+        retidos sob pesos uniformes). Conclusões que sobrevivem à variação de seus próprios
+        parâmetros são mais confiáveis.
+  \item \textbf{Um resultado negativo informativo.} A demonstração de que a cascata ingênua por
+        propagação de sobrecarga colapsa a rede de forma insensível a $\alpha$ não é um fracasso
+        --- é um achado que justifica empiricamente a escolha de um modelo de realocação com
+        restrição de capacidade, e dialoga diretamente com Cumelles et al. (2021).
+  \item \textbf{Honestidade epistêmica.} O trabalho distingue explicitamente \textbf{verificação}
+        (consistência interna, garantida por testes automatizados) de \textbf{validação} (a
+        correspondência com a realidade, declarada como trabalho futuro). Não se reivindica
+        validação empírica que não foi feita --- o que torna as afirmações de confiabilidade
+        precisas e defensáveis.
+\end{itemize}
+
+\subsection{Impacto}
+
+No plano \textbf{prático}, o artefato oferece uma leitura objetiva de quais aeroportos concentram
+risco estrutural na malha nacional, com subsídios para estudos de planejamento, contingência e
+priorização de investimentos em capacidade. A camada de capacidade vai além da pergunta ``a rede
+se desconecta?'' para ``o sistema consegue reabsorver os passageiros afetados?'' --- mais próxima
+da experiência real do passageiro e do operador. No plano \textbf{científico e educacional}, por
+ser aberto, testado e reproduzível, o artefato pode ser auditado, criticado e estendido por outros
+pesquisadores e estudantes, servindo de base para os trabalhos futuros listados a seguir ---
+notadamente a substituição do proxy de capacidade por dados reais. É precisamente a
+reprodutibilidade que converte um exercício pontual em uma plataforma reutilizável.
+
+% 7.6 LIMITAÇÕES E TRABALHOS FUTUROS
+\section{Limitações e Trabalhos Futuros}
+\label{sec:limitacoes}
+
+A proposta delimita-se deliberadamente à análise da \textbf{vulnerabilidade estrutural} da rede, ou
+seja, ao impacto da remoção de aeroportos sobre a \textit{topologia} da malha (conectividade,
+componentes e isolamento de nós). Algumas escolhas de escopo merecem registro explícito:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Modelo estático.} O grafo representa a malha em um período de referência; não são
+        modeladas dinâmicas temporais de voos (atrasos, propagação hora a hora), que exigiriam um
+        modelo orientado a eventos, como discutido por Cumelles et al. (2021).
+  \item \textbf{Capacidade como parâmetro, não como dado --- a premissa dos 20\%.} A limitação
+        mais importante a registrar é o modelo de capacidade. Não existe base pública consolidada
+        de capacidade real de pista e de \textit{slots} por aeroporto; por isso, a capacidade foi
+        aproximada por $C_i = (1 + \alpha)\,L_i$, ou seja, supôs-se que cada aeroporto consegue
+        absorver uma \textbf{folga de 20\% acima de sua própria demanda observada}
+        ($\alpha = 0{,}20$) no cenário de referência. \textbf{Esse valor é uma suposição, não uma
+        medida}: 20\% pode ser muito ou pouco, e variar amplamente entre um pequeno aeroporto
+        regional e um grande hub metropolitano operando no limite. Justamente por reconhecer essa
+        incerteza, os resultados não foram reportados para um único $\alpha$, mas ao longo de uma
+        \textbf{varredura} (Tabela~\ref{tab:cascata}): a fração de demanda sem realocação varia de
+        29\% (folga de 100\%) a 61\% (folga de 10\%). Essa sensibilidade tem duas leituras. A
+        favor do trabalho: mesmo no cenário \textit{mais} otimista (100\% de folga), mais de um
+        quarto da demanda fica desatendida --- o achado qualitativo (alta concentração de risco
+        nos hubs) é \textbf{robusto à premissa}. Como limite: os \textbf{números absolutos} de
+        demanda não realocada devem ser lidos como comparativos entre cenários, não como
+        previsões. A \textbf{calibração empírica de $\alpha$} a partir de capacidades reais e de
+        episódios históricos de fechamento de aeroportos é o trabalho futuro mais relevante, e a
+        própria varredura indica por quê: é a faixa de $\alpha$ que determina a magnitude do
+        impacto estimado.
+  \item \textbf{Demais simplificações do modelo de capacidade.} A realocação opera sobre demanda
+        anual agregada (não sobre voos programados, sem dimensão temporal) e é feita por
+        proximidade geográfica, independentemente de o destino estar no mesmo componente conexo da
+        rede fragmentada. A substituição da realocação por proximidade por um \textbf{modelo de
+        Huff} com tempos de viagem (Correia et al.) permanece como refinamento futuro.
+\end{itemize}
+
+O reconhecimento explícito desses limites delimita com precisão o que o artefato entrega e o que
+fica em aberto, orientando trabalhos subsequentes sem comprometer a validade dos resultados
+obtidos.
+
+% 8. CONCLUSÃO
+\section{Conclusão}
+
+Este trabalho entregou um artefato computacional aberto e reproduzível para a análise de
+vulnerabilidade da rede aeroportuária brasileira, cumprindo os objetivos propostos. A partir de
+microdados públicos da ANAC (doze meses de 2025), a malha foi modelada como um grafo ponderado de
+155 aeroportos e 622 rotas, sobre o qual se calcularam um ranking de criticidade e simulações de
+remoção de nós.
+
+Os resultados respondem à questão orientadora. Os aeroportos estruturalmente mais críticos são os
+de forte papel de intermediação --- com \textbf{Viracopos (VCP)} em primeiro lugar, em
+concordância com a literatura independente --- e o impacto de sua remoção é fortemente assimétrico:
+o ataque direcionado fragmenta a malha muito mais que a falha aleatória de mesma magnitude
+(maior componente de 56{,}1\% contra 85{,}2\% no passo 10), confirmando a fragilidade típica de
+redes \textit{scale-free}. A camada exploratória de capacidade acrescenta que, fechados os dez
+maiores hubs, de 29\% a 61\% da demanda de passageiros fica sem realocação viável, conforme a
+folga de capacidade assumida.
+
+A contribuição é uma \textbf{inovação de processo}: não uma nova descoberta topológica, mas a
+conversão de dados dispersos em uma ferramenta documentada, testada (verificação por testes
+automatizados), robusta (ranking estável a perturbações nos pesos) e auditável. A principal fronteira em
+aberto é a \textbf{validação empírica do modelo de capacidade} --- a substituição da folga
+suposta de 20\% por capacidades reais e a calibração de $\alpha$ a partir de episódios históricos
+de interrupção --- caminho que a natureza aberta e reproduzível do artefato deliberadamente
+facilita.
 
 % 9. REFERÊNCIAS
 \section{Referências Bibliográficas}
@@ -353,6 +660,11 @@ of complex networks.} \textit{Nature}, v. 406, p. 378--382, 2000. DOI: 10.1038/3
 \textbf{Estimativa da distribuição da demanda na Região Metropolitana de São Paulo com cenários
 de um novo aeroporto.} \textit{Journal of Transport Literature}, 2013.
 
+\item COUTO, Guilherme S.; SILVA, Ana Paula Couto da; RUIZ, Linnyer B.; BENEVENUTO, Fabrício.
+\textbf{Structural properties of the Brazilian air transportation network.} \textit{Anais da
+Academia Brasileira de Ciências}, v. 87, n. 3, p. 1653--1674, 2015.
+DOI: 10.1590/0001-3765201520140155.
+
 \item CUMELLES, Joel; LORDAN, Oriol; SALLAN, Jose M. \textbf{Cascading failures in airport
 networks.} \textit{Journal of Air Transport Management}, v. 92, 2021.
 DOI: 10.1016/j.jairtraman.2021.102026.
@@ -360,10 +672,6 @@ DOI: 10.1016/j.jairtraman.2021.102026.
 \item AGÊNCIA NACIONAL DE AVIAÇÃO CIVIL (ANAC). \textbf{Dados de movimentação de passageiros
 --- microdados de voos regulares.} Disponível em: \url{https://dados.anac.gov.br}. Acesso em:
 abr. 2026.
-
-\item HAGBERG, Aric A.; SCHULT, Daniel A.; SWART, Pieter J. \textbf{Exploring network structure,
-dynamics, and function using NetworkX.} In: \textit{Proceedings of the 7th Python in Science
-Conference (SciPy 2008)}. Disponível em: \url{https://networkx.org}. Acesso em: abr. 2026.
 
 \end{itemize}
 

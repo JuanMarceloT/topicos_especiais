@@ -270,10 +270,31 @@ def carregar_dados() -> dict:
                     "vol_restante": float(row["fracao_volume_restante"]),
                 })
 
+    # Simulação de realocação sob capacidade (Cumelles, adaptado)
+    sim_realoc = []
+    realoc_path = RES / "simulacao_cascata_capacidade_2025.csv"
+    alpha_realoc = None
+    if realoc_path.exists():
+        with realoc_path.open(encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                alpha_realoc = row.get("alpha")
+                sim_realoc.append({
+                    "passo":     int(row["passo"]),
+                    "removido":  row["aeroporto_removido"],
+                    "removidos": row["removidos_acumulados"].split("|"),
+                    "saturados": row["lista_saturados"].split("|") if row["lista_saturados"] else [],
+                    "maior_comp": int(row["maior_componente"]),
+                    "fracao":    float(row["fracao_maior_componente"]),
+                    "saturados_n": int(row["aeroportos_saturados"]),
+                    "frac_stranded": float(row["fracao_demanda_nao_realocada"]),
+                })
+
     return {
         "airports": airports,
         "routes":   routes,
         "sim":      sim,
+        "sim_realoc": sim_realoc,
+        "alpha_realoc": alpha_realoc,
         "sem_coord": sem_coord,
         "total":    len(ranking),
     }
@@ -322,6 +343,7 @@ def gerar_html(dados: dict) -> str:
   .airport:hover {{ r: 10px; }}
   .airport.removed {{ opacity: 0.15; }}
   .airport.isolated {{ stroke: #f59e0b !important; stroke-width: 2; }}
+  .airport.saturated {{ stroke: #ef4444 !important; stroke-width: 2.5; fill: #ef4444; }}
 
   .a-label {{
     font-size: 9px;
@@ -467,6 +489,10 @@ def gerar_html(dados: dict) -> str:
   button:disabled {{ opacity: 0.4; cursor: default; }}
   #sim-step-label {{ font-size: 12px; color: #8b949e; }}
 
+  #sim-modes {{ display: flex; gap: 6px; margin-bottom: 8px; }}
+  .modo-btn {{ flex: 1; font-size: 10px; padding: 5px 4px; text-align: center; }}
+  .modo-btn.active {{ background: #1f6feb; border-color: #1f6feb; color: #fff; }}
+
   #sim-progress {{
     height: 4px;
     background: #21262d;
@@ -537,6 +563,8 @@ def gerar_html(dados: dict) -> str:
     <div class="leg-item"><div class="leg-dot" style="width:9px;height:9px;background:#3b82f6;"></div> Top 4–20</div>
     <div class="leg-item"><div class="leg-dot" style="width:7px;height:7px;background:#22d3ee;"></div> Top 21–50</div>
     <div class="leg-item"><div class="leg-dot" style="width:5px;height:5px;background:#6b7280;"></div> Demais</div>
+    <div class="leg-item" style="margin-top:6px;"><div class="leg-dot" style="width:9px;height:9px;background:transparent;border:2px solid #f59e0b;"></div> Isolado (ataque)</div>
+    <div class="leg-item"><div class="leg-dot" style="width:9px;height:9px;background:#ef4444;"></div> Saturado (realocação)</div>
     <div class="leg-item" style="margin-top:6px;"><div style="width:20px;height:1px;background:#60a5fa;opacity:0.6;"></div> Top 50 rotas</div>
     <div class="leg-item"><div style="width:20px;height:1px;background:#3d82f6;opacity:0.25;"></div> Demais rotas</div>
   </div>
@@ -560,14 +588,18 @@ def gerar_html(dados: dict) -> str:
     </div>
     <div class="stat-box">
       <div class="val" id="stat-comp">1</div>
-      <div class="lbl">Componentes</div>
+      <div class="lbl" id="stat-comp-lbl">Componentes</div>
     </div>
   </div>
 
   <div id="top-list"></div>
 
   <div id="sim-panel">
-    <h2>Simulação de ataque</h2>
+    <h2 id="sim-title">Simulação de ataque</h2>
+    <div id="sim-modes">
+      <button id="btn-modo-topo" class="modo-btn active">Ataque topológico</button>
+      <button id="btn-modo-realoc" class="modo-btn">Realocação (capacidade)</button>
+    </div>
     <div id="sim-controls">
       <button id="btn-reset">↺</button>
       <button id="btn-prev">‹</button>
@@ -585,13 +617,14 @@ def gerar_html(dados: dict) -> str:
       <span class="sim-stat-val" id="ss-maior">—</span>
     </div>
     <div class="sim-stat-row">
-      <span class="sim-stat-key">Componentes</span>
+      <span class="sim-stat-key" id="ss-k3">Componentes</span>
       <span class="sim-stat-val" id="ss-comp">—</span>
     </div>
     <div class="sim-stat-row">
-      <span class="sim-stat-key">Volume restante</span>
+      <span class="sim-stat-key" id="ss-k4">Volume restante</span>
       <span class="sim-stat-val" id="ss-vol">—</span>
     </div>
+    <div id="sim-nota" style="font-size:10px;color:#8b949e;margin-top:8px;"></div>
   </div>
 </div>
 
@@ -776,59 +809,87 @@ function focusAirport(id) {{
   selectRankItem(a.rank);
 }}
 
-// ── Simulação ─────────────────────────────────────────────────────────────────
+// ── Simulação (dois modos: ataque topológico e realocação sob capacidade) ──────
 let simStep = 0;
-const simLen = DATA.sim.length;
+let modo = 'topo';                 // 'topo' | 'realoc'
 let playTimer = null;
 
+function dataset() {{ return modo === 'realoc' ? DATA.sim_realoc : DATA.sim; }}
+function simLen() {{ return dataset().length; }}
+
 function applySimStep(step) {{
-  // Resetar todos
-  d3.selectAll('.airport').classed('removed', false).classed('isolated', false);
+  d3.selectAll('.airport').classed('removed', false).classed('isolated', false).classed('saturated', false);
   d3.selectAll('.rank-item').classed('removed-item', false);
+  const N = simLen();
+  const ehRealoc = modo === 'realoc';
 
   if (step === 0) {{
     document.getElementById('ss-removido').textContent = '—';
     document.getElementById('ss-maior').textContent    = '—';
     document.getElementById('ss-comp').textContent     = '—';
     document.getElementById('ss-vol').textContent      = '—';
-    document.getElementById('stat-comp').textContent   = '1';
+    document.getElementById('stat-comp').textContent   = ehRealoc ? '0' : '1';
     document.getElementById('sim-progress-bar').style.width = '0%';
-    document.getElementById('sim-step-label').textContent = `Passo 0 / ${{simLen}}`;
+    document.getElementById('sim-step-label').textContent = `Passo 0 / ${{N}}`;
     document.getElementById('btn-prev').disabled = true;
     document.getElementById('btn-reset').disabled = true;
+    document.getElementById('btn-next').disabled = N === 0;
     return;
   }}
 
-  const s = DATA.sim[step - 1];
+  const s = dataset()[step - 1];
 
-  // Marcar removidos
   s.removidos.forEach(id => {{
     d3.select('#ap-' + id).classed('removed', true);
     const ri = document.querySelector('#ri-' + (DATA.airports.findIndex(a=>a.id===id)+1));
     if (ri) ri.classList.add('removed-item');
   }});
 
-  // Marcar isolados
-  s.isolados.filter(id => id).forEach(id => {{
-    d3.select('#ap-' + id).classed('isolated', true);
-  }});
-
-  // Stats
-  const fracColor = s.fracao > 0.8 ? 'val-ok' : s.fracao > 0.55 ? 'val-warn' : 'val-danger';
   document.getElementById('ss-removido').textContent = s.removido;
-  document.getElementById('ss-maior').innerHTML =
-    `<span class="${{fracColor}}">${{s.maior_comp}} (${{(s.fracao*100).toFixed(1)}}%)</span>`;
-  document.getElementById('ss-comp').textContent  = s.componentes;
-  document.getElementById('ss-vol').innerHTML =
-    `<span class="${{fracColor}}">${{(s.vol_restante*100).toFixed(1)}}%</span>`;
-  document.getElementById('stat-comp').textContent = s.componentes;
-  document.getElementById('sim-progress-bar').style.width =
-    ((step / simLen) * 100) + '%';
-  document.getElementById('sim-step-label').textContent = `Passo ${{step}} / ${{simLen}}`;
+  document.getElementById('sim-progress-bar').style.width = ((step / N) * 100) + '%';
+  document.getElementById('sim-step-label').textContent = `Passo ${{step}} / ${{N}}`;
+
+  if (ehRealoc) {{
+    (s.saturados || []).filter(id => id).forEach(id => d3.select('#ap-' + id).classed('saturated', true));
+    const fc = s.frac_stranded < 0.25 ? 'val-ok' : s.frac_stranded < 0.5 ? 'val-warn' : 'val-danger';
+    document.getElementById('ss-maior').innerHTML = `${{s.maior_comp}} (${{(s.fracao*100).toFixed(1)}}%)`;
+    document.getElementById('ss-comp').textContent = s.saturados_n;
+    document.getElementById('ss-vol').innerHTML = `<span class="${{fc}}">${{(s.frac_stranded*100).toFixed(1)}}%</span>`;
+    document.getElementById('stat-comp').textContent = s.saturados_n;
+  }} else {{
+    (s.isolados || []).filter(id => id).forEach(id => d3.select('#ap-' + id).classed('isolated', true));
+    const fc = s.fracao > 0.8 ? 'val-ok' : s.fracao > 0.55 ? 'val-warn' : 'val-danger';
+    document.getElementById('ss-maior').innerHTML = `<span class="${{fc}}">${{s.maior_comp}} (${{(s.fracao*100).toFixed(1)}}%)</span>`;
+    document.getElementById('ss-comp').textContent = s.componentes;
+    document.getElementById('ss-vol').innerHTML = `<span class="${{fc}}">${{(s.vol_restante*100).toFixed(1)}}%</span>`;
+    document.getElementById('stat-comp').textContent = s.componentes;
+  }}
+
   document.getElementById('btn-prev').disabled  = step <= 1;
   document.getElementById('btn-reset').disabled = step <= 0;
-  document.getElementById('btn-next').disabled  = step >= simLen;
+  document.getElementById('btn-next').disabled  = step >= N;
 }}
+
+function setModo(novo) {{
+  if (novo === 'realoc' && DATA.sim_realoc.length === 0) return;
+  modo = novo;
+  clearPlay();
+  simStep = 0;
+  const ehR = modo === 'realoc';
+  document.getElementById('btn-modo-topo').classList.toggle('active', !ehR);
+  document.getElementById('btn-modo-realoc').classList.toggle('active', ehR);
+  document.getElementById('sim-title').textContent = ehR ? 'Realocação sob capacidade' : 'Simulação de ataque';
+  document.getElementById('ss-k3').textContent = ehR ? 'Aeroportos saturados' : 'Componentes';
+  document.getElementById('ss-k4').textContent = ehR ? 'Demanda não realocada' : 'Volume restante';
+  document.getElementById('stat-comp-lbl').textContent = ehR ? 'Saturados' : 'Componentes';
+  document.getElementById('sim-nota').textContent = ehR
+    ? `Realocação para alternativas próximas com capacidade (α=${{DATA.alpha_realoc}}). Adaptado de Cumelles et al. (2021).`
+    : 'Remoção por criticidade; mede a fragmentação topológica (Albert et al., 2000).';
+  applySimStep(0);
+}}
+
+document.getElementById('btn-modo-topo').addEventListener('click', () => setModo('topo'));
+document.getElementById('btn-modo-realoc').addEventListener('click', () => setModo('realoc'));
 
 document.getElementById('btn-reset').addEventListener('click', () => {{
   clearPlay();
@@ -841,7 +902,7 @@ document.getElementById('btn-prev').addEventListener('click', () => {{
 }});
 document.getElementById('btn-next').addEventListener('click', () => {{
   clearPlay();
-  if (simStep < simLen) {{ simStep++; applySimStep(simStep); }}
+  if (simStep < simLen()) {{ simStep++; applySimStep(simStep); }}
 }});
 
 function clearPlay() {{
@@ -852,12 +913,12 @@ document.getElementById('btn-play').addEventListener('click', function() {{
   if (playTimer) {{
     clearPlay();
   }} else {{
-    if (simStep >= simLen) simStep = 0;
+    if (simStep >= simLen()) simStep = 0;
     this.textContent = '⏸';
     playTimer = setInterval(() => {{
       simStep++;
       applySimStep(simStep);
-      if (simStep >= simLen) clearPlay();
+      if (simStep >= simLen()) clearPlay();
     }}, 800);
   }}
 }});
@@ -866,8 +927,9 @@ document.getElementById('btn-play').addEventListener('click', function() {{
 applySimStep(0);
 document.getElementById('btn-prev').disabled  = true;
 document.getElementById('btn-reset').disabled = true;
-document.getElementById('btn-next').disabled  = simLen === 0;
-document.getElementById('btn-play').disabled  = simLen === 0;
+document.getElementById('btn-next').disabled  = simLen() === 0;
+document.getElementById('btn-play').disabled  = simLen() === 0;
+document.getElementById('btn-modo-realoc').disabled = DATA.sim_realoc.length === 0;
 
 </script>
 </body>

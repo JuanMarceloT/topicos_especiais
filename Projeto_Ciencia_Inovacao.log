@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.7)  7 MAY 2026 16:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.7)  18 JUN 2026 14:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -480,52 +480,51 @@ o.toc)
 \openout4 = `Projeto_Ciencia_Inovacao.toc'.
 
 
-[2] [3] [4] [5]
+[2] [3] [4] [5] [6]
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-39.
+64.
  (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
-[6]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[7] [8] (./Projeto_Ciencia_Inovacao.aux)
+[7] [8] [9] [10] [11] [12] [13] [14] [15] [16] (./Projeto_Ciencia_Inovacao.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `Projeto_Ciencia_Inovacao.out' has not change
 d.
-(rerunfilecheck)             Checksum: 2A52B62FB86B860775AF307B3D0249FA;3276.
+(rerunfilecheck)             Checksum: 6E59B8EB3434E8C47D30CBFDAA20D1BF;5830.
  ) 
 Here is how much of TeX's memory you used:
- 12177 strings out of 476162
- 188780 string characters out of 5794815
+ 12238 strings out of 476162
+ 189554 string characters out of 5794815
  1937975 words of memory out of 5000000
- 33993 multiletter control sequences out of 15000+600000
- 568891 words of font info for 59 fonts, out of 8000000 for 9000
+ 34026 multiletter control sequences out of 15000+600000
+ 573043 words of font info for 67 fonts, out of 8000000 for 9000
  16 hyphenation exceptions out of 8191
- 69i,12n,79p,1213b,593s stack positions out of 10000i,1000n,20000p,200000b,200000s
- </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600
-pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.60
-0pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.6
-00pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.
-600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440
-.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm109
-5.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm14
-40.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2
-074.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm
-1200.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecc
-c1440.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex1
-0.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on Projeto_Ciencia_Inovacao.pdf (8 pages, 182743 bytes).
+ 69i,13n,79p,1213b,608s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbi1200.600
+pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1095.60
+0pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.6
+00pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.
+600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200
+.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx120
+0.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx14
+40.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1
+095.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm
+1440.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecb
+x2074.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ec
+rm1200.600pk> </home/aprix/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/e
+ccc1440.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cme
+x10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on Projeto_Ciencia_Inovacao.pdf (16 pages, 245729 bytes).
 PDF statistics:
- 596 PDF objects out of 1000 (max. 8388607)
- 213 compressed objects within 3 object streams
- 37 named destinations out of 1000 (max. 500000)
- 169 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 810 PDF objects out of 1000 (max. 8388607)
+ 326 compressed objects within 4 object streams
+ 61 named destinations out of 1000 (max. 500000)
+ 257 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,0 +1,7 @@
+# Microdados brutos da ANAC — não versionados por tamanho (~2 GB).
+# Baixe de https://dados.anac.gov.br para DADOS/ no formato combinada2025-*.txt
+DADOS/
+
+# Caches do Python
+__pycache__/
+*.pyc

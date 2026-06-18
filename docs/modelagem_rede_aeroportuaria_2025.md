@@ -107,12 +107,12 @@ Os dez aeroportos mais criticos segundo o score calculado foram:
 2. CNF - Confins/MG
 3. GRU - Guarulhos/SP
 4. REC - Recife/PE
-5. MAO - Manaus/AM
-6. CGH - Sao Paulo/SP
-7. BSB - Brasilia/DF
+5. CGH - Sao Paulo/SP
+6. BSB - Brasilia/DF
+7. MAO - Manaus/AM
 8. GIG - Rio de Janeiro/RJ
 9. SSA - Salvador/BA
-10. BEL - Belem/PA
+10. FOR - Fortaleza/CE
 
 Esses aeroportos se destacam por combinarem alta conectividade, alto volume de passageiros ou
 papel relevante como intermediarios entre diferentes partes da rede.
@@ -122,7 +122,7 @@ papel relevante como intermediarios entre diferentes partes da rede.
 A modelagem indica que a rede aeroportuaria brasileira apresenta forte dependencia de aeroportos
 centrais. Aeroportos como VCP, CNF e GRU aparecem em posicoes elevadas por conectarem grande
 quantidade de destinos e concentrarem volume significativo de passageiros. Outros aeroportos,
-como MAO, REC e BEL, aparecem com destaque por sua funcao regional, especialmente na conexao de
+como MAO, REC e FOR, aparecem com destaque por sua funcao regional, especialmente na conexao de
 areas mais distantes aos principais centros da malha.
 
 Essa base permite avancar para a proxima etapa do projeto: a simulacao de falhas. Nessa etapa,

@@ -67,16 +67,47 @@ def haversine(a: tuple[float, float], b: tuple[float, float]) -> float:
     return 2 * raio * math.asin(math.sqrt(h))
 
 
+REGRAS = ("proximidade", "conectado", "capacidade")
+
+
+def _ordenar_candidatos(
+    fechado: str,
+    vivos: set[str],
+    coords: dict[str, tuple[float, float]],
+    adj0: dict[str, dict[str, int]],
+    capacidade: dict[str, float],
+    ocupacao: dict[str, float],
+    regra: str,
+) -> list[str]:
+    """Ordena as alternativas segundo a regra de selecao (selection rule)."""
+    base = [v for v in vivos if v in coords]
+    if regra == "capacidade":
+        # maior capacidade residual primeiro (ignora distancia)
+        return sorted(base, key=lambda v: capacidade[v] - ocupacao[v], reverse=True)
+    if regra == "conectado":
+        # aeroportos diretamente conectados ao fechado primeiro, depois por distancia
+        vizinhos = set(adj0.get(fechado, {}))
+        return sorted(
+            base,
+            key=lambda v: (0 if v in vizinhos else 1, haversine(coords[fechado], coords[v])),
+        )
+    # "proximidade": mais proximo primeiro
+    return sorted(base, key=lambda v: haversine(coords[fechado], coords[v]))
+
+
 def realocar_demanda(
     adj0: dict[str, dict[str, int]],
     demanda0: dict[str, float],
     coords: dict[str, tuple[float, float]],
     removidos: list[str],
     alpha: float,
+    regra: str = "proximidade",
 ) -> dict[str, object]:
-    """Realoca a demanda dos aeroportos fechados para as alternativas proximas.
+    """Realoca a demanda dos aeroportos fechados para as alternativas, segundo `regra`.
 
     alpha = inf => capacidade infinita: toda demanda com algum destino viavel e absorvida.
+    `regra` em REGRAS: proximidade (mais proximo), conectado (vizinho de rota primeiro),
+    capacidade (maior folga residual primeiro).
     """
     infinita = math.isinf(alpha)
     capacidade = {
@@ -87,15 +118,15 @@ def realocar_demanda(
     vivos = set(adj0) - set(removidos)
     saturados: list[str] = []
     nao_realocada = 0.0
+    passageiro_km = 0.0
 
     for fechado in removidos:
         a_realocar = demanda0.get(fechado, 0.0)
         if fechado not in coords:
             nao_realocada += a_realocar
             continue
-        cand = sorted(
-            (v for v in vivos if v in coords),
-            key=lambda v: haversine(coords[fechado], coords[v]),
+        cand = _ordenar_candidatos(
+            fechado, vivos, coords, adj0, capacidade, ocupacao, regra
         )
         for v in cand:
             if a_realocar <= 1e-6:
@@ -106,11 +137,17 @@ def realocar_demanda(
             usado = min(residual, a_realocar)
             ocupacao[v] += usado
             a_realocar -= usado
+            passageiro_km += usado * haversine(coords[fechado], coords[v])
             if not infinita and ocupacao[v] >= capacidade[v] - 1e-6 and v not in saturados:
                 saturados.append(v)
         nao_realocada += a_realocar
 
-    return {"vivos": vivos, "saturados": saturados, "nao_realocada": nao_realocada}
+    return {
+        "vivos": vivos,
+        "saturados": saturados,
+        "nao_realocada": nao_realocada,
+        "passageiro_km": passageiro_km,
+    }
 
 
 def simular_ataque_cascata(
@@ -120,6 +157,7 @@ def simular_ataque_cascata(
     ordem: list[str],
     limite: int,
     alpha: float,
+    regra: str = "proximidade",
 ) -> list[dict[str, object]]:
     """Remove aeroportos na ordem do ranking; a cada passo realoca a demanda acumulada."""
     total_nos = len(adj0)
@@ -127,7 +165,7 @@ def simular_ataque_cascata(
     linhas = []
     for k in range(1, limite + 1):
         removidos = ordem[:k]
-        res = realocar_demanda(adj0, demanda0, coords, removidos, alpha)
+        res = realocar_demanda(adj0, demanda0, coords, removidos, alpha, regra)
         adj = remover_nos(adj0, set(removidos))
         comps = componentes(adj)
         maior = comps[0] if comps else []
@@ -137,14 +175,40 @@ def simular_ataque_cascata(
                 "aeroporto_removido": ordem[k - 1],
                 "alpha": alpha,
                 "aeroportos_removidos": k,
+                "removidos_acumulados": "|".join(removidos),
                 "aeroportos_saturados": len(res["saturados"]),
+                "lista_saturados": "|".join(res["saturados"]),
                 "maior_componente": len(maior),
                 "fracao_maior_componente": len(maior) / total_nos if total_nos else 0,
                 "passageiros_nao_realocados": round(res["nao_realocada"]),
                 "fracao_demanda_nao_realocada": res["nao_realocada"] / demanda_total,
+                "passageiro_km_realocacao": round(res["passageiro_km"]),
             }
         )
     return linhas
+
+
+def comparar_regras(
+    adj0: dict[str, dict[str, int]],
+    demanda0: dict[str, float],
+    coords: dict[str, tuple[float, float]],
+    ordem: list[str],
+    passo: int,
+    alpha: float,
+) -> list[dict[str, object]]:
+    """Compara as selection rules no passo dado (distancia total de realocacao)."""
+    saida = []
+    for regra in REGRAS:
+        linhas = simular_ataque_cascata(adj0, demanda0, coords, ordem, passo, alpha, regra)
+        r = linhas[passo - 1]
+        saida.append(
+            {
+                "regra": regra,
+                "passageiros_nao_realocados": r["passageiros_nao_realocados"],
+                "passageiro_km_realocacao": r["passageiro_km_realocacao"],
+            }
+        )
+    return saida
 
 
 def escrever_csv(path: Path, linhas: list[dict[str, object]]) -> None:
@@ -171,8 +235,8 @@ def main() -> None:
     ) as f:
         f.write("Resumo da realocacao de demanda sob capacidade - 2025\n")
         f.write("=" * 60 + "\n\n")
-        f.write("Modelo: Cumelles, Lordan & Sallan (2021) - realocacao para as\n")
-        f.write("alternativas mais proximas com capacidade disponivel.\n")
+        f.write("Modelo adaptado do principio de Cumelles, Lordan & Sallan (2021):\n")
+        f.write("realocacao para alternativas proximas com capacidade disponivel.\n")
         f.write("Capacidade C = (1 + alpha) * demanda inicial (embarcados + desembarcados).\n\n")
         f.write(f"Aeroportos na rede: {len(adj)}\n")
         f.write(f"Demanda total: {round(sum(demanda.values())):,} passageiros\n")
@@ -195,6 +259,20 @@ def main() -> None:
         f.write(
             "\nQuanto menor o alpha (menos folga de capacidade), mais aeroportos\n"
             "saturam e maior a demanda de passageiros que nao encontra realocacao viavel.\n"
+        )
+
+        f.write(f"\nComparacao de selection rules (alpha={ALPHA_REFERENCIA}, passo {passo_ref}):\n")
+        f.write(f"{'regra':>12} | {'nao realocados':>15} | {'passageiro-km':>16}\n")
+        f.write("-" * 50 + "\n")
+        for r in comparar_regras(adj, demanda, COORDS, ordem, passo_ref, ALPHA_REFERENCIA):
+            f.write(
+                f"{r['regra']:>12} | {r['passageiros_nao_realocados']:>15,} | "
+                f"{r['passageiro_km_realocacao']:>16,}\n"
+            )
+        f.write(
+            "\nA demanda nao realocada independe da regra (e limitada pela capacidade\n"
+            "residual total do sistema); a regra afeta a distancia total de realocacao:\n"
+            "'proximidade' minimiza o passageiro-km; 'capacidade' o aumenta.\n"
         )
 
     print("Realocacao sob capacidade concluida.")
